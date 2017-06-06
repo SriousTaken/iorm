@@ -20,6 +20,7 @@ import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.emf.edit.provider.ViewerNotification;
+
 import org.framed.iorm.model.NamedElement;
 import org.framed.iorm.model.OrmPackage;
 
@@ -71,6 +72,17 @@ public class NamedElementItemProvider extends ItemProviderAdapter implements IEd
 								"_UI_NamedElement_type"),
 						OrmPackage.Literals.NAMED_ELEMENT__NAME, true, false, false,
 						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This returns NamedElement.gif.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Object getImage(Object object) {
+		return overlayImage(object, getResourceLocator().getImage("full/obj16/NamedElement"));
 	}
 
 	/**

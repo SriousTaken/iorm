@@ -1,9 +1,17 @@
 package org.framed.iorm.model.editor.multipage;
 
+import java.io.IOException;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.graphiti.examples.common.ExampleUtil;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
@@ -22,7 +30,9 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.framed.iorm.model.editor.literals.IdentifierLiterals;
 import org.framed.iorm.model.editor.literals.NameLiterals;
 import org.framed.iorm.model.editor.subeditors.DiagramEditorWithID;
+import org.framed.iorm.model.editor.subeditors.FeatureEditorWithID;
 import org.framed.iorm.model.editor.subeditors.TextViewerWithID;
+import org.framed.iorm.model.editor.util.MethodUtil;
 
 public class MultiPageEditor extends FormEditor implements IResourceChangeListener, ISelectionListener {
 	
@@ -46,12 +56,17 @@ public class MultiPageEditor extends FormEditor implements IResourceChangeListen
 								editorDataDiagram;
 	private TextViewerWithID textViewerIORM,
 							 textViewerCROM;
+	private FeatureEditorWithID editorFeatures;
 	
 	//editors indexes
 	private int editorBehaviorDiagramIndex,
 				editorDataDiagramIndex,
 				textViewerIORMIndex,
-				textViewerCROMIndex;
+				textViewerCROMIndex,
+				editorFeaturesIndex;
+	
+	//resource of the iorm model
+	private Resource resource;
 
 	public MultiPageEditor() {
 		super();
@@ -64,7 +79,25 @@ public class MultiPageEditor extends FormEditor implements IResourceChangeListen
 			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
 		super.init(site, editorInput);
 		getSite().getWorkbenchWindow().getSelectionService().addSelectionListener(this);
+		initializeResource(editorInput);
 	}
+	
+	//get resource from editor input
+	private void initializeResource(IEditorInput editorInput) {
+	    ResourceSet resourceSet = new ResourceSetImpl();
+	    if (editorInput instanceof IFileEditorInput) {
+	    	IFileEditorInput fileInput = (IFileEditorInput) editorInput;
+	    	IFile file = fileInput.getFile();
+	    	//String inputFilename = file.getName();
+	    	resource = resourceSet.createResource(URI.createURI(file.getLocationURI().toString()));
+	    	try {
+	    		resource.load(null);
+	    	} catch (IOException e) { 
+	    		e.printStackTrace();
+	    		resource = null;
+	    	}
+	    }
+	}	    
 	
 	@Override
 	public void dispose() {
@@ -79,6 +112,10 @@ public class MultiPageEditor extends FormEditor implements IResourceChangeListen
 		editorDataDiagram = new DiagramEditorWithID(PAGE_ID_DATA);
 		textViewerIORM = new TextViewerWithID(PAGE_ID_IORM_TEXT);
 		textViewerCROM = new TextViewerWithID(PAGE_ID_CROM_TEXT);
+		editorFeatures = new FeatureEditorWithID(PAGE_ID_FEATURE, resource);
+		
+		//set feature model
+		//editorFeatures
 		
 		//add pages
 		try { 
@@ -86,8 +123,9 @@ public class MultiPageEditor extends FormEditor implements IResourceChangeListen
 			editorDataDiagramIndex = addPage(editorDataDiagram, getEditorInput());
 			textViewerIORMIndex = addPage(textViewerIORM, getEditorInput());
 			textViewerCROMIndex = addPage(textViewerCROM, getEditorInput());
+			editorFeaturesIndex = addPage(editorFeatures, getEditorInput());
 		} catch (PartInitException e) { e.printStackTrace(); }
-		//create model
+		//create root model in graphiti business model
 		ICreateFeature createModelFeature = null;
 		ICreateFeature[] createFeatures = editorBehaviorDiagram.getDiagramTypeProvider().getFeatureProvider().getCreateFeatures();
 		for(int i = 0; i<createFeatures.length; i++) {
@@ -101,22 +139,32 @@ public class MultiPageEditor extends FormEditor implements IResourceChangeListen
 		setPageText(editorDataDiagramIndex, DATA_PAGE_NAME);
 		setPageText(textViewerIORMIndex, TEXT_IORM_PAGE_NAME);
 		setPageText(textViewerCROMIndex, TEXT_CROM_PAGE_NAME);	
+		setPageText(editorFeaturesIndex, FEATURE_PAGE_NAME);
 	}
 	
 	public boolean isSaveAsAllowed() {
 		return true;
 	}
 	
+	@Override
 	public void doSave(IProgressMonitor monitor) {
-		getEditor(editorBehaviorDiagramIndex).doSave(monitor);
+		//save active page last, so it has the priority
+		//if text pages are active save prioritize the behavior page
+		if(getActivePage()==editorDataDiagramIndex) {
+			if(getEditor(editorBehaviorDiagramIndex).isDirty()) 
+				getEditor(editorBehaviorDiagramIndex).doSave(monitor);
+			if(getEditor(editorDataDiagramIndex).isDirty()) 
+				getEditor(editorDataDiagramIndex).doSave(monitor);
+		} else {
+			if(getEditor(editorDataDiagramIndex).isDirty()) 
+				getEditor(editorDataDiagramIndex).doSave(monitor);
+			if(getEditor(editorBehaviorDiagramIndex).isDirty()) 
+				getEditor(editorBehaviorDiagramIndex).doSave(monitor);
+		}		
 	}
 		
-	public void doSaveAs() {
-		IEditorPart editor = getEditor(0);
-		editor.doSaveAs();
-		setPageText(0, editor.getTitle());
-		setInput(editor.getEditorInput());
-	}
+	@Override
+	public void doSaveAs() {}
 	
 	protected void pageChange(int newPageIndex) {
 		super.pageChange(newPageIndex);

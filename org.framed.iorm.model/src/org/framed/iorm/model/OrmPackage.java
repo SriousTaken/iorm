@@ -31,7 +31,7 @@ public interface OrmPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNAME = "orm";
+	String eNAME = "iorm";
 
 	/**
 	 * The package namespace URI.
@@ -39,7 +39,7 @@ public interface OrmPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_URI = "http://orm/1.0";
+	String eNS_URI = "http://iorm/1.0";
 
 	/**
 	 * The package namespace name.
@@ -47,7 +47,7 @@ public interface OrmPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_PREFIX = "org.framed.orm.model";
+	String eNS_PREFIX = "org.framed.iorm.model";
 
 	/**
 	 * The singleton instance of the package.

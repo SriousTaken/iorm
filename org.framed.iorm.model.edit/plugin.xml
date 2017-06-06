@@ -7,9 +7,9 @@
 <plugin>
 
    <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
-      <!-- @generated ORM -->
+      <!-- @generated IORM -->
       <factory
-            uri="http://orm/1.0"
+            uri="http://iorm/1.0"
             class="org.framed.iorm.model.provider.OrmItemProviderAdapterFactory"
             supportedTypes=
               "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
@@ -20,9 +20,9 @@
    </extension>
 
    <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
-      <!-- @generated ORM -->
+      <!-- @generated IORM -->
       <factory
-            uri="http://orm.featuremodel/1.0"
+            uri="http://iorm.featuremodel/1.0"
             class="org.framed.iorm.featuremodel.provider.FeaturemodelItemProviderAdapterFactory"
             supportedTypes=
               "org.eclipse.emf.edit.provider.IEditingDomainItemProvider

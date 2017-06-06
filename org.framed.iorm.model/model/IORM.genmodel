@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.framed.orm.model/src" modelPluginID="org.framed.orm.model"
-    modelName="ORM" modelPluginClass="" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.framed.iorm.model/src" editDirectory="/org.framed.iorm.model.edit/src"
+    editorDirectory="/org.framed.iorm.model.editor/src" modelPluginID="org.framed.iorm.model"
+    modelName="ORM" modelPluginClass="" editPluginClass="org.framed.iorm.model.provider.ORMEditPlugin"
+    editorPluginClass="org.framed.iorm.model.presentation.ORMEditorPlugin" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
     reflectiveDelegation="true" codeFormatting="true" importerID="org.eclipse.emf.importer.ecore"
-    featureDelegation="Reflective" complianceLevel="7.0" copyrightFields="false" editPluginID="org.framed.orm.model.edit"
-    editorPluginID="org.framed.orm.model.editor" operationReflection="true" importOrganizing="true">
+    featureDelegation="Reflective" complianceLevel="7.0" copyrightFields="false" editPluginID="org.framed.iorm.model.edit"
+    editorPluginID="org.framed.iorm.model.editor" operationReflection="true" importOrganizing="true">
   <foreignModel>IORM.ecore</foreignModel>
-  <genPackages prefix="Orm" disposableProviderFactory="true" ecorePackage="IORM.ecore#/">
+  <genPackages prefix="Orm" basePackage="org.framed" disposableProviderFactory="true"
+      interfacePackageSuffix="model" metaDataPackageSuffix="model" classPackageSuffix="model.impl"
+      utilityPackageSuffix="model.util" providerPackageSuffix="model.provider" presentationPackageSuffix="model.presentation"
+      testsPackageSuffix="model.tests" fileExtensions="crom_dia" ecorePackage="IORM.ecore#/">
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="IORM.ecore#//Type">
       <genEnumLiterals ecoreEnumLiteral="IORM.ecore#//Type/CompartmentType"/>
       <genEnumLiterals ecoreEnumLiteral="IORM.ecore#//Type/NaturalType"/>
@@ -61,7 +66,8 @@
     <genClasses ecoreClass="IORM.ecore#//Segment">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IORM.ecore#//Segment/elements"/>
     </genClasses>
-    <nestedGenPackages prefix="Featuremodel" disposableProviderFactory="true" ecorePackage="IORM.ecore#//featuremodel">
+    <nestedGenPackages prefix="Featuremodel" basePackage="org.framed.iorm" disposableProviderFactory="true"
+        ecorePackage="IORM.ecore#//featuremodel">
       <genEnums typeSafeEnumCompatible="false" ecoreEnum="IORM.ecore#//featuremodel/FeatureName">
         <genEnumLiterals ecoreEnumLiteral="IORM.ecore#//featuremodel/FeatureName/RML_Feature_Model"/>
         <genEnumLiterals ecoreEnumLiteral="IORM.ecore#//featuremodel/FeatureName/Role_Types"/>

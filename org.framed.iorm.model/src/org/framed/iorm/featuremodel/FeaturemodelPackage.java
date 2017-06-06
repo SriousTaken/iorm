@@ -39,7 +39,7 @@ public interface FeaturemodelPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_URI = "http://orm.featuremodel/1.0";
+	String eNS_URI = "http://iorm.featuremodel/1.0";
 
 	/**
 	 * The package namespace name.
@@ -47,7 +47,7 @@ public interface FeaturemodelPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_PREFIX = "org.framed.orm.model.featuremodel";
+	String eNS_PREFIX = "org.framed.iorm.model.featuremodel";
 
 	/**
 	 * The singleton instance of the package.

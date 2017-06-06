@@ -5,6 +5,10 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.framed.iorm.model.Model;
 import org.framed.iorm.model.Type;
 import org.framed.iorm.model.editor.literals.LayoutLiterals;

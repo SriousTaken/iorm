@@ -20,9 +20,11 @@ import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
 import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.emf.edit.provider.ViewerNotification;
+
 import org.framed.iorm.featuremodel.FRaMEDConfiguration;
 import org.framed.iorm.featuremodel.FeaturemodelFactory;
 import org.framed.iorm.featuremodel.FeaturemodelPackage;
+
 import org.framed.iorm.model.provider.ORMEditPlugin;
 
 /**

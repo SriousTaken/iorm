@@ -20,8 +20,11 @@ Require-Bundle: org.eclipse.graphiti;bundle-version="0.13.2",
  org.eclipse.emf.edit;bundle-version="2.12.0",
  org.eclipse.emf.transaction;bundle-version="1.9.0",
  org.eclipse.jface.text;bundle-version="3.11.2",
- org.eclipse.graphiti.examples.common
-Import-Package: org.eclipse.graphiti.examples.common,
+ org.eclipse.graphiti.examples.common,
+ de.ovgu.featureide.fm.core;bundle-version="3.3.1"
+Import-Package: de.ovgu.featureide.fm.ui.editors.configuration,
+ org.eclipse.graphiti.examples.common,
  org.eclipse.graphiti.features;version="0.13.2",
+ org.framed.iorm.featuremodel,
  org.framed.iorm.model,
  org.framed.iorm.model.provider

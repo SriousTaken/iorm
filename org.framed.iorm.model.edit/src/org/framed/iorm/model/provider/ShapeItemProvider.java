@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ViewerNotification;
+
 import org.framed.iorm.model.OrmFactory;
 import org.framed.iorm.model.OrmPackage;
 import org.framed.iorm.model.Shape;
