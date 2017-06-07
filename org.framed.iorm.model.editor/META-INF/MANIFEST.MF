@@ -1,9 +1,15 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Pattern
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.framed.iorm.model.editor;singleton:=true
 Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: .
+Bundle-Activator: org.framed.iorm.model.presentation.ORMEditorPlugin$Implementation
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.framed.iorm.featuremodel.presentation,
+ org.framed.iorm.model.presentation
 Require-Bundle: org.eclipse.graphiti;bundle-version="0.13.2",
  org.eclipse.graphiti.mm;bundle-version="0.13.2",
  org.eclipse.graphiti.ui;bundle-version="0.13.2",
@@ -11,10 +17,13 @@ Require-Bundle: org.eclipse.graphiti;bundle-version="0.13.2",
  org.eclipse.graphiti.examples.chess;bundle-version="0.13.2",
  org.eclipse.gef;bundle-version="3.11.0",
  org.eclipse.ui.editors;bundle-version="3.10.1",
- org.eclipse.core.resources;bundle-version="3.11.1",
+ org.eclipse.core.resources;bundle-version="3.11.1";visibility:=reexport,
+ org.framed.iorm.model.edit;visibility:=reexport,
+ org.eclipse.emf.ecore.xmi;visibility:=reexport,
+ org.eclipse.emf.edit.ui;visibility:=reexport,
  org.eclipse.core.runtime;bundle-version="3.12.0",
  org.eclipse.ui.forms;bundle-version="3.7.1",
- org.eclipse.ui.ide;bundle-version="3.12.3",
+ org.eclipse.ui.ide;bundle-version="3.12.3";visibility:=reexport,
  org.eclipse.ui;bundle-version="3.108.1",
  org.eclipse.ui.views.properties.tabbed;bundle-version="3.7.0",
  org.eclipse.emf.edit;bundle-version="2.12.0",
@@ -22,6 +31,7 @@ Require-Bundle: org.eclipse.graphiti;bundle-version="0.13.2",
  org.eclipse.jface.text;bundle-version="3.11.2",
  org.eclipse.graphiti.examples.common,
  de.ovgu.featureide.fm.core;bundle-version="3.3.1"
+Bundle-ActivationPolicy: lazy
 Import-Package: de.ovgu.featureide.fm.ui.editors.configuration,
  org.eclipse.graphiti.examples.common,
  org.eclipse.graphiti.features;version="0.13.2",

@@ -23,6 +23,10 @@ public class IdentifierLiterals {
 							   IMG_ID_FEATURE_NATURALTYPE = IMG_ID_PREFIX + "img_naturaltype",
 							   IMG_ID_FEATURE_DATATYPE = IMG_ID_PREFIX + "img_datatype";
 	
+	//feature model ID
+	//~~~~~~~~~~~~~~~~
+	public static final String FEATUREMODEL_ID = "org.framed.iorm.featuremodel";
+	
 	//shape IDs
 	//~~~~~~~~~
 	//Model

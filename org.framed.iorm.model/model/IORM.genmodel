@@ -11,7 +11,7 @@
   <genPackages prefix="Orm" basePackage="org.framed" disposableProviderFactory="true"
       interfacePackageSuffix="model" metaDataPackageSuffix="model" classPackageSuffix="model.impl"
       utilityPackageSuffix="model.util" providerPackageSuffix="model.provider" presentationPackageSuffix="model.presentation"
-      testsPackageSuffix="model.tests" fileExtensions="crom_dia" ecorePackage="IORM.ecore#/">
+      testsPackageSuffix="model.tests" fileExtensions=".diagram" ecorePackage="IORM.ecore#/">
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="IORM.ecore#//Type">
       <genEnumLiterals ecoreEnumLiteral="IORM.ecore#//Type/CompartmentType"/>
       <genEnumLiterals ecoreEnumLiteral="IORM.ecore#//Type/NaturalType"/>

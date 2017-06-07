@@ -1,5 +1,6 @@
 package org.framed.iorm.model.editor.multipage;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
@@ -33,6 +34,8 @@ import org.framed.iorm.model.editor.subeditors.DiagramEditorWithID;
 import org.framed.iorm.model.editor.subeditors.FeatureEditorWithID;
 import org.framed.iorm.model.editor.subeditors.TextViewerWithID;
 import org.framed.iorm.model.editor.util.MethodUtil;
+
+import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 
 public class MultiPageEditor extends FormEditor implements IResourceChangeListener, ISelectionListener {
 	
@@ -79,25 +82,7 @@ public class MultiPageEditor extends FormEditor implements IResourceChangeListen
 			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
 		super.init(site, editorInput);
 		getSite().getWorkbenchWindow().getSelectionService().addSelectionListener(this);
-		initializeResource(editorInput);
 	}
-	
-	//get resource from editor input
-	private void initializeResource(IEditorInput editorInput) {
-	    ResourceSet resourceSet = new ResourceSetImpl();
-	    if (editorInput instanceof IFileEditorInput) {
-	    	IFileEditorInput fileInput = (IFileEditorInput) editorInput;
-	    	IFile file = fileInput.getFile();
-	    	//String inputFilename = file.getName();
-	    	resource = resourceSet.createResource(URI.createURI(file.getLocationURI().toString()));
-	    	try {
-	    		resource.load(null);
-	    	} catch (IOException e) { 
-	    		e.printStackTrace();
-	    		resource = null;
-	    	}
-	    }
-	}	    
 	
 	@Override
 	public void dispose() {
@@ -107,43 +92,45 @@ public class MultiPageEditor extends FormEditor implements IResourceChangeListen
 	
 	@Override
 	protected void addPages() {
-		//create editors
+		//create editors (except feature editor)
 		editorBehaviorDiagram = new DiagramEditorWithID(PAGE_ID_BEHAVIOR);
 		editorDataDiagram = new DiagramEditorWithID(PAGE_ID_DATA);
 		textViewerIORM = new TextViewerWithID(PAGE_ID_IORM_TEXT);
 		textViewerCROM = new TextViewerWithID(PAGE_ID_CROM_TEXT);
-		editorFeatures = new FeatureEditorWithID(PAGE_ID_FEATURE, resource);
-		
-		//set feature model
-		//editorFeatures
-		
-		//add pages
+		//add pages (except feature page)
 		try { 
 			editorBehaviorDiagramIndex = addPage(editorBehaviorDiagram, getEditorInput());
 			editorDataDiagramIndex = addPage(editorDataDiagram, getEditorInput());
 			textViewerIORMIndex = addPage(textViewerIORM, getEditorInput());
 			textViewerCROMIndex = addPage(textViewerCROM, getEditorInput());
-			editorFeaturesIndex = addPage(editorFeatures, getEditorInput());
+			
 		} catch (PartInitException e) { e.printStackTrace(); }
 		//create root model in graphiti business model
 		ICreateFeature createModelFeature = null;
-		ICreateFeature[] createFeatures = editorBehaviorDiagram.getDiagramTypeProvider().getFeatureProvider().getCreateFeatures();
-		for(int i = 0; i<createFeatures.length; i++) {
-			if(createFeatures[i].getCreateName().equals(MODEL_FEATURE_NAME)) 
-				createModelFeature = createFeatures[i];
-		}
+			ICreateFeature[] createFeatures = editorBehaviorDiagram.getDiagramTypeProvider().getFeatureProvider().getCreateFeatures();
+			for(int i = 0; i<createFeatures.length; i++) {
+				if(createFeatures[i].getCreateName().equals(MODEL_FEATURE_NAME)) 
+					createModelFeature = createFeatures[i];
+			}
 		ICreateContext createModelFeatureContext = new CreateContext();
-		createModelFeature.create(createModelFeatureContext);	
+		createModelFeature.create(createModelFeatureContext);
+		//save after creation of root model
+		doSave(null);
+		
+		//create feature editor and add feature page
+		try {
+			editorFeatures = new FeatureEditorWithID(PAGE_ID_FEATURE, getEditorInput());
+		} catch (FileNotFoundException e) { e.printStackTrace(); }
+		  catch (UnsupportedModelException e) { e.printStackTrace(); }	
+		try {
+			editorFeaturesIndex = addPage(editorFeatures, getEditorInput());
+		} catch (PartInitException e) { e.printStackTrace(); }
 		//set page names
 		setPageText(editorBehaviorDiagramIndex, BEHAVIOR_PAGE_NAME);
 		setPageText(editorDataDiagramIndex, DATA_PAGE_NAME);
 		setPageText(textViewerIORMIndex, TEXT_IORM_PAGE_NAME);
 		setPageText(textViewerCROMIndex, TEXT_CROM_PAGE_NAME);	
 		setPageText(editorFeaturesIndex, FEATURE_PAGE_NAME);
-	}
-	
-	public boolean isSaveAsAllowed() {
-		return true;
 	}
 	
 	@Override
@@ -163,6 +150,10 @@ public class MultiPageEditor extends FormEditor implements IResourceChangeListen
 		}		
 	}
 		
+	public boolean isSaveAsAllowed() {
+		return false;
+	}
+	
 	@Override
 	public void doSaveAs() {}
 	

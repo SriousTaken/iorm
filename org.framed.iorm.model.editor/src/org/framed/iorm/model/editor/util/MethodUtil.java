@@ -31,8 +31,9 @@ public class MethodUtil {
 	public static final Model getDiagramRootModel(Diagram diagram) {
 		List<Model> models=  new ArrayList<Model>();
 		for(EObject eObject : diagram.eResource().getContents()) {
-			if(eObject instanceof Model) models.add((Model) eObject);
-		}
+			if(eObject instanceof Model) {
+				models.add((Model) eObject);
+		}	}
 		if(models.size()==1) return models.get(0);
 		return null;
 	}
