@@ -561,7 +561,6 @@ public class DataTypePattern extends AbstractPattern{
 		boolean returnValue = false;
          
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
-		System.out.println("c");
 		//business names of natural type, attributes and operations
 		String businessTypeName = getBusinessTypeName(pictogramElement);
 		List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);

@@ -27,8 +27,8 @@
  
  	<extension point="org.eclipse.ui.editors">
      	<editor
-            class="org.framed.iorm.model.editor.multipage.MultiPageEditor"
-            contributorClass="org.framed.iorm.model.editor.multipage.MultiPageEditorContributor"
+            class="org.framed.iorm.model.editor.multipage.MultipageEditor"
+            contributorClass="org.framed.iorm.model.editor.multipage.MultipageEditorContributor"
             extensions="diagram"
             default="true"
             id="IORM_MultipageEditor"

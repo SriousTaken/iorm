@@ -3,7 +3,6 @@ package org.framed.iorm.model.editor.wizards;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.graphiti.examples.common.ExampleProjectNature;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 public class RoleModelProjectWizard extends BasicNewProjectResourceWizard {

@@ -1,18 +1,11 @@
 package org.framed.iorm.model.editor.multipage;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.graphiti.examples.common.ExampleUtil;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
@@ -33,11 +26,10 @@ import org.framed.iorm.model.editor.literals.NameLiterals;
 import org.framed.iorm.model.editor.subeditors.DiagramEditorWithID;
 import org.framed.iorm.model.editor.subeditors.FeatureEditorWithID;
 import org.framed.iorm.model.editor.subeditors.TextViewerWithID;
-import org.framed.iorm.model.editor.util.MethodUtil;
 
 import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 
-public class MultiPageEditor extends FormEditor implements IResourceChangeListener, ISelectionListener {
+public class MultipageEditor extends FormEditor implements IResourceChangeListener, ISelectionListener {
 	
 	//name literals
 	private final String BEHAVIOR_PAGE_NAME = NameLiterals.BEHAVIOR_PAGE_NAME,
@@ -68,10 +60,7 @@ public class MultiPageEditor extends FormEditor implements IResourceChangeListen
 				textViewerCROMIndex,
 				editorFeaturesIndex;
 	
-	//resource of the iorm model
-	private Resource resource;
-
-	public MultiPageEditor() {
+	public MultipageEditor() {
 		super();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 	}
@@ -82,6 +71,10 @@ public class MultiPageEditor extends FormEditor implements IResourceChangeListen
 			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
 		super.init(site, editorInput);
 		getSite().getWorkbenchWindow().getSelectionService().addSelectionListener(this);
+	}
+	
+	public DiagramEditorWithID getBehaviorEditor() {
+	    return (DiagramEditorWithID) getEditor(editorBehaviorDiagramIndex);
 	}
 	
 	@Override
@@ -119,7 +112,7 @@ public class MultiPageEditor extends FormEditor implements IResourceChangeListen
 		
 		//create feature editor and add feature page
 		try {
-			editorFeatures = new FeatureEditorWithID(PAGE_ID_FEATURE, getEditorInput());
+			editorFeatures = new FeatureEditorWithID(PAGE_ID_FEATURE, getEditorInput(), this);
 		} catch (FileNotFoundException e) { e.printStackTrace(); }
 		  catch (UnsupportedModelException e) { e.printStackTrace(); }	
 		try {
@@ -137,7 +130,9 @@ public class MultiPageEditor extends FormEditor implements IResourceChangeListen
 	public void doSave(IProgressMonitor monitor) {
 		//save active page last, so it has the priority
 		//if text pages are active save prioritize the behavior page
-		if(getActivePage()==editorDataDiagramIndex) {
+		if(getActivePage()==editorDataDiagramIndex || 
+		   getActivePage()==textViewerIORMIndex ||	
+		   getActivePage()==textViewerCROMIndex ) {
 			if(getEditor(editorBehaviorDiagramIndex).isDirty()) 
 				getEditor(editorBehaviorDiagramIndex).doSave(monitor);
 			if(getEditor(editorDataDiagramIndex).isDirty()) 
@@ -148,6 +143,11 @@ public class MultiPageEditor extends FormEditor implements IResourceChangeListen
 			if(getEditor(editorBehaviorDiagramIndex).isDirty()) 
 				getEditor(editorBehaviorDiagramIndex).doSave(monitor);
 		}		
+		//if feature page is active save the changes on this page
+		if(getActivePage()==editorFeaturesIndex &&
+		   getEditor(editorFeaturesIndex).isDirty()) {
+			getEditor(editorFeaturesIndex).doSave(monitor);
+		}
 	}
 		
 	public boolean isSaveAsAllowed() {

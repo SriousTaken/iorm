@@ -6,14 +6,13 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -29,6 +28,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
@@ -38,20 +38,22 @@ import org.framed.iorm.featuremodel.FRaMEDFeature;
 import org.framed.iorm.featuremodel.FeatureName;
 import org.framed.iorm.featuremodel.FeaturemodelFactory;
 import org.framed.iorm.model.Model;
+import org.framed.iorm.model.editor.commands.FeatureModelConfigurationEditorChangeCommand;
 import org.framed.iorm.model.editor.literals.IdentifierLiterals;
+import org.framed.iorm.model.editor.literals.URLLiterals;
+import org.framed.iorm.model.editor.multipage.MultipageEditor;
 import org.framed.iorm.model.editor.util.MethodUtil;
-import org.osgi.framework.Bundle;
 
 import de.ovgu.featureide.fm.core.base.IFeature;
-import de.ovgu.featureide.fm.core.base.impl.Feature;
 import de.ovgu.featureide.fm.core.base.impl.FeatureModel;
 import de.ovgu.featureide.fm.core.configuration.Configuration;
 import de.ovgu.featureide.fm.core.configuration.SelectableFeature;
 import de.ovgu.featureide.fm.core.configuration.Selection;
+import de.ovgu.featureide.fm.core.configuration.TreeElement;
 import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 import de.ovgu.featureide.fm.core.io.xml.XmlFeatureModelReader;
-import de.ovgu.featureide.fm.core.job.WorkMonitor;
 
+@SuppressWarnings("deprecation")
 public class FeatureEditorWithID extends EditorPart {
 
 	//id literals
@@ -59,6 +61,9 @@ public class FeatureEditorWithID extends EditorPart {
 	
 	//identifier of editor
 	private String id;
+	
+	//multipage editor that uses the feature editor
+	private MultipageEditor multipageEditor;
 	
 	//resource, diagram and models of the editors input
 	private Resource resource;
@@ -70,19 +75,23 @@ public class FeatureEditorWithID extends EditorPart {
 	private Configuration configuration;
 	
 	//path to feature model and standart configuration
-	private final Bundle bundleFeatureModel = Platform.getBundle("org.framed.iorm.featuremodel");
-	private final URL fileURLToFeatureModel = bundleFeatureModel.getEntry("model.xml");
-	private final URL fileURLToStandartConfiguration = bundleFeatureModel.getEntry("/standardframedconfiguration/standardFramedConfiguration.diagram");
+	private final URL fileURLToFeatureModel = URLLiterals.URL_TO_FEATUREMODEL,
+					  fileURLToStandartConfiguration = URLLiterals.URL_TO_STANDARD_CONFIGURATION;
 	
-	//graphical representation
+	//graphical representation and its items
 	private Tree tree;
+	private final HashMap<SelectableFeature, TreeItem> itemMap = new HashMap<SelectableFeature, TreeItem>();
 	
 	//status of the configuration
 	private Label infoLabel;
 	
-	public FeatureEditorWithID(String id, IEditorInput editorInput) throws FileNotFoundException, UnsupportedModelException {
+	//shows if the editor contains an usaved change
+	private boolean dirty = false;
+	
+	public FeatureEditorWithID(String id, IEditorInput editorInput, MultipageEditor multipageEditor) throws FileNotFoundException, UnsupportedModelException {
 		super();
 		this.id = id;
+		this.multipageEditor = multipageEditor;
 		getResourceFromEditorInput(editorInput);
 		readRootModel();
 		readFeatureModel();
@@ -108,7 +117,6 @@ public class FeatureEditorWithID extends EditorPart {
 	 	if (editorInput instanceof IFileEditorInput) {
 	    	IFileEditorInput fileInput = (IFileEditorInput) editorInput;
 	    	IFile file = fileInput.getFile();
-	    	//String inputFilename = file.getName();
 	    	resource = resourceSet.createResource(URI.createURI(file.getLocationURI().toString()));
 	    	try {
 	    		resource.load(null);
@@ -157,7 +165,7 @@ public class FeatureEditorWithID extends EditorPart {
 	    if (framedConfiguration == null || 
 	    	framedConfiguration.getFeatures() == null || 
 	        framedConfiguration.getFeatures().size() < 1) {
-	      // Load standard configuration for framed
+	    	//load standard configuration for framed
 	    	ResourceSet resourceSet = new ResourceSetImpl();
 	    	Resource resourceStandartConfiguration =
 	          resourceSet.createResource(URI.createURI(FileLocator.resolve(fileURLToStandartConfiguration).toURI().toString()));
@@ -169,7 +177,7 @@ public class FeatureEditorWithID extends EditorPart {
 	    	Model standardConfigurationModel = (Model) resourceStandartConfiguration.getContents().get(0);
 	    	rootModel.setFramedConfiguration(FeaturemodelFactory.eINSTANCE.createFRaMEDConfiguration());
 
-	    	// Apply each feature in the standard configuration to the FeatureIDE Configuration
+	    	//apply each feature in the standard configuration to the FeatureIDE Configuration
 	    	for (FRaMEDFeature framedFeature : standardConfigurationModel.getFramedConfiguration().getFeatures()) {
 	    		if (framedFeature.isManuallySelected()) {
 	    			configuration.setManual(framedFeature.getName().getLiteral(), Selection.SELECTED);
@@ -181,7 +189,6 @@ public class FeatureEditorWithID extends EditorPart {
 	    }
 	}
 	
-	//TODO: rename myfeature...
 	private void writeConfigurationToModel() {
 	    FRaMEDConfiguration framedConfiguration = rootModel.getFramedConfiguration();
 	    // Remove all existing Features
@@ -191,41 +198,51 @@ public class FeatureEditorWithID extends EditorPart {
 	      manualFeatureNames.add(s.getName());
 	    }
 	    // Add each selected feature to the FramedConfiguration
-	    for (IFeature f : configuration.getSelectedFeatures()) {
-	      FRaMEDFeature myFeature = FeaturemodelFactory.eINSTANCE.createFRaMEDFeature();
-	      myFeature.setName(FeatureName.getByName(f.getName()));
-	      myFeature.setManuallySelected(manualFeatureNames.contains(FeatureName.getByName(f.getName())
+	    for (IFeature feature : configuration.getSelectedFeatures()) {
+	      FRaMEDFeature framedFeature = FeaturemodelFactory.eINSTANCE.createFRaMEDFeature();
+	      framedFeature.setName(FeatureName.getByName(feature.getName()));
+	      framedFeature.setManuallySelected(manualFeatureNames.contains(FeatureName.getByName(feature.getName())
 	          .getLiteral()));
-	      framedConfiguration.getFeatures().add(myFeature);
+	      framedConfiguration.getFeatures().add(framedFeature);
 	    }
 	}
 	
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
-		
+		try {
+		      createStandardFramedConfiguration();
+		    } catch (URISyntaxException e) { e.printStackTrace(); } 
+			  catch (IOException e) { e.printStackTrace(); }
+		    boolean resourceSaved = saveGraphicalResource();
+		    if (!resourceSaved) return;
+		    setDirty(false);
 	}
-
-	@Override
-	public void doSaveAs() {
-		// TODO Auto-generated method stub
-		
+	
+	private boolean saveGraphicalResource() {
+	    if (resource == null) {
+	      return false;
+	    }
+	    try {
+	      resource.save(null);
+	      return true;
+	    } catch (IOException e) { e.printStackTrace(); }
+	    return false;
 	}
 
 	@Override
 	public boolean isDirty() {
-		// TODO Auto-generated method stub
-		return false;
+		return dirty;
 	}
-
+	
+	public void setDirty(boolean newDirty) {
+		if(dirty != newDirty) {
+			dirty = newDirty;
+			firePropertyChange(IEditorPart.PROP_DIRTY);
+		}	
+	}
+	
 	@Override
-	public boolean isSaveAsAllowed() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	 @Override
-	 public void createPartControl(Composite parent) {
+	public void createPartControl(Composite parent) {
 		 // parent composite
 		 GridLayout gridLayout = new GridLayout(1, false);
 		 gridLayout.verticalSpacing = 4;
@@ -255,54 +272,6 @@ public class FeatureEditorWithID extends EditorPart {
 		 infoLabel = new Label(compositeTop, SWT.NONE);
 		 infoLabel.setLayoutData(gridData);
 		 updateInfoLabel();	
-		 
-		 
-
-	    // TODO: This block was commented out in FeatureIDE v2.7.5. I did not check if there was a
-	    // necissity for this, so this might be used
-	    // in the future.
-
-	    // autoselect button
-	    // gridData = new GridData();
-	    // gridData.horizontalAlignment = SWT.RIGHT;
-	    // gridData.verticalAlignment = SWT.CENTER;
-	    // autoSelectButton = new Button(compositeTop, SWT.TOGGLE);
-	    // autoSelectButton.setText(AUTOSELECT_FEATURES);
-	    // autoSelectButton.setLayoutData(gridData);
-	    // autoSelectButton.setSelection(false);
-	    // autoSelectButton.setEnabled(false);
-	    //
-	    // autoSelectButton.addSelectionListener(new SelectionListener() {
-	    // @Override
-	    // public void widgetSelected(SelectionEvent e) {
-	    // final Configuration config = configurationEditor.getConfiguration();
-	    // if (configurationEditor.isAutoSelectFeatures()) {
-	    // invalidFeatures.clear();
-	    // configurationEditor.setAutoSelectFeatures(false);
-	    // configurationEditor.getConfigJobManager().cancelAllJobs();
-	    // config.makeManual(!canDeselectFeatures());
-	    // walkTree(new IBinaryFunction<TreeItem, SelectableFeature, Void>() {
-	    // @Override
-	    // public Void invoke(TreeItem item, SelectableFeature feature) {
-	    // refreshItem(item, feature);
-	    // return null;
-	    // }
-	    // }, new FunctionalInterfaces.NullFunction<Void, Void>());
-	    // updateInfoLabel(Display.getCurrent());
-	    // } else {
-	    // if (invalidFeatures.isEmpty()) {
-	    // configurationEditor.setAutoSelectFeatures(true);
-	    // // updateInfoLabel();
-	    // computeTree(true);
-	    // } else {
-	    // autoSelectButton.setSelection(false);
-	    // }
-	    // }
-	    // }
-	    //
-	    // @Override
-	    // public void widgetDefaultSelected(SelectionEvent e) {}
-	    // });
 
 		 // 2. sub composite
 		 gridData = new GridData();
@@ -313,40 +282,12 @@ public class FeatureEditorWithID extends EditorPart {
 		 final Composite compositeBottom = new Composite(parent, SWT.BORDER);
 		 compositeBottom.setLayout(new FillLayout());
 		 compositeBottom.setLayoutData(gridData);
-
-		 createUITree(compositeBottom);
-	  }
-	 
-	 protected void createUITree(Composite parent) {
-		 tree = new Tree(parent, SWT.CHECK);
-		 tree.addSelectionListener(new SelectionListener() {
-		 @Override
-		      public void widgetDefaultSelected(SelectionEvent e) {}
-
-		      @Override
-		      public void widgetSelected(SelectionEvent event) {
-		        if (event.detail == SWT.CHECK) {
-		          final TreeItem item = (TreeItem) event.item;
-		          final Object data = item.getData();
-		          if (data instanceof SelectableFeature) {
-		            final SelectableFeature feature = (SelectableFeature) item.getData();
-		            item.setChecked(true);
-		            switch (feature.getAutomatic()) {
-		              case SELECTED:
-		                item.setChecked(true);
-		                break;
-		              case UNSELECTED:
-		                item.setChecked(false);
-		                break;
-		              case UNDEFINED:
-		                //changeSelection(item, true);
-		                break;
-		            }
-		          }
-		        }
-		      }
-		    });
-		  }
+		 
+		 tree = new Tree(compositeBottom, SWT.CHECK);
+		 createSelectionListener();
+		 updateTree();
+		 updateInfoLabel();
+	 }
 	 
 	 private void updateInfoLabel() {
 		    Boolean valid = configuration.isValid();
@@ -354,10 +295,150 @@ public class FeatureEditorWithID extends EditorPart {
 		    //infoLabel.setForeground(valid ? blue : red);
 		  }
 
-	@Override
-	public void setFocus() {
-		// TODO Auto-generated method stub
+	//tree related operations
+	//~~~~~~~~~~~~~~~~~~~~~~~ 
+	public void createSelectionListener() {
+		tree.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
 		
+				@Override
+				public void widgetSelected(SelectionEvent event) {
+					if (event.detail == SWT.CHECK) {
+						final TreeItem item = (TreeItem) event.item;
+				 		final Object data = item.getData();
+				 		if (data instanceof SelectableFeature) {
+				 			final SelectableFeature feature = (SelectableFeature) item.getData();
+				 			item.setChecked(true);
+				 			switch (feature.getAutomatic()) {
+				 				case SELECTED: 
+				 					item.setChecked(true);
+				 					break;
+				 				case UNSELECTED:
+				 					item.setChecked(false);
+				 					break;
+				 				case UNDEFINED:
+				 					changeSelection(item, true);
+				 					//item.setChecked(false);
+				 					break;
+	}	}	}	}	}	);	}
+		
+	public void updateTree() {
+	    tree.removeAll();
+	    final TreeItem root = new TreeItem(tree, 0);
+	    final SelectableFeature rootFeature = configuration.getRoot();
+		root.setText(configuration.getRoot().getName());
+	    root.setData(configuration.getRoot());
+		refreshItem(root, rootFeature);
+	    itemMap.put(configuration.getRoot(), root);
+	    buildTree(root, configuration.getRoot().getChildren());
+		}
+		
+	private void buildTree(final TreeItem parent, final TreeElement[] children) {
+		for (int i = 0; i < children.length; i++) {
+		 	final TreeElement child = children[i];
+		 	if (child instanceof SelectableFeature) {
+		 		final SelectableFeature currentFeature = (SelectableFeature) child;
+		 		//if (!(currentFeature.getFeature().isHidden())) {
+		 			TreeItem childNode = null;
+		 			// This try for the case that the parent item is already disposed.
+		 			try {
+		 				childNode = new TreeItem(parent, 0);
+		 			} catch (Exception e) { return; }
+		 			childNode.setText(currentFeature.getFeature().getName());
+		 			childNode.setData(currentFeature);
+		 			refreshItem(childNode, currentFeature);
+		 			itemMap.put(currentFeature, childNode);
+		 			if (currentFeature.hasChildren()) {
+		 				buildTree(childNode, currentFeature.getChildren());
+		 			}
+		        //}
+		 	}
+		}
+		parent.setExpanded(true);
 	}
+	 
+	protected void refreshItem(TreeItem item, SelectableFeature feature) {
+	    item.setBackground(null);
+	    switch (feature.getAutomatic()) {
+			case SELECTED:
+				item.setGrayed(true);
+		      	item.setForeground(null);
+		      	item.setChecked(true);
+		      	break;
+			case UNSELECTED:
+		      	item.setGrayed(true);
+		      	//item.setForeground(gray);
+		      	item.setChecked(false);
+		      	break;
+			case UNDEFINED:
+		      	item.setGrayed(false);
+		      	item.setForeground(null);
+		      	item.setChecked(feature.getManual() == Selection.SELECTED);
+		      	break;
+	    }
+	}
+	
+	public void changeSelection(final TreeItem item, final boolean select) {
+		FeatureModelConfigurationEditorChangeCommand cmd = new FeatureModelConfigurationEditorChangeCommand();
+		cmd.setEditor(this);
+		cmd.setItem(item);
+		cmd.setSelect(select);
+		multipageEditor.getBehaviorEditor().getCommandStack().execute(cmd);   
+	}
+	
+	public void  setSelection(final TreeItem item, final boolean select) {
+		SelectableFeature feature = (SelectableFeature) item.getData();
+	    if (feature.getAutomatic() == Selection.UNDEFINED) {
+	    	switch (feature.getManual()) {
+	        	case SELECTED:
+	        		set(feature, (select) ? Selection.UNDEFINED : Selection.UNSELECTED);
+	        		break;
+	        	case UNSELECTED:
+	        		set(feature, (select) ? Selection.SELECTED : Selection.UNDEFINED);
+	        		break;
+	        	case UNDEFINED:
+	        		set(feature, (select) ? Selection.SELECTED : Selection.UNSELECTED);
+	        		break;
+	        	default:
+	        		set(feature, Selection.UNDEFINED);
+	        }
+	    	setDirty(true);
+	    	TreeElement configRootFeature = configuration.getRoot();
+	    	updateSelections(itemMap.get(configRootFeature), configRootFeature.getChildren());
+	    }
+	    updateInfoLabel();
+	}
+	    
+	private void updateSelections(final TreeItem parent, final TreeElement[] children) {
+		for (int i = 0; i < children.length; i++) {
+			final TreeElement child = children[i];
+	        if (child instanceof SelectableFeature) {
+	        	final SelectableFeature currentFeature = (SelectableFeature) child;
+	            for (TreeItem t : parent.getItems()) {
+	            	if (t.getData().equals(currentFeature)) {
+	            		refreshItem(t, currentFeature);
+	            		updateSelections(t, currentFeature.getChildren());
+	            		break;
+	    }	}	}	}
+	}	    
+	    
+	protected void set(SelectableFeature feature, Selection selection) {
+		configuration.setManual(feature, selection);
+	    writeConfigurationToModel();
+	}
+	 
+	//unused methods
+	//~~~~~~~~~~~~~~	
+	@Override
+	public void setFocus() {}
+
+	@Override
+	public boolean isSaveAsAllowed() {
+		return false;
+	}
+	    
+	@Override
+	public void doSaveAs() {}
 }
 

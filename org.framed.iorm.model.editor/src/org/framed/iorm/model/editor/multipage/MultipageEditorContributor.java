@@ -15,7 +15,7 @@ import org.framed.iorm.model.editor.literals.IdentifierLiterals;
 import org.framed.iorm.model.editor.subeditors.DiagramEditorWithID;
 import org.framed.iorm.model.editor.subeditors.TextViewerWithID;
 
-public class MultiPageEditorContributor extends MultiPageEditorActionBarContributor {
+public class MultipageEditorContributor extends MultiPageEditorActionBarContributor {
 	
 	//id literals
 	public final String PAGE_ID_BEHAVIOR = IdentifierLiterals.PAGE_ID_BEHAVIOR,
@@ -26,7 +26,7 @@ public class MultiPageEditorContributor extends MultiPageEditorActionBarContribu
 	
 	private IEditorPart activeEditorPart;
 	
-	public MultiPageEditorContributor() {
+	public MultipageEditorContributor() {
 		super();
 	}
 	
