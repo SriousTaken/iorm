@@ -10,8 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -56,6 +59,8 @@ import de.ovgu.featureide.fm.core.io.xml.XmlFeatureModelReader;
 @SuppressWarnings("deprecation")
 public class FeatureEditorWithID extends EditorPart {
 
+	boolean flag=false;
+	
 	//id literals
 	private final String FEATUREMODEL_ID = IdentifierLiterals.FEATUREMODEL_ID;
 	
@@ -65,9 +70,9 @@ public class FeatureEditorWithID extends EditorPart {
 	//multipage editor that uses the feature editor
 	private MultipageEditor multipageEditor;
 	
-	//resource, diagram and models of the editors input
+	//file, resource, diagram and models of the editors input
+	private IFile file;
 	private Resource resource;
-	private Diagram diagram;
 	private Model rootModel;
 	private FeatureModel featureModel;
 	
@@ -112,11 +117,12 @@ public class FeatureEditorWithID extends EditorPart {
 		return id;
 	}
 	
-	private void getResourceFromEditorInput(IEditorInput editorInput) {
+	public void getResourceFromEditorInput(IEditorInput editorInput) {
 		ResourceSet resourceSet = new ResourceSetImpl();
 	 	if (editorInput instanceof IFileEditorInput) {
 	    	IFileEditorInput fileInput = (IFileEditorInput) editorInput;
-	    	IFile file = fileInput.getFile();
+	    	file = fileInput.getFile();
+	    
 	    	resource = resourceSet.createResource(URI.createURI(file.getLocationURI().toString()));
 	    	try {
 	    		resource.load(null);
@@ -127,14 +133,14 @@ public class FeatureEditorWithID extends EditorPart {
 	    }
 	}
 	
-	private void readRootModel() {
+	public void readRootModel() {
 		if (resource != null) {
-			diagram = (Diagram) resource.getContents().get(0);
+			Diagram diagram = (Diagram) resource.getContents().get(0);
 			rootModel = MethodUtil.getDiagramRootModel(diagram);
 		} else
 			throw new NullPointerException("The resource could not be loaded.");
 	}
-	
+		
 	private void readFeatureModel() throws FileNotFoundException, UnsupportedModelException {
 		FeatureModel featureModel = new FeatureModel(FEATUREMODEL_ID);
 		File featureModelFile = null;
@@ -190,7 +196,7 @@ public class FeatureEditorWithID extends EditorPart {
 	}
 	
 	private void writeConfigurationToModel() {
-	    FRaMEDConfiguration framedConfiguration = rootModel.getFramedConfiguration();
+		FRaMEDConfiguration framedConfiguration = rootModel.getFramedConfiguration();
 	    // Remove all existing Features
 	    framedConfiguration.getFeatures().clear();
 	    List<String> manualFeatureNames = new ArrayList<String>();
@@ -203,19 +209,27 @@ public class FeatureEditorWithID extends EditorPart {
 	      framedFeature.setName(FeatureName.getByName(feature.getName()));
 	      framedFeature.setManuallySelected(manualFeatureNames.contains(FeatureName.getByName(feature.getName())
 	          .getLiteral()));
-	      framedConfiguration.getFeatures().add(framedFeature);
+	      framedConfiguration.getFeatures().add(framedFeature); 
 	    }
+	    //multipageEditor.getBehaviorEditor().getDiagramTypeProvider().getDiagram().eResource().setModified(true);
+	    doSave(null);
+	    flag = true;
 	}
 	
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		System.out.println(id);
 		try {
 		      createStandardFramedConfiguration();
 		    } catch (URISyntaxException e) { e.printStackTrace(); } 
 			  catch (IOException e) { e.printStackTrace(); }
-		    boolean resourceSaved = saveGraphicalResource();
-		    if (!resourceSaved) return;
-		    setDirty(false);
+		boolean resourceSaved = saveGraphicalResource();
+		if (!resourceSaved) return;
+		setDirty(false);
+		//refresh the file of the editor
+		try {
+			file.refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());
+		} catch (CoreException e) { e.printStackTrace(); }
 	}
 	
 	private boolean saveGraphicalResource() {
@@ -223,8 +237,8 @@ public class FeatureEditorWithID extends EditorPart {
 	      return false;
 	    }
 	    try {
-	      resource.save(null);
-	      return true;
+	    	resource.save(null);
+	    	return true;
 	    } catch (IOException e) { e.printStackTrace(); }
 	    return false;
 	}
@@ -319,7 +333,6 @@ public class FeatureEditorWithID extends EditorPart {
 				 					break;
 				 				case UNDEFINED:
 				 					changeSelection(item, true);
-				 					//item.setChecked(false);
 				 					break;
 	}	}	}	}	}	);	}
 		
@@ -381,13 +394,13 @@ public class FeatureEditorWithID extends EditorPart {
 	
 	public void changeSelection(final TreeItem item, final boolean select) {
 		FeatureModelConfigurationEditorChangeCommand cmd = new FeatureModelConfigurationEditorChangeCommand();
-		cmd.setEditor(this);
+		cmd.setFeatureEditor(this);
 		cmd.setItem(item);
 		cmd.setSelect(select);
-		multipageEditor.getBehaviorEditor().getCommandStack().execute(cmd);   
+		multipageEditor.getBehaviorEditor().getCommandStack().execute(cmd);
 	}
 	
-	public void  setSelection(final TreeItem item, final boolean select) {
+	public void setSelection(final TreeItem item, final boolean select) {
 		SelectableFeature feature = (SelectableFeature) item.getData();
 	    if (feature.getAutomatic() == Selection.UNDEFINED) {
 	    	switch (feature.getManual()) {

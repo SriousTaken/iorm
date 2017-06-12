@@ -2,6 +2,7 @@ package org.framed.iorm.model.editor.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.widgets.TreeItem;
+import org.framed.iorm.model.editor.subeditors.DiagramEditorWithID;
 import org.framed.iorm.model.editor.subeditors.FeatureEditorWithID;
 
 public class FeatureModelConfigurationEditorChangeCommand extends Command {
@@ -29,8 +30,8 @@ public class FeatureModelConfigurationEditorChangeCommand extends Command {
 		featureEditor.setSelection(item, !select);
 	}
 
-	public void setEditor(FeatureEditorWithID editor) {
-		this.featureEditor = editor;
+	public void setFeatureEditor(FeatureEditorWithID featureEditor) {
+		this.featureEditor = featureEditor;
 	}
 	  
 	public void setItem(TreeItem item) {

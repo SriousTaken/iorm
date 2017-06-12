@@ -21,15 +21,23 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.part.FileEditorInput;
+import org.framed.iorm.featuremodel.FRaMEDConfiguration;
+import org.framed.iorm.featuremodel.FRaMEDFeature;
+import org.framed.iorm.featuremodel.FeaturemodelFactory;
+import org.framed.iorm.model.Model;
+import org.framed.iorm.model.Shape;
 import org.framed.iorm.model.editor.literals.IdentifierLiterals;
 import org.framed.iorm.model.editor.literals.NameLiterals;
 import org.framed.iorm.model.editor.subeditors.DiagramEditorWithID;
 import org.framed.iorm.model.editor.subeditors.FeatureEditorWithID;
 import org.framed.iorm.model.editor.subeditors.TextViewerWithID;
+import org.framed.iorm.model.editor.util.MethodUtil;
 
 import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 
 public class MultipageEditor extends FormEditor implements IResourceChangeListener, ISelectionListener {
+	
+	boolean a=false, b=false, c=false, d=false;
 	
 	//name literals
 	private final String BEHAVIOR_PAGE_NAME = NameLiterals.BEHAVIOR_PAGE_NAME,
@@ -74,7 +82,11 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	}
 	
 	public DiagramEditorWithID getBehaviorEditor() {
-	    return (DiagramEditorWithID) getEditor(editorBehaviorDiagramIndex);
+	    return editorBehaviorDiagram;
+	}
+	
+	public DiagramEditorWithID getDataEditor() {
+	    return editorDataDiagram;
 	}
 	
 	@Override
@@ -82,12 +94,12 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 		super.dispose();
 	}
-	
+		
 	@Override
 	protected void addPages() {
 		//create editors (except feature editor)
-		editorBehaviorDiagram = new DiagramEditorWithID(PAGE_ID_BEHAVIOR);
-		editorDataDiagram = new DiagramEditorWithID(PAGE_ID_DATA);
+		editorBehaviorDiagram = new DiagramEditorWithID(PAGE_ID_BEHAVIOR, this, getEditorInput());
+		editorDataDiagram = new DiagramEditorWithID(PAGE_ID_DATA, this, getEditorInput());
 		textViewerIORM = new TextViewerWithID(PAGE_ID_IORM_TEXT);
 		textViewerCROM = new TextViewerWithID(PAGE_ID_CROM_TEXT);
 		//add pages (except feature page)
@@ -96,11 +108,12 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 			editorDataDiagramIndex = addPage(editorDataDiagram, getEditorInput());
 			textViewerIORMIndex = addPage(textViewerIORM, getEditorInput());
 			textViewerCROMIndex = addPage(textViewerCROM, getEditorInput());
-			
 		} catch (PartInitException e) { e.printStackTrace(); }
-		//create root model in graphiti business model
+		//set data page as active to create root model and the feature model
+		setActivePage(editorDataDiagramIndex);
+		//create root model in graphiti business model in
 		ICreateFeature createModelFeature = null;
-			ICreateFeature[] createFeatures = editorBehaviorDiagram.getDiagramTypeProvider().getFeatureProvider().getCreateFeatures();
+			ICreateFeature[] createFeatures = editorDataDiagram.getDiagramTypeProvider().getFeatureProvider().getCreateFeatures();
 			for(int i = 0; i<createFeatures.length; i++) {
 				if(createFeatures[i].getCreateName().equals(MODEL_FEATURE_NAME)) 
 					createModelFeature = createFeatures[i];
@@ -124,30 +137,24 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 		setPageText(textViewerIORMIndex, TEXT_IORM_PAGE_NAME);
 		setPageText(textViewerCROMIndex, TEXT_CROM_PAGE_NAME);	
 		setPageText(editorFeaturesIndex, FEATURE_PAGE_NAME);
+		//set behavior page as is active for the user to see first
+		setActivePage(editorBehaviorDiagramIndex);
 	}
 	
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		//save feature editor
+		if(getEditor(editorFeaturesIndex).isDirty()) getEditor(editorFeaturesIndex).doSave(monitor);
 		//save active page last, so it has the priority
-		//if text pages are active save prioritize the behavior page
-		if(getActivePage()==editorDataDiagramIndex || 
-		   getActivePage()==textViewerIORMIndex ||	
-		   getActivePage()==textViewerCROMIndex ) {
-			if(getEditor(editorBehaviorDiagramIndex).isDirty()) 
-				getEditor(editorBehaviorDiagramIndex).doSave(monitor);
-			if(getEditor(editorDataDiagramIndex).isDirty()) 
-				getEditor(editorDataDiagramIndex).doSave(monitor);
+		//if text pages or feature page are active prioritize the behavior page
+		if(getActivePage()==editorDataDiagramIndex) {
+			if(editorBehaviorDiagram.isDirty()) editorBehaviorDiagram.doSave(monitor);
+			if(editorDataDiagram.isDirty()) editorDataDiagram.doSave(monitor);
 		} else {
-			if(getEditor(editorDataDiagramIndex).isDirty()) 
-				getEditor(editorDataDiagramIndex).doSave(monitor);
-			if(getEditor(editorBehaviorDiagramIndex).isDirty()) 
-				getEditor(editorBehaviorDiagramIndex).doSave(monitor);
-		}		
-		//if feature page is active save the changes on this page
-		if(getActivePage()==editorFeaturesIndex &&
-		   getEditor(editorFeaturesIndex).isDirty()) {
-			getEditor(editorFeaturesIndex).doSave(monitor);
-		}
+			if(editorDataDiagram.isDirty()) editorDataDiagram.doSave(monitor);
+			if(editorBehaviorDiagram.isDirty()) editorBehaviorDiagram.doSave(monitor);
+		}	
+		
 	}
 		
 	public boolean isSaveAsAllowed() {
@@ -158,6 +165,7 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	public void doSaveAs() {}
 	
 	protected void pageChange(int newPageIndex) {
+		doSave(null);
 		super.pageChange(newPageIndex);
 	}
 		
@@ -175,14 +183,10 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	}	}
 	
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		// Propagate the selection changed event to all sub editors
-		int pageCount = getPageCount();
-		for (int i = 0; i < pageCount; i++) {
-			IEditorPart editor = getEditor(i);
-			if (editor instanceof ISelectionListener) {
-				((ISelectionListener) editor).selectionChanged(part, selection);
-			}
-		}
+		//System.out.println(editorBehaviorDiagram);
+		if (editorBehaviorDiagram.equals(getActiveEditor())) 
+			editorBehaviorDiagram.selectionChanged(getActiveEditor(), selection);
+	    if (editorDataDiagram.equals(getActiveEditor()))
+	    	editorDataDiagram.selectionChanged(getActiveEditor(), selection);
 	}
-	
 }
