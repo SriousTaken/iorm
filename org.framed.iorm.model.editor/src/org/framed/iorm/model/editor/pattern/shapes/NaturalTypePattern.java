@@ -135,7 +135,6 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		
 		//get container and new object
 		org.framed.iorm.model.Shape addedNaturalType = (org.framed.iorm.model.Shape) addContext.getNewObject();
-		if (addedNaturalType.eResource() == null) { getDiagram().eResource().getContents().add(addedNaturalType); }
 		ContainerShape targetDiagram = (Diagram) addContext.getTargetContainer();
 		
 		//get width and height
@@ -148,7 +147,6 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 					  
 		//drop shadow
 		ContainerShape dropShadowShape = pictogramElementCreateService.createContainerShape(containerShape, true);
-		
 		Rectangle dropShadowRectangle = graphicAlgorithmService.createRectangle(dropShadowShape);
 		dropShadowRectangle.setForeground(manageColor(COLOR_SHADOW));
 		dropShadowRectangle.setBackground(manageColor(COLOR_SHADOW));
@@ -217,7 +215,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		directEditingInfo.setPictogramElement(nameShape);
 		directEditingInfo.setGraphicsAlgorithm(text);
 		//add anchors to the container
-		pictogramElementCreateService.createChopboxAnchor(containerShape);
+		pictogramElementCreateService.createChopboxAnchor(typeBodyShape);
 		//set container as layout target
 		layoutPictogramElement(containerShape);
 		return containerShape;
@@ -436,8 +434,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 			org.framed.iorm.model.Shape shape = (org.framed.iorm.model.Shape) businessObject;
 			if(shape.getType() == Type.NATURAL_TYPE) {
 				return true;
-			}
-		}
+		}	}
 		return false;
 	}
 

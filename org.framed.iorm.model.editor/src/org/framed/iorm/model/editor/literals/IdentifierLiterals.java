@@ -43,7 +43,7 @@ public class IdentifierLiterals {
 						 	   SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER = "shape_nt_opcontainer";
 	
 	//Data Type
-	public static final String SHAPE_ID_DATATYPE_CONTAINER = "shape_dt_container",
+	public static final String SHAPE_ID_DATATYPE_TYPEBODY = "shape_dt_typebody",
 						 	   SHAPE_ID_DATATYPE_SHADOW = "shape_dt_shadow",
 						 	   SHAPE_ID_DATATYPE_NAME = "shape_dt_name", 
 						 	   SHAPE_ID_DATATYPE_FIRSTLINE = "shape_dt_firstline",
