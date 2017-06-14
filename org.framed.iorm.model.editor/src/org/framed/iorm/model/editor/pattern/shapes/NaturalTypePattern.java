@@ -9,9 +9,14 @@ import org.eclipse.graphiti.features.IDirectEditingInfo;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IDirectEditingContext;
 import org.eclipse.graphiti.features.context.ILayoutContext;
+import org.eclipse.graphiti.features.context.IMoveShapeContext;
+import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.eclipse.graphiti.features.context.impl.DeleteContext;
+import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
@@ -46,7 +51,8 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 	private final String NATURALTYPE_FEATURE_NAME = NameLiterals.NATURALTYPE_FEATURE_NAME;
 	
 	//ID literals
-	private final String SHAPE_ID_NATURALTYPE_CONTAINER = IdentifierLiterals.SHAPE_ID_NATURALTYPE_CONTAINER,
+	private final String SHAPE_ID_NATURALTYPE_TYPEBODY = IdentifierLiterals.SHAPE_ID_NATURALTYPE_TYPEBODY,
+						 SHAPE_ID_NATURALTYPE_SHADOW = IdentifierLiterals.SHAPE_ID_NATURALTYPE_SHADOW,
 						 SHAPE_ID_NATURALTYPE_NAME = IdentifierLiterals.SHAPE_ID_NATURALTYPE_NAME,
 						 SHAPE_ID_NATURALTYPE_FIRSTLINE = IdentifierLiterals.SHAPE_ID_NATURALTYPE_FIRSTLINE,
 						 SHAPE_ID_NATURALTYPE_SECONDLINE = IdentifierLiterals.SHAPE_ID_NATURALTYPE_SECONDLINE,
@@ -59,11 +65,13 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 					  MIN_HEIGHT = LayoutLiterals.MIN_HEIGHT_FOR_CLASS_OR_ROLE, 
 					  HEIGHT_NAME_SHAPE = LayoutLiterals.HEIGHT_NAME_SHAPE,
 					  PUFFER_BETWEEN_ELEMENTS = LayoutLiterals.PUFFER_BETWEEN_ELEMENTS,
+					  SHADOW_SIZE = LayoutLiterals.SHADOW_SIZE,
 					  HEIGHT_ATTRITBUTE_SHAPE = LayoutLiterals.HEIGHT_ATTRITBUTE_SHAPE,
 					  HEIGHT_OPERATION_SHAPE = LayoutLiterals.HEIGHT_OPERATION_SHAPE;
 	private final IColorConstant COLOR_TEXT = LayoutLiterals.COLOR_TEXT,
 								 COLOR_LINES = LayoutLiterals.COLOR_LINES,
-								 COLOR_BACKGROUND = LayoutLiterals.COLOR_BACKGROUND;
+								 COLOR_BACKGROUND = LayoutLiterals.COLOR_BACKGROUND,
+								 COLOR_SHADOW = LayoutLiterals.COLOR_SHADOW;
 	
 	//services
 	private static final IPeCreateService pictogramElementCreateService = Graphiti.getPeCreateService();
@@ -77,7 +85,6 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 	public String getCreateName() {
 		return NATURALTYPE_FEATURE_NAME;
 	}
-	
 	
 	@Override
 	public String getCreateImageId() {
@@ -104,7 +111,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
 		return isMainBusinessObjectApplicable(businessObject);
 	}
-	
+		
 	// add features
 	//~~~~~~~~~~~~~
 	@Override
@@ -128,46 +135,59 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		
 		//get container and new object
 		org.framed.iorm.model.Shape addedNaturalType = (org.framed.iorm.model.Shape) addContext.getNewObject();
+		if (addedNaturalType.eResource() == null) { getDiagram().eResource().getContents().add(addedNaturalType); }
 		ContainerShape targetDiagram = (Diagram) addContext.getTargetContainer();
 		
-		//set graphics algorithm
-		ContainerShape containerShape = pictogramElementCreateService.createContainerShape(targetDiagram, true);
-		Rectangle containerRectangle = graphicAlgorithmService.createRectangle(containerShape);
-		containerRectangle.setForeground(manageColor(COLOR_LINES));
-		containerRectangle.setBackground(manageColor(COLOR_BACKGROUND));
+		//get width and height
 		int width = addContext.getWidth(), height = addContext.getHeight();
 		if(addContext.getWidth() < MIN_WIDTH) width = MIN_WIDTH;
 		if(addContext.getHeight() < MIN_HEIGHT) height = MIN_HEIGHT;
-		graphicAlgorithmService.setLocationAndSize(containerRectangle, addContext.getX(), addContext.getY(), width, height);
-		if (addedNaturalType.eResource() == null) { getDiagram().eResource().getContents().add(addedNaturalType); }
+		
+		//container for body shape and shadow
+		ContainerShape containerShape = pictogramElementCreateService.createContainerShape(targetDiagram, false);
+					  
+		//drop shadow
+		ContainerShape dropShadowShape = pictogramElementCreateService.createContainerShape(containerShape, true);
+		
+		Rectangle dropShadowRectangle = graphicAlgorithmService.createRectangle(dropShadowShape);
+		dropShadowRectangle.setForeground(manageColor(COLOR_SHADOW));
+		dropShadowRectangle.setBackground(manageColor(COLOR_SHADOW));
+		graphicAlgorithmService.setLocationAndSize(dropShadowRectangle, addContext.getX()+SHADOW_SIZE, addContext.getY()+SHADOW_SIZE, width, height);
+		
+		//body shape of type
+		ContainerShape typeBodyShape = pictogramElementCreateService.createContainerShape(containerShape, true);		
+		Rectangle typeBodyRectangle = graphicAlgorithmService.createRectangle(typeBodyShape);
+		typeBodyRectangle.setForeground(manageColor(COLOR_LINES));
+		typeBodyRectangle.setBackground(manageColor(COLOR_BACKGROUND));
+		graphicAlgorithmService.setLocationAndSize(typeBodyRectangle, addContext.getX(), addContext.getY(), width, height);
 		
 		//name
-		Shape nameShape = pictogramElementCreateService.createShape(containerShape, false);
+		Shape nameShape = pictogramElementCreateService.createShape(typeBodyShape, false);
 		Text text = graphicAlgorithmService.createText(nameShape, addedNaturalType.getName());	
 		text.setForeground(manageColor(COLOR_TEXT));	
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);	
-		graphicAlgorithmService.setLocationAndSize(text, 0, 0, addContext.getWidth(), HEIGHT_NAME_SHAPE);	
+		graphicAlgorithmService.setLocationAndSize(text, 0, 0, width, HEIGHT_NAME_SHAPE);	
 		
 		//first line
-		Shape firstLineShape = pictogramElementCreateService.createShape(containerShape, false);
-		Polyline firstPolyline = graphicAlgorithmService.createPolyline(firstLineShape, new int[] {0, HEIGHT_NAME_SHAPE, addContext.getWidth(), HEIGHT_NAME_SHAPE});
+		Shape firstLineShape = pictogramElementCreateService.createShape(typeBodyShape, false);
+		Polyline firstPolyline = graphicAlgorithmService.createPolyline(firstLineShape, new int[] {0, HEIGHT_NAME_SHAPE, width, HEIGHT_NAME_SHAPE});
 		firstPolyline.setForeground(manageColor(COLOR_LINES));
 		
 		//attribute container
-		ContainerShape attributeContainer = pictogramElementCreateService.createContainerShape(containerShape, false);
+		ContainerShape attributeContainer = pictogramElementCreateService.createContainerShape(typeBodyShape, false);
 		Rectangle attributeRectangle = graphicAlgorithmService.createRectangle(attributeContainer);
 		attributeRectangle.setLineVisible(false);
 		attributeRectangle.setBackground(manageColor(COLOR_BACKGROUND));
-		int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.NATURAL_TYPE, addContext.getHeight());
+		int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.NATURAL_TYPE, height);
 		graphicAlgorithmService.setLocationAndSize(attributeRectangle, PUFFER_BETWEEN_ELEMENTS, HEIGHT_NAME_SHAPE+PUFFER_BETWEEN_ELEMENTS, 
 									 			   addContext.getWidth()-2*PUFFER_BETWEEN_ELEMENTS, horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS);
 		//second line
-		Shape secondLineShape = pictogramElementCreateService.createShape(containerShape, false);	
-		Polyline secondPolyline = graphicAlgorithmService.createPolyline(secondLineShape, new int[] {0, horizontalCenter, addContext.getWidth(), horizontalCenter});
+		Shape secondLineShape = pictogramElementCreateService.createShape(typeBodyShape, false);	
+		Polyline secondPolyline = graphicAlgorithmService.createPolyline(secondLineShape, new int[] {0, horizontalCenter, width, horizontalCenter});
 		secondPolyline.setForeground(manageColor(COLOR_LINES));
 		
 		//operation container
-		ContainerShape operationContainer = pictogramElementCreateService.createContainerShape(containerShape, false);
+		ContainerShape operationContainer = pictogramElementCreateService.createContainerShape(typeBodyShape, false);
 		Rectangle operationRectangle = graphicAlgorithmService.createRectangle(operationContainer);
 		operationRectangle.setLineVisible(false);
 		operationRectangle.setBackground(manageColor(COLOR_BACKGROUND));
@@ -175,7 +195,8 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 									 			   addContext.getWidth()-2*PUFFER_BETWEEN_ELEMENTS, horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS);
 		
 		//setProperties
-		PropertyUtil.setShape_IdValue(containerRectangle, SHAPE_ID_NATURALTYPE_CONTAINER);
+		PropertyUtil.setShape_IdValue(typeBodyRectangle, SHAPE_ID_NATURALTYPE_TYPEBODY);
+		PropertyUtil.setShape_IdValue(dropShadowRectangle, SHAPE_ID_NATURALTYPE_SHADOW);
 		PropertyUtil.setShape_IdValue(text, SHAPE_ID_NATURALTYPE_NAME);
 		PropertyUtil.setShape_IdValue(firstPolyline, SHAPE_ID_NATURALTYPE_FIRSTLINE);
 		PropertyUtil.setShape_IdValue(attributeRectangle, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER);
@@ -183,6 +204,8 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		PropertyUtil.setShape_IdValue(operationRectangle, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER);
 		//set links
 		link(containerShape, addedNaturalType);
+		link(typeBodyShape, addedNaturalType);
+		link(dropShadowShape, addedNaturalType);
 		link(nameShape, addedNaturalType);
 		link(firstLineShape, addedNaturalType);
 		link(attributeContainer, addedNaturalType);
@@ -190,7 +213,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		link(operationContainer, addedNaturalType);
 		//directEditing right at creation
 		IDirectEditingInfo directEditingInfo = getFeatureProvider().getDirectEditingInfo();
-		directEditingInfo.setMainPictogramElement(containerShape);
+		directEditingInfo.setMainPictogramElement(typeBodyShape);
 		directEditingInfo.setPictogramElement(nameShape);
 		directEditingInfo.setGraphicsAlgorithm(text);
 		//add anchors to the container
@@ -301,14 +324,30 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 	@Override
 	public boolean layout(ILayoutContext layoutContext) {	
 		boolean layoutChanged = false;
-		ContainerShape containerShape = (ContainerShape) layoutContext.getPictogramElement();
-        GraphicsAlgorithm naturalTypeRectangle = containerShape.getGraphicsAlgorithm();   
+		ContainerShape container = (ContainerShape) layoutContext.getPictogramElement();
+		Rectangle typeBodyRectangle = null;
+		//return false is container is overall container that has typeBodyShape and dropShadowShape as children
+		if(container.getGraphicsAlgorithm() == null)  return false; 
+		//container is typeBodyShape, else return false
+		if(PropertyUtil.isShape_IdValue(container.getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_TYPEBODY))
+			typeBodyRectangle = (Rectangle) container.getGraphicsAlgorithm(); 
+		else return false;
+		//get the drop shadow rectangle to the type body rectangle
+		Rectangle dropShadowRectangle = (Rectangle) container.getContainer().getChildren().get(0).getGraphicsAlgorithm();
+		        
+		//ensure the minimal width and height
+        if(typeBodyRectangle.getWidth() < MIN_WIDTH) typeBodyRectangle.setWidth(MIN_WIDTH);
+		if(typeBodyRectangle.getHeight() < MIN_HEIGHT) typeBodyRectangle.setHeight(MIN_HEIGHT);
+		int containerWidth = typeBodyRectangle.getWidth();
+        int containerHeight = typeBodyRectangle.getHeight();
+        //set the size of the drop shadow to the new size of the type body
+        dropShadowRectangle.setWidth(containerWidth);
+        dropShadowRectangle.setHeight(containerHeight);
+        //set the x and y value of the drop shadow to the values of the type body
+        dropShadowRectangle.setX(typeBodyRectangle.getX()+SHADOW_SIZE);
+        dropShadowRectangle.setY(typeBodyRectangle.getY()+SHADOW_SIZE);
         
-        if(naturalTypeRectangle.getWidth() < MIN_WIDTH) naturalTypeRectangle.setWidth(MIN_WIDTH);
-		if(naturalTypeRectangle.getHeight() < MIN_HEIGHT) naturalTypeRectangle.setHeight(MIN_HEIGHT);
-		int containerWidth = naturalTypeRectangle.getWidth();
-        int containerHeight = naturalTypeRectangle.getHeight();
-        for (Shape shape : containerShape.getChildren()){
+        for (Shape shape : container.getChildren()){
             GraphicsAlgorithm graphicsAlgorithm = shape.getGraphicsAlgorithm();                         	                 
             //name
             if (graphicsAlgorithm instanceof Text) {
@@ -336,7 +375,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
             	Rectangle rectangle = (Rectangle) graphicsAlgorithm;  
 	            if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER)) {
 	            	int newHeight = (((containerHeight)-HEIGHT_NAME_SHAPE)/2)-PUFFER_BETWEEN_ELEMENTS,
-	            		newWidth = (naturalTypeRectangle.getWidth()-2*PUFFER_BETWEEN_ELEMENTS);            				
+	            		newWidth = (typeBodyRectangle.getWidth()-2*PUFFER_BETWEEN_ELEMENTS);            				
 	            	rectangle.setHeight(newHeight);
 	            	rectangle.setWidth(newWidth);
 	            	ContainerShape attributeContainerShape = (ContainerShape) shape;	       
@@ -358,7 +397,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 	            if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER)) {
 	            	int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.NATURAL_TYPE, containerHeight);
 	            	int newHeight = horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS;
-	            	int newWidth = naturalTypeRectangle.getWidth()-2*PUFFER_BETWEEN_ELEMENTS;		
+	            	int newWidth = typeBodyRectangle.getWidth()-2*PUFFER_BETWEEN_ELEMENTS;		
 	            	int newY = horizontalCenter+PUFFER_BETWEEN_ELEMENTS;	            	
 	            	rectangle.setHeight(newHeight);
 	            	rectangle.setWidth(newWidth);
@@ -395,7 +434,9 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		Object businessObject =  getBusinessObjectForPictogramElement(pictogramElement);
 		if(businessObject instanceof org.framed.iorm.model.Shape) {
 			org.framed.iorm.model.Shape shape = (org.framed.iorm.model.Shape) businessObject;
-			if(shape.getType() == Type.NATURAL_TYPE) return true;
+			if(shape.getType() == Type.NATURAL_TYPE) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -403,7 +444,9 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 	@Override
 	public IReason updateNeeded(IUpdateContext updateContext) {
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
-		if(PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_CONTAINER)) {
+		
+		if(pictogramElement.getGraphicsAlgorithm() != null &&
+		   PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_TYPEBODY)) {
 			//pictogram name of natural type, attributes and operations
 			String pictogramTypeName = getPictogramTypeName(pictogramElement);
 			List<String> pictogramAttributeNames = getpictogramAttributeNames(pictogramElement);
@@ -569,4 +612,77 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		}	}	}	}	}	}
         return returnValue;
 	}	
+	
+	//move feature
+	//~~~~~~~~~~~~
+	//disable that the user can move the drop shadow manually
+	@Override
+	public boolean canMoveShape(IMoveShapeContext moveContext) {
+		if(PropertyUtil.isShape_IdValue(moveContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_SHADOW)) {
+			return false;
+		}
+		ContainerShape typeBodyShape = (ContainerShape) moveContext.getPictogramElement();
+		ContainerShape dropShadowShape = (ContainerShape) ((ContainerShape) typeBodyShape).getContainer().getChildren().get(0);
+		//copied and expanded from super.canMoveShape(IMoveShapeContext moveContext)
+		return moveContext.getSourceContainer() != null && 
+			   (moveContext.getSourceContainer().equals(moveContext.getTargetContainer()) ||
+				moveContext.getTargetContainer().equals(dropShadowShape)) && 
+			   isPatternRoot(moveContext.getPictogramElement());
+	}
+	
+	//move the type body and the drop shadow 
+	@Override
+	public void moveShape(IMoveShapeContext moveContext) {
+		ContainerShape typeBodyShape = (ContainerShape) moveContext.getPictogramElement();
+		Rectangle typeBodyRectangle = (Rectangle) typeBodyShape.getGraphicsAlgorithm();
+		ContainerShape dropShadowShape = (ContainerShape) ((ContainerShape) typeBodyShape).getContainer().getChildren().get(0);
+		Rectangle dropShadowRectangle = (Rectangle) dropShadowShape.getGraphicsAlgorithm();
+		
+		if(moveContext.getSourceContainer().equals(moveContext.getTargetContainer())) {
+			dropShadowRectangle.setX(moveContext.getX()+SHADOW_SIZE);
+			dropShadowRectangle.setY(moveContext.getY()+SHADOW_SIZE);
+			super.moveShape(moveContext);
+		} else {
+			//targetContainer of moveContext is dropShadowShape
+			//set targetContainer to diagram and use special calculation for the new position of type body and drop shadow 
+			dropShadowRectangle.setX(typeBodyRectangle.getX()+moveContext.getX()+2*SHADOW_SIZE);
+			dropShadowRectangle.setY(typeBodyRectangle.getY()+moveContext.getY()+2*SHADOW_SIZE);
+			MoveShapeContext changedMoveContextForTypeBody = new MoveShapeContext(moveContext.getShape());
+			changedMoveContextForTypeBody.setTargetContainer(dropShadowShape.getContainer());
+			changedMoveContextForTypeBody.setX(typeBodyRectangle.getX()+moveContext.getX()+SHADOW_SIZE);
+			changedMoveContextForTypeBody.setY(typeBodyRectangle.getY()+moveContext.getY()+SHADOW_SIZE);
+			super.moveShape(changedMoveContextForTypeBody);
+		}
+		
+	}
+	
+	//resize feature
+	//~~~~~~~~~~~~~~
+	//disable that the user can resize the drop shadow manually
+	@Override
+	public boolean canResizeShape(IResizeShapeContext resizeContext) {
+		if(PropertyUtil.isShape_IdValue(resizeContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_SHADOW)) {
+			return false;
+		}
+		return super.canResizeShape(resizeContext);
+	}
+	
+	//delete feature
+	//~~~~~~~~~~~~~~
+	//disable that the user can delete the drop shadow manually
+	@Override
+	public boolean canDelete(IDeleteContext deleteContext) {
+		if(PropertyUtil.isShape_IdValue(deleteContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_SHADOW)) {
+			return false;
+		}
+		return super.canDelete(deleteContext);
+	}
+		
+	//delete parent container (the one that contains drop shadow shape and type body shape)
+	@Override
+	public void delete(IDeleteContext deleteContext) {
+		ContainerShape containerShape = (ContainerShape) ((ContainerShape) deleteContext.getPictogramElement()).getContainer();
+		IDeleteContext deleteContextForAllShapes = new DeleteContext(containerShape);
+		super.delete(deleteContextForAllShapes);
+	}
 }

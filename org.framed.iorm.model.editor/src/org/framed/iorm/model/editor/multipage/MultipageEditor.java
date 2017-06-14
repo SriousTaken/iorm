@@ -21,17 +21,11 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.part.FileEditorInput;
-import org.framed.iorm.featuremodel.FRaMEDConfiguration;
-import org.framed.iorm.featuremodel.FRaMEDFeature;
-import org.framed.iorm.featuremodel.FeaturemodelFactory;
-import org.framed.iorm.model.Model;
-import org.framed.iorm.model.Shape;
 import org.framed.iorm.model.editor.literals.IdentifierLiterals;
 import org.framed.iorm.model.editor.literals.NameLiterals;
 import org.framed.iorm.model.editor.subeditors.DiagramEditorWithID;
 import org.framed.iorm.model.editor.subeditors.FeatureEditorWithID;
 import org.framed.iorm.model.editor.subeditors.TextViewerWithID;
-import org.framed.iorm.model.editor.util.MethodUtil;
 
 import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 

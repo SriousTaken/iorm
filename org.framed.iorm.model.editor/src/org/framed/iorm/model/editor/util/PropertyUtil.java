@@ -16,6 +16,10 @@ public class PropertyUtil {
 		return (Graphiti.getPeService().getPropertyValue(container, KEY_SHAPE_ID).equals(value));
 	}
 	
+	public static String getShit(PropertyContainer container) {
+		return Graphiti.getPeService().getPropertyValue(container, KEY_SHAPE_ID);
+	}
+	
 	
 	
 }

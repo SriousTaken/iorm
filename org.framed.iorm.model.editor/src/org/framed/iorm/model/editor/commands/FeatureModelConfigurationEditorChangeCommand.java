@@ -2,7 +2,6 @@ package org.framed.iorm.model.editor.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.widgets.TreeItem;
-import org.framed.iorm.model.editor.subeditors.DiagramEditorWithID;
 import org.framed.iorm.model.editor.subeditors.FeatureEditorWithID;
 
 public class FeatureModelConfigurationEditorChangeCommand extends Command {

@@ -34,7 +34,7 @@ public class IdentifierLiterals {
 						 	   SHAPE_ID_MODEL_NAME = "shape_model_name";
 	
 	//Natural Type
-	public static final String SHAPE_ID_NATURALTYPE_CONTAINER = "shape_nt_container",
+	public static final String SHAPE_ID_NATURALTYPE_TYPEBODY = "shape_nt_typebody",
 						 	   SHAPE_ID_NATURALTYPE_SHADOW = "shape_nt_shadow",
 						 	   SHAPE_ID_NATURALTYPE_NAME = "shape_nt_name", 
 						 	   SHAPE_ID_NATURALTYPE_FIRSTLINE = "shape_nt_firstline",

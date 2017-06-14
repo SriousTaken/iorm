@@ -5,10 +5,12 @@ import org.eclipse.graphiti.util.IColorConstant;
 public class LayoutLiterals {
 
 	//general
-	public static final int PUFFER_BETWEEN_ELEMENTS = 3;
+	public static final int PUFFER_BETWEEN_ELEMENTS = 3,
+							SHADOW_SIZE = 5;
 	public static final IColorConstant COLOR_TEXT = IColorConstant.BLACK,
 			   						   COLOR_LINES = IColorConstant.BLACK,
-			   						   COLOR_BACKGROUND = IColorConstant.WHITE;
+			   						   COLOR_BACKGROUND = IColorConstant.WHITE,
+			   						   COLOR_SHADOW = IColorConstant.GRAY;
 		
 	//wizard
 	public static final int LENGHT_TEXTFIELD_WIZARD = 250;
