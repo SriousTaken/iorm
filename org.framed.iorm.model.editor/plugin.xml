@@ -1,93 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
+
+<!--
+-->
+
 <plugin>
- 	<extension point="org.eclipse.graphiti.ui.diagramTypes">
-    	<diagramType
-      		description="This is a Role Model Diagram"
-     		id="IORM_Diagram"
-      		name="Role Model Diagram"
-      		type="Role Model">
-    	</diagramType>
-  	</extension>
-  
-  	<extension point="org.eclipse.graphiti.ui.diagramTypeProviders">
-    	<diagramTypeProvider
-      		class="org.framed.iorm.model.editor.providers.DiagramProvider"
-      		description="This is the editor for Role Model Diagrams"
-      		id="IORM_Diagram_Provider"
-      		name="Role Model Diagram Provider">
-      		<diagramType
-        		id="IORM_Diagram">
-      		</diagramType>
-        	<imageProvider
-              	id="org.framed.iorm.model.editor.imageProvider">
-        	</imageProvider>
-   		</diagramTypeProvider>
-  	</extension>
- 
- 	<extension point="org.eclipse.ui.editors">
-     	<editor
-            class="org.framed.iorm.model.editor.multipage.MultipageEditor"
-            contributorClass="org.framed.iorm.model.editor.multipage.MultipageEditorContributor"
-            extensions="diagram"
-            default="true"
-            id="IORM_MultipageEditor"
-            name="Role Model Multipage Editor">
-      	</editor>
-   	</extension>
-
-	<extension point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
-     	<propertyContributor
-         	typeMapper="org.eclipse.graphiti.examples.common.property.TypeMapper"
-            contributorId="IORM_PropertyContributor"
-            labelProvider="org.eclipse.graphiti.examples.common.property.PropertiesLabelProvider">
-        	<propertyCategory category="graphiti-legacy" />
-      	</propertyContributor>
-   	</extension>
-   	
-   	<extension point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
-      	<propertyTabs
-            contributorId="IORM_PropertyContributor">
-          	<propertyTab
-            	label="Advanced" category="graphiti-legacy"
-               	id="org.eclipse.graphiti.properties.legacytab">
-         	</propertyTab>
-      	</propertyTabs>
-   	</extension>
-    
-    <extension
-          point="org.eclipse.ui.newWizards">
-       <category
-             id="org.framed.iorm.model.editor.wizard_category"
-             name="Role Models">
-       </category>
-       <wizard
-             category="org.framed.iorm.model.editor.wizard_category"
-             class="org.framed.iorm.model.editor.wizards.RoleModelWizard"
-             icon="icons/wizard/icon_role_model_wizard.png"
-             id="org.framed.iorm.model.editor.model_wizard"
-             name="Role Model">
-       </wizard>
-       <wizard
-             category="org.framed.iorm.model.editor.wizard_category"
-             class="org.framed.iorm.model.editor.wizards.RoleModelProjectWizard"
-             icon="icons/wizard/icon_role_model_project_wizard.png"
-             id="org.framed.iorm.model.editor.project_wizard"
-             name="Role Model Project">
-       </wizard>
-    </extension>
-    
-    <extension
-          point="org.eclipse.graphiti.ui.imageProviders">
-       <imageProvider
-             class="org.framed.iorm.model.editor.providers.ImageProvider"
-             id="org.framed.iorm.model.editor.imageProvider">
-       </imageProvider>
-    </extension>
-    
-
-
-
 
    <extension point="org.eclipse.ui.newWizards">
       <!-- @generated IORM -->
@@ -144,4 +61,5 @@
             contributorClass="org.framed.iorm.featuremodel.presentation.FeaturemodelActionBarContributor">
       </editor>
    </extension>
+
 </plugin>
