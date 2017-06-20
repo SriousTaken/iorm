@@ -30,8 +30,8 @@ import org.framed.iorm.ui.util.PropertyUtil;
 public class AttributeOperationCommonPattern extends AbstractPattern {
 	
 	//name literals
-	private final String ATTRIBUTE_STANDART_NAME = NameLiterals.STANDART_ATTRIBUTE_NAME,
-						 STANDART_OPERATION_NAME = NameLiterals.STANDART_OPERATION_NAME,
+	private final String ATTRIBUTE_STANDART_NAME = NameLiterals.STANDARD_ATTRIBUTE_NAME,
+						 STANDART_OPERATION_NAME = NameLiterals.STANDARD_OPERATION_NAME,
 						 ATTRIBUTE_OPERATION_COMMON_FEATURE_NAME = NameLiterals.ATTRIBUTE_OPERATION_COMMON_FEATURE_NAME;
 	
 	//text literals

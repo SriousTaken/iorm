@@ -7,13 +7,17 @@ import org.eclipse.graphiti.pattern.IPattern;
 import org.framed.iorm.model.NamedElement;
 import org.framed.iorm.model.OrmFactory;
 import org.framed.iorm.model.Type;
+import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 
 public class AttributePattern extends AbstractPattern implements IPattern {
 
 	//name literals
-	private final String ATTRIBUTE_STANDART_NAME = NameLiterals.STANDART_ATTRIBUTE_NAME,
+	private final String ATTRIBUTE_STANDARD_NAME = NameLiterals.STANDARD_ATTRIBUTE_NAME,
 						 ATTRIBUTE_FEATURE_NAME = NameLiterals.ATTRIBUTE_FEATURE_NAME;
+	
+	//id literals
+	private final String IMG_ID_FEATURE_ATTRIBUTE = IdentifierLiterals.IMG_ID_FEATURE_ATTRIBUTE;
 		
 	public AttributePattern() {
 		super(null);
@@ -22,6 +26,11 @@ public class AttributePattern extends AbstractPattern implements IPattern {
 	@Override
 	public String getCreateName() {
 		return ATTRIBUTE_FEATURE_NAME;
+	}
+	
+	@Override
+	public String getCreateImageId() {
+		return IMG_ID_FEATURE_ATTRIBUTE;
 	}
 	
 	@Override
@@ -59,7 +68,7 @@ public class AttributePattern extends AbstractPattern implements IPattern {
 	public Object[] create(ICreateContext createContext) {
 		//create new attribute
 		NamedElement newAttribute = OrmFactory.eINSTANCE.createNamedElement();
-		newAttribute.setName(ATTRIBUTE_STANDART_NAME);
+		newAttribute.setName(ATTRIBUTE_STANDARD_NAME);
 		//add new attribute to the attribute segment of the class or role
 		org.framed.iorm.model.Shape classOrRole = 
 				(org.framed.iorm.model.Shape) getBusinessObjectForPictogramElement(createContext.getTargetContainer());

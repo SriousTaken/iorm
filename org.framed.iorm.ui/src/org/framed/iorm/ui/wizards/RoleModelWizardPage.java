@@ -5,7 +5,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.graphiti.examples.common.Messages;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -17,34 +16,83 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
+import org.framed.iorm.ui.literals.TextLiterals;
+import org.framed.iorm.ui.util.DirectEditingUtil;
 
-//mostly taken and customized from the class "DiagramNameWizardPage.java" in the github repository of Graphiti.
-//look there for reference
+/**
+ * This class is an Eclipse wizard page that asks for a name of a new diagram. It is used by {@link RoleModelWizard}.
+ * <p>
+ * The code in this class is mostly taken and customized from the class "DiagramNameWizardPage.java" by Graphiti. 
+ * You can find this class in the github repository of Graphiti. Also look there for reference too.
+ */
 public class RoleModelWizardPage extends WizardPage {
 
-	private final String WIZARD_PAGE_DESC = NameLiterals.WIZARD_PAGE_DESC;
+	/**
+	 * the standard name for new diagrams
+	 */
+	private final String STANDARD_DIAGRAM_NAME = NameLiterals.STANDARD_DIAGRAM_NAME;
+	
+	/**
+	 * the message that ask for a name of the new diagram gathered from {@link TextLiterals} and
+	 * the message that informs the user about an invalid input for the name
+	 */
+	private final String WIZARD_PAGE_DESC = TextLiterals.WIZARD_PAGE_DESC,
+						 WIZARD_MESSAGE_INVALID_INPUT = TextLiterals.WIZARD_MESSAGE_INVALID_INPUT;
 
+	/**
+	 * the layout integer that defines the leght of the used textfield gathered from {@link LayoutLiterals}
+	 */
 	private final int LENGHT_TEXTFIELD_WIZARD = LayoutLiterals.LENGHT_TEXTFIELD_WIZARD;
 
+	/**
+	 * the used textfield to get the user input
+	 */
 	private Text textField;
 
+	/**
+	 * listener that checks if the user input and the workspace is valid
+	 */
 	private Listener nameModifyListener = new Listener() {
-		public void handleEvent(Event e) {
-			boolean valid = validatePage();
-			setPageComplete(valid);
+												public void handleEvent(Event e) {
+													boolean valid = validatePage();
+													setPageComplete(valid);
+										  }		};
+	/**
+	 * validates user input and workspace									
+	 * @return if the user input and the workspace is valid
+	 */
+	private boolean validatePage() {
+		String text = getTextFieldValue();
+		if (!(DirectEditingUtil.matchesIdentifier(text))) { 
+			setErrorMessage(null);
+			setMessage(WIZARD_MESSAGE_INVALID_INPUT);
+			return false;
 		}
-	};
-
-	public RoleModelWizardPage(String pageName, String title, ImageDescriptor titleImage) {
-		super(pageName, title, titleImage);
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IStatus status = workspace.validateName(text, IResource.FILE);
+		if (!status.isOK()) {
+			setErrorMessage(status.getMessage());
+			return false;
+		}
+		setErrorMessage(null);
+		setMessage(null);
+		return true;
 	}
-
+		
+	/**
+	 * Class constructor
+	 * @param pageName the name of the page which is also used as title
+	 */
 	protected RoleModelWizardPage(String pageName) {
 		super(pageName);
 		setTitle(pageName);
 		setDescription(WIZARD_PAGE_DESC);
 	}
-
+	
+	/**
+	 * defines the graphic representation of the wizard page
+	 * @param parent the parent composite of the wizard
+	 */
 	@Override
 	public void createControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NULL);
@@ -55,35 +103,29 @@ public class RoleModelWizardPage extends WizardPage {
 		createProjectNameGroup(composite);
 		setPageComplete(validatePage());
 		
-		// Show description on opening
 		setErrorMessage(null);
 		setMessage(null);
 		setControl(composite);
 	}
 
+	/**
+	 * publishes the user input to the {@link RoleModelWizard}
+	 * @return the initial text value or the user input
+	 */
 	public String getText() {
-		if (textField == null) {
-			return getInitialTextFieldValue();
-		}
+		if (textField == null)
+			return STANDARD_DIAGRAM_NAME;
 		return getTextFieldValue();
 	}
-
-	protected boolean validatePage() {
-		String text = getTextFieldValue();
-		if (text.equals("")) { //$NON-NLS-1$
-			setErrorMessage(null);
-			setMessage(Messages.DiagramNameWizardPage_Message);
-			return false;
+	
+	/**
+	 * @return trimmed user input id text is not null
+ 	 */
+	private String getTextFieldValue() {
+		if (textField == null) {
+			return ""; 
 		}
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IStatus status = doWorkspaceValidation(workspace, text);
-		if (!status.isOK()) {
-			setErrorMessage(status.getMessage());
-			return false;
-		}
-		setErrorMessage(null);
-		setMessage(null);
-		return true;
+		return textField.getText().trim();
 	}
 
 	private final void createProjectNameGroup(Composite parent) {
@@ -93,43 +135,25 @@ public class RoleModelWizardPage extends WizardPage {
 		layout.numColumns = 2;
 		projectGroup.setLayout(layout);
 		projectGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
 		// new project label
 		Label projectLabel = new Label(projectGroup, SWT.NONE);
 		projectLabel.setText(Messages.DiagramNameWizardPage_Label);
 		projectLabel.setFont(parent.getFont());
-
 		// new project name entry field
 		textField = new Text(projectGroup, SWT.BORDER);
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.widthHint = LENGHT_TEXTFIELD_WIZARD;
 		textField.setLayoutData(data);
 		textField.setFont(parent.getFont());
-
 		// Set the initial value first before listener
 		// to avoid handling an event during the creation.
-		if (getInitialTextFieldValue() != null) {
-			textField.setText(getInitialTextFieldValue());
-		}
+		textField.setText(STANDARD_DIAGRAM_NAME);
 		textField.addListener(SWT.Modify, nameModifyListener);
 	}
 
-	private String getTextFieldValue() {
-		if (textField == null) {
-			return ""; 
-		}
-		return textField.getText().trim();
-	}
-
-	private String getInitialTextFieldValue() {
-		return "newDiagram";
-	}
-
-	private IStatus doWorkspaceValidation(IWorkspace workspace, String text) {
-		IStatus ret = workspace.validateName(text, IResource.FILE);
-		return ret;
-	}
-
+	/**
+	 * set the page visible
+	 */
 	@Override
 	public void setVisible(boolean visible) {
 		super.setVisible(visible);

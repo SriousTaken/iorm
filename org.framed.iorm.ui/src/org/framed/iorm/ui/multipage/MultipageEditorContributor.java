@@ -15,57 +15,76 @@ import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.subeditors.DiagramEditorWithID;
 import org.framed.iorm.ui.subeditors.TextViewerWithID;
 
+/**
+ * This class sets the actions for the action bars depending of which type the active editor is.
+ * @author Kevin Kassin
+ */
 public class MultipageEditorContributor extends MultiPageEditorActionBarContributor {
 	
-	//id literals
+	/**
+	 * identifier literals for the pages of the multipage editor
+	 * <p>
+	 * for reference check the Strings in {@link IdentifierLiterals}
+	 * @see IdentifierLiterals
+	 */
 	public final String PAGE_ID_BEHAVIOR = IdentifierLiterals.PAGE_ID_BEHAVIOR,
  			  			PAGE_ID_DATA = IdentifierLiterals.PAGE_ID_DATA,
  			  			PAGE_ID_IORM_TEXT = IdentifierLiterals.PAGE_ID_IORM_TEXT,
  			  			PAGE_ID_CROM_TEXT = IdentifierLiterals.PAGE_ID_CROM_TEXT,
  			  			PAGE_ID_FEATURE = IdentifierLiterals.PAGE_ID_FEATURE;
 	
+	/**
+	 * the editor that is active at the moment 
+	 */
 	private IEditorPart activeEditorPart;
 	
+	/**
+	 * Class constructor
+	 */
 	public MultipageEditorContributor() {
 		super();
 	}
 	
-	protected IAction getAction(ITextEditor editor, String actionID) {
+	/**
+	 * get an Action by an specific ID from a given text editor
+	 * @param editor the texteditor the action to get is from
+	 * @param actionID the id of the action to get
+	 * @return the action to get
+	 */
+	private IAction getAction(ITextEditor editor, String actionID) {
 		if(editor == null) return null;
 		return editor.getAction(actionID);
 	}
 	
-
+	/**
+	 * This operation sets the actions for the action bars depending on the active editor.
+	 * <p>
+	 * It gets the different actions from the active editors in respective of which type the active
+	 * editor is.
+	 */
 	public void setActivePage(IEditorPart part) {
 		if (activeEditorPart == part) return;
 		activeEditorPart = part;
 
 		IActionBars actionBars = getActionBars();
 		if (actionBars != null) {
-
 			//page is DiagramEditor
 			if((part instanceof DiagramEditorWithID)) {
 				DiagramEditorWithID editor = (DiagramEditorWithID) part;
-				if(editor.getId()==PAGE_ID_BEHAVIOR || editor.getId()==PAGE_ID_DATA) {
-					String undoActionID = new UndoAction(editor).getId(),
-						   redoActionID = new RedoAction(editor).getId(),
-						   deleteActionID = new DeleteAction((IWorkbenchPart) editor).getId();
+				String undoActionID = new UndoAction(editor).getId(),
+					   redoActionID = new RedoAction(editor).getId(),
+					   deleteActionID = new DeleteAction((IWorkbenchPart) editor).getId();
 		
-					actionBars.setGlobalActionHandler( ActionFactory.UNDO.getId(), editor.getActionRegistry().getAction(undoActionID));
-					actionBars.setGlobalActionHandler( ActionFactory.REDO.getId(), editor.getActionRegistry().getAction(redoActionID));
-					actionBars.setGlobalActionHandler( ActionFactory.DELETE.getId(), editor.getActionRegistry().getAction(deleteActionID));
+				actionBars.setGlobalActionHandler( ActionFactory.UNDO.getId(), editor.getActionRegistry().getAction(undoActionID));
+				actionBars.setGlobalActionHandler( ActionFactory.REDO.getId(), editor.getActionRegistry().getAction(redoActionID));
+				actionBars.setGlobalActionHandler( ActionFactory.DELETE.getId(), editor.getActionRegistry().getAction(deleteActionID));
 				}	
-			}
 			//page is TextViewer		
 			if((part instanceof TextViewerWithID)) {
 				TextViewerWithID editor = (TextViewerWithID) part;
-				if(editor.getId()==PAGE_ID_IORM_TEXT || editor.getId()==PAGE_ID_CROM_TEXT) {
-					actionBars.setGlobalActionHandler( ActionFactory.COPY.getId(), getAction(editor, ITextEditorActionConstants.COPY));
-					actionBars.setGlobalActionHandler( ActionFactory.SELECT_ALL.getId(), getAction(editor, ITextEditorActionConstants.SELECT_ALL));
-					actionBars.setGlobalActionHandler( ActionFactory.FIND.getId(), getAction(editor, ITextEditorActionConstants.FIND));
-					actionBars.updateActionBars();
-				}
-			}
-		}
-	}
+				actionBars.setGlobalActionHandler( ActionFactory.COPY.getId(), getAction(editor, ITextEditorActionConstants.COPY));
+				actionBars.setGlobalActionHandler( ActionFactory.SELECT_ALL.getId(), getAction(editor, ITextEditorActionConstants.SELECT_ALL));
+				actionBars.setGlobalActionHandler( ActionFactory.FIND.getId(), getAction(editor, ITextEditorActionConstants.FIND));
+				actionBars.updateActionBars();
+	}	}	}
 }

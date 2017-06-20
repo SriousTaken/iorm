@@ -30,14 +30,22 @@ public class IdentifierLiterals {
 							   PAGE_ID_IORM_TEXT = "page_iorm_text",
 							   PAGE_ID_CROM_TEXT = "page_crom_text",
 							   PAGE_ID_FEATURE = "page_feature_configuration";
+	
+	/**
+	 * string used as prefix for image identifiers for icon of create features
+	 */
+	private static final String IMG_ID_PREFIX = "org.framed.iorm.ui.";
+	
 	/**
 	 * image IDs
 	 * <p>
 	 * the identifier of images used in the {@link DiagramEditorWithID} for features
 	 */
-	private static final String IMG_ID_PREFIX = "org.framed.iorm.ui.";
 	public static final String IMG_ID_FEATURE_NATURALTYPE = IMG_ID_PREFIX + "img_naturaltype",
-							   IMG_ID_FEATURE_DATATYPE = IMG_ID_PREFIX + "img_datatype";
+							   IMG_ID_FEATURE_DATATYPE = IMG_ID_PREFIX + "img_datatype",
+							   IMG_ID_FEATURE_ATTRIBUTE = IMG_ID_PREFIX + "img_attribute",
+							   IMG_ID_FEATURE_OPERATION = IMG_ID_PREFIX + "img_operation",
+							   IMG_ID_FEATURE_INHERITANCE = IMG_ID_PREFIX + "img_inheritance";
 	
 	/**
 	 * feature model ID

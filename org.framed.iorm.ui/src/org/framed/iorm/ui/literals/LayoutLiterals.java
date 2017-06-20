@@ -4,6 +4,10 @@ import org.eclipse.graphiti.util.IColorConstant;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * This class saves severals static layout integers and color values used for layouting.
+ * @author Kevin Kassin
+ */
 public class LayoutLiterals {
 
 	/**

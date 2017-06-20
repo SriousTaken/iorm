@@ -7,13 +7,16 @@ import org.eclipse.graphiti.pattern.IPattern;
 import org.framed.iorm.model.NamedElement;
 import org.framed.iorm.model.OrmFactory;
 import org.framed.iorm.model.Type;
+import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 
 public class OperationPattern extends AbstractPattern implements IPattern {
 	
 	//name literals
-	private final String STANDART_OPERATION_NAME = NameLiterals.STANDART_OPERATION_NAME,
+	private final String STANDARD_OPERATION_NAME = NameLiterals.STANDARD_OPERATION_NAME,
 						 OPERATION_FEATURE_NAME = NameLiterals.OPERATION_FEATURE_NAME;
+	//id literals
+	private final String IMG_ID_FEATURE_OPERATION = IdentifierLiterals.IMG_ID_FEATURE_OPERATION;
 	
 	public OperationPattern() {
 		super(null);
@@ -22,6 +25,11 @@ public class OperationPattern extends AbstractPattern implements IPattern {
 	@Override
 	public String getCreateName() {
 		return OPERATION_FEATURE_NAME;
+	}
+	
+	@Override
+	public String getCreateImageId() {
+		return IMG_ID_FEATURE_OPERATION;
 	}
 	
 	@Override
@@ -59,7 +67,7 @@ public class OperationPattern extends AbstractPattern implements IPattern {
 	public Object[] create(ICreateContext createContext) {
 		//create new operation
 		NamedElement newOperation = OrmFactory.eINSTANCE.createNamedElement();
-		newOperation.setName(STANDART_OPERATION_NAME);
+		newOperation.setName(STANDARD_OPERATION_NAME);
 		//add new operation to the operation segment of the class or role
 		org.framed.iorm.model.Shape classOrRole = 
 				(org.framed.iorm.model.Shape) getBusinessObjectForPictogramElement(createContext.getTargetContainer());

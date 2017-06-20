@@ -23,21 +23,34 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 
-//mostly taken and customized from the class "CreateDiagramWizard.java" in the github repository of Graphiti.
-//look there for reference
+/**
+ * This class creates an Eclipse wizard to create a role model.
+ * <p>
+ * The code in this class is mostly taken and customized from the class "CreateDiagramWizard.java" by Graphiti. 
+ * You can find this class in the github repository of Graphiti. Also look there for reference too.
+ */
 public class RoleModelWizard extends BasicNewResourceWizard {
 
-	//id literals
+	/**
+	 * identifier literals for the diagram type and the multipage editor id gathered from {@link IdentifierLiterals}
+	 */
 	private final String DIAGRAM_TYPE = IdentifierLiterals.DIAGRAM_TYPE,
 						 EDITOR_ID = IdentifierLiterals.EDITOR_ID;
 	
-	//name literals
+	/**
+	 * name literals for the wizard page and window gathered from {@link NameLiterals}
+	 */
 	private final String WIZARD_PAGE_NAME = NameLiterals.WIZARD_PAGE_NAME,
 						 WIZARD_WINDOW_NAME = NameLiterals.WIZARD_WINDOW_NAME;
 	
+	/**
+	 * the wizard page used by this wizard
+	 */
 	private RoleModelWizardPage roleModelWizardPage;
-	private Diagram diagram;
-
+	
+	/**
+	 * creates and adds and {@link RoleModelWizardPage} to the wizard
+	 */
 	@Override
 	public void addPages() {
 		super.addPages();
@@ -45,24 +58,33 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 		addPage(roleModelWizardPage);
 	}
 
-	@Override
-	public boolean canFinish() {
-		return super.canFinish();
-	}
-
+	/**
+	 * initalize method
+	 * <p>
+	 * sets the windows title
+	 */
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection currentSelection) {
 		super.init(workbench, currentSelection);
 		setWindowTitle(WIZARD_WINDOW_NAME);
 	}
 
+	/**
+	 * performs the creation of a rolemodel using the following steps:
+	 * <p>
+	 * Step 1: ask for the diagrams name via the wizard page
+	 * Step 2: checks if project is selected into which the diagram can be created
+	 * Step 3: create a diagram, write it to file and open it
+	 * @exception PartInitException
+	 */
 	@Override
 	public boolean performFinish() {
+		//Step 1
 		final String diagramName = roleModelWizardPage.getText();
+		//Step 2
 		IProject project = null;
 		IFolder diagramFolder = null;
 		Object element = getSelection().getFirstElement();
-		
 		if (element instanceof IProject) {
 			project = (IProject) element;
 		} else if (element instanceof AbstractInstancesOfTypeContainerNode) {
@@ -78,11 +100,11 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 			ErrorDialog.openError(getShell(), Messages.CreateDiagramWizard_NoProjectFoundErrorTitle, null, status);
 			return false;
 		}
+		//Step 3
 		Diagram diagram = Graphiti.getPeCreateService().createDiagram(DIAGRAM_TYPE, diagramName, true);
 		if (diagramFolder == null) {
 			diagramFolder = project.getFolder("src/diagrams/");
 		}
-	
 		IFile diagramFile = diagramFolder.getFile(diagramName + ".diagram");
 		URI uri = URI.createPlatformResourceURI(diagramFile.getFullPath().toString(), true);
 		FileService.createEmfFileForDiagram(uri, diagram);
@@ -96,9 +118,5 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 			return false;
 		}
 		return true;
-	}
-
-	public Diagram getDiagram() {
-		return diagram;
 	}
 }	

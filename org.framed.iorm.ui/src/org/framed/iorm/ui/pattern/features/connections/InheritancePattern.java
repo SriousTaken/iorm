@@ -23,64 +23,115 @@ import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.util.PropertyUtil;
 
+/**
+ * This is used to work with Inheritances in the editor.
+ * <p>
+ * It deals with the following aspects of of Inheritances:<br>
+ * (1) creating inheritances, especially their business object<br>
+ * (2) adding inheritances to the diagram, especially their pictogram elements<br>
+ * @author Kevin Kassin
+ */
 public class InheritancePattern extends AbstractConnectionPattern {
 	
-	//name literals
+	/**
+	 * the name of the feature gathered from {@link NameLiterals}
+	 */
 	private static final String INHERITANCE_FEATURE_NAME = NameLiterals.INHERITANCE_FEATURE_NAME;
 	
-	//ID literals
-	private static final String SHAPE_ID_INHERITANCE_CONNECTION = IdentifierLiterals.SHAPE_ID_INHERITANCE_CONNECTION;
+	/**
+	 * the identifier for the polyline of the inheritances gathered from {@link IdentifierLiterals} and
+	 * the identifier for the icon of the create feature
+	 */
+	private static final String SHAPE_ID_INHERITANCE_CONNECTION = IdentifierLiterals.SHAPE_ID_INHERITANCE_CONNECTION,
+								IMG_ID_FEATURE_INHERITANCE = IdentifierLiterals.IMG_ID_FEATURE_INHERITANCE;
 	
-	//layout literals
+	/**
+	 * the layout integers used to layout the arrowhead of the inheritances gathered from {@link LayoutLiterals}
+	 */
 	private static final int INHERITANCE_ARROWHEAD_LENGTH = LayoutLiterals.INHERITANCE_ARROWHEAD_LENGTH,
 							 INHERITANCE_ARROWHEAD_HEIGHT = LayoutLiterals.INHERITANCE_ARROWHEAD_HEIGHT;
 							 
-	
+	/**
+	 * the color values used for the polyline and the arrowhead of inheritances gathered from {@link LayoutLiterals}
+	 */
 	private static final IColorConstant COLOR_CONNECTIONS = LayoutLiterals.COLOR_CONNECTIONS,
 										COLOR_INHERITANCE_ARROWHEAD = LayoutLiterals.COLOR_INHERITANCE_ARROWHEAD;		
 
-	//services
+	/**
+	 * the pictogramm service used to create free form connections and decorators for the inheritances
+	 */
 	private static final IPeCreateService pictogramElementCreateSerive = Graphiti.getPeCreateService();
+	
+	/**
+	 * the graphic algorith serive used to create polylines and polygons for the inheritances
+	 */
 	private static final IGaService graphicAlgorithmService = Graphiti.getGaService();
 		
+	/**
+	 * Class constructor
+	 */
 	public InheritancePattern() {
 		super();
 	}
 	
+	/**
+	 * get method for the features name
+	 * @return the name of the feature
+	 */
+	@Override
 	public String getCreateName() {
 		return INHERITANCE_FEATURE_NAME;
 	}
 	
+	/**
+	 * get method for the identifier of the icon for the create feature
+	 * @return the id of the icon
+	 */
+	@Override
+	public String getCreateImageId() {
+		return IMG_ID_FEATURE_INHERITANCE;
+	}
+	
 	//add feature
 	//~~~~~~~~~~~
+	/**
+	 * calculates if a inheritance can be added to the pictogram diagram
+	 * <p>
+	 * returns true if<br>
+	 * (1) context is of type {@link IAddConnectionContext} and<br>
+	 * (2) the business object is a inheritance
+	 * @return if inheritance can be added
+	 */
 	public boolean canAdd(IAddContext addContext) {
 		if (addContext instanceof IAddConnectionContext &&
 		   addContext.getNewObject() instanceof Relation) {
 		   Relation relation = (Relation) addContext.getNewObject();
-		   if(relation.getType() == Type.INHERITANCE) {
+		   if(relation.getType() == Type.INHERITANCE)
 			   return true;
-		   }
-		  
-	   }
-	   return false;
+		}
+		return false;
 	}
 	
+	/**
+	 * adds the inheritance to the pictogram diagram using the following steps:
+	 * <p>
+	 * Step 1: create a connection shape and polyline as its graphic algorithm
+	 * Step 2: create the a connection decorator and a arrowhead as its graphic algorithm 
+	 * Step 3: set property ID for polyline
+	 * Step 4: link the pictogram elements and the business objects
+	 */
 	public PictogramElement add(IAddContext addContext) {
 		IAddConnectionContext addConnectionContext = (IAddConnectionContext) addContext;
 	    Relation addedInheritance = (Relation) addContext.getNewObject();
 	    Anchor sourceAnchor = addConnectionContext.getSourceAnchor();
 	    Anchor targetAnchor = addConnectionContext.getTargetAnchor();
-	    
-	    //create connection
+	    //Step 1
 	    Connection connection = pictogramElementCreateSerive.createFreeFormConnection(getDiagram());
 	    connection.setStart(sourceAnchor);
 	    connection.setEnd(targetAnchor);
-	    
-	    //set graphic algorithms
 	    Polyline polyline = graphicAlgorithmService.createPolyline(connection);
 	    polyline.setForeground(manageColor(COLOR_CONNECTIONS));
-	    
-	    //add arrowhead as decorator
+	    //Step2
 	    ConnectionDecorator connectionDecorator;
 	    connectionDecorator = pictogramElementCreateSerive.createConnectionDecorator(connection, false, 1.0, true);
 	    int points[] = new int[] { -1*INHERITANCE_ARROWHEAD_LENGTH, INHERITANCE_ARROWHEAD_HEIGHT, 		//Point 1
@@ -89,71 +140,95 @@ public class InheritancePattern extends AbstractConnectionPattern {
 	    Polygon arrowhead = graphicAlgorithmService.createPolygon(connectionDecorator, points);
 	    arrowhead.setForeground(manageColor(COLOR_CONNECTIONS));
 	    arrowhead.setBackground(manageColor(COLOR_INHERITANCE_ARROWHEAD));
-	    
-	    //set property
+	    //Step 3
 	    PropertyUtil.setShape_IdValue(polyline, SHAPE_ID_INHERITANCE_CONNECTION);
-	    
-	    //links
+	    //Step 4
 	    link(connection, addedInheritance);
-	
 	    return connection;
 	}
 	 
 	//create feature
 	//~~~~~~~~~~~~~~
+	/**
+	 * calculates if a inheritance can be created
+	 * <p>
+	 * returns true if<br>
+	 * (1) target and source shape are not null and<br>
+	 * (2) target and source shape is of valid type and<br>
+	 * (3) source shapes and targets shapes container are the same and <br>
+	 * (4) target and source shape are of the same type
+	 * @return if inheritance can be added
+	 */
 	public boolean canCreate(ICreateConnectionContext createContext) {
-		// return true if both anchors belong to an natural or data type, both anchors belong to the same kind of type   
 		Anchor sourceAnchor = createContext.getSourceAnchor();
 	    Anchor targetAnchor = createContext.getTargetAnchor();
 	    org.framed.iorm.model.Shape sourceShape = getShapeForAnchor(sourceAnchor);
 	    org.framed.iorm.model.Shape targetShape = getShapeForAnchor(targetAnchor);
 	    if(sourceShape != null && targetShape != null) {
-	    	if(sourceShape.getType() == Type.NATURAL_TYPE) 
-	    		if(targetShape.getType() == Type.NATURAL_TYPE) return true;
-	    	if(sourceShape.getType() == Type.DATA_TYPE)	
-	    		if(targetShape.getType() == Type.DATA_TYPE) return true;
-	    }	
+	    	if(sourceShape.getContainer() == targetShape.getContainer()) {
+		    	if(sourceShape.getType() == Type.NATURAL_TYPE) 
+		    		if(targetShape.getType() == Type.NATURAL_TYPE) return true;
+		    	if(sourceShape.getType() == Type.DATA_TYPE)	
+		    		if(targetShape.getType() == Type.DATA_TYPE) return true;
+	    }	}
 	    return false;
 	}
 	 
+	/**
+	 * checks if a inheritance can be started from a given source shape
+	 * <p>
+	 * returns true if<br>
+	 * (1) source shape is not null and<br>
+	 * (2) source shape is of valid type 
+	 * @return if inheritance can be started
+	 */
 	public boolean canStartConnection(ICreateConnectionContext createContext) {
-		// return true if start anchor belongs to a natural or data type
 		Anchor sourceAnchor = createContext.getSourceAnchor();
 		org.framed.iorm.model.Shape sourceShape = getShapeForAnchor(sourceAnchor);
 		if(sourceShape != null){	
 			if(sourceShape.getType() == Type.NATURAL_TYPE || 
-			   sourceShape.getType() == Type.DATA_TYPE) 
-			return true;
+			   sourceShape.getType() == Type.DATA_TYPE)
+				return true;
 		}	
 		return false;
 	}
 	  
+	/**
+	 * creates the business object of an inheritance using the following steps:
+	 * <p>
+	 * Step 1: get source and target shapes<br>
+	 * Step 2: get new inheritance from iorm model and add it to the resource of the diagram<br>
+	 * Step 3: set source, target and container of inheritance<br>
+	 * Step 4: call add operation of this pattern
+	 */
 	public Connection create(ICreateConnectionContext createContext) {
+		//Step 1
 		Anchor sourceAnchor = createContext.getSourceAnchor();
 	    Anchor targetAnchor = createContext.getTargetAnchor();
 	    org.framed.iorm.model.Shape sourceShape = getShapeForAnchor(sourceAnchor);
 	    org.framed.iorm.model.Shape targetShape = getShapeForAnchor(targetAnchor);
 		Connection newConnection = null;
-	 
-	    if (sourceShape != null && targetShape != null) {
-	    	// create a new inheritance	 
-	    	Relation newInheritance = OrmFactory.eINSTANCE.createRelation();
-	    	newInheritance.setType(Type.INHERITANCE); 
-	    	if(newInheritance.eResource() != null) getDiagram().eResource().getContents().add(newInheritance);
-	    	if(sourceShape.getContainer() == targetShape.getContainer()) {
-	    		newInheritance.setContainer(sourceShape.getContainer());
-	    		sourceShape.getContainer().getElements().add(newInheritance);
-	    	}	
-	    	newInheritance.setSource(sourceShape);
-	    	newInheritance.setTarget(targetShape);
-	    	// add connection for business object
-	        AddConnectionContext addContext = new AddConnectionContext(sourceAnchor, targetAnchor);
-	        addContext.setNewObject(newInheritance);
-	        if(canAdd(addContext)) add(addContext); 	        
-	    }
+		//Step 2
+		Relation newInheritance = OrmFactory.eINSTANCE.createRelation();
+	    newInheritance.setType(Type.INHERITANCE); 
+	    if(newInheritance.eResource() != null) getDiagram().eResource().getContents().add(newInheritance);
+	    //Step 3
+	    newInheritance.setContainer(sourceShape.getContainer());
+	    sourceShape.getContainer().getElements().add(newInheritance);
+	    newInheritance.setSource(sourceShape);
+	    newInheritance.setTarget(targetShape);
+	    //Step 4
+	    AddConnectionContext addContext = new AddConnectionContext(sourceAnchor, targetAnchor);
+	    addContext.setNewObject(newInheritance);
+	    if(canAdd(addContext)) add(addContext); 	        
 	    return newConnection;
 	}
-
+	
+	/**
+	 * Helper method to get the iorm model shape for a given anchor
+	 * @param anchor the anchor that belongs to the shape to get
+	 * @return the shape that has the give anchor
+	 */
 	private org.framed.iorm.model.Shape getShapeForAnchor(Anchor anchor) {
 		Object object = null;
 		if (anchor != null) { object = getBusinessObjectForPictogramElement(anchor.getParent()); }

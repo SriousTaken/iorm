@@ -29,9 +29,24 @@ import org.framed.iorm.ui.subeditors.TextViewerWithID;
 
 import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 
+/**
+ * This class is used creates the overall editor to edit the role model. 
+ * <p>
+ * It uses subeditors by the types {@link DiagramEditorWithID}, {@link FeatureEditorWithID} and 
+ * {@link TextViewerWithID}. It call the constructors and handles the management of saving these subeditors.
+ * @see DiagramEditorWithID
+ * @see FeatureEditorWithID
+ * @see TextViewerWithID
+ * @author Kevin Kassin
+ */
 public class MultipageEditor extends FormEditor implements IResourceChangeListener, ISelectionListener {
 	
-	//name literals
+	/**
+	 * name literals for the pages of the multipage editor
+	 * <p>
+	 * for reference check the Strings in {@link NameLiterals}
+	 * @see NameLiterals
+	 */
 	private final String BEHAVIOR_PAGE_NAME = NameLiterals.BEHAVIOR_PAGE_NAME,
 						 DATA_PAGE_NAME = NameLiterals.DATA_PAGE_NAME,
 						 TEXT_IORM_PAGE_NAME = NameLiterals.TEXT_IORM_PAGE_NAME,
@@ -39,33 +54,73 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 						 FEATURE_PAGE_NAME = NameLiterals.FEATURE_PAGE_NAME,
 						 MODEL_FEATURE_NAME = NameLiterals.MODEL_FEATURE_NAME;
 	
-	//id literals
+	/**
+	 * identifier literals for the pages of the multipage editor
+	 * <p>
+	 * for reference check the Strings in {@link IdentifierLiterals}
+	 * @see IdentifierLiterals
+	 */
 	private final String  PAGE_ID_BEHAVIOR = IdentifierLiterals.PAGE_ID_BEHAVIOR,
 			   			  PAGE_ID_DATA = IdentifierLiterals.PAGE_ID_DATA,
 			   			  PAGE_ID_IORM_TEXT = IdentifierLiterals.PAGE_ID_IORM_TEXT,
 			   			  PAGE_ID_CROM_TEXT = IdentifierLiterals.PAGE_ID_CROM_TEXT,
 			   			  PAGE_ID_FEATURE = IdentifierLiterals.PAGE_ID_FEATURE;
 	
-	//editors
-	private DiagramEditorWithID editorBehaviorDiagram,
-							   //editorDataDiagram,
-							   lastUsedDiagramEditor;
+	/**
+	 * the subeditors of the multipage editor of type {@link DiagramEditorWithID}
+	 * <p>
+	 * (1) the editor with the behavior view 
+	 * (2) the editor with the data view
+	 */
+	private DiagramEditorWithID editorBehaviorDiagram;
+							   //editorDataDiagram;
+	/**
+	 * the subeditors of the multipage editor of type {@link TextViewerWithID}
+	 * <p>
+	 * (1) the textviewer for the iorm diagram
+	 * (2) the textviewer for the transformed diagram in the crom model
+	 */
 	private TextViewerWithID textViewerIORM,
 							textViewerCROM;
+	/**
+	 * the subeditors of the multipage editor of type {@link FeatureEditorWithID}
+	 * <p>
+	 * the editor that is usd to change the configuration of the role model
+	 */
 	private FeatureEditorWithID editorFeatures;
 	
-	//editors indexes
+	/**
+	 * the indices if the subeditor of the multipage editor
+	 */
 	private int editorBehaviorDiagramIndex,
 				//editorDataDiagramIndex,
 				textViewerIORMIndex,
 				textViewerCROMIndex,
 				editorFeaturesIndex;
 	
+	/**
+	 * Class constructor
+	 */
 	public MultipageEditor() {
 		super();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 	}
-		
+	
+	/**
+	 * dispose the editor on close or deletion of opened file
+	 */
+	@Override
+	public void dispose() {
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
+		super.dispose();
+	}
+
+	/**
+	 * initialize method
+	 * @param site
+	 * @param editorInput the file opened with the editor
+	 * @throws PartInitException if editor input is not of type {@link IFileEditorInput}	
+	 */
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		if (!(editorInput instanceof IFileEditorInput))
@@ -74,10 +129,10 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 		getSite().getWorkbenchWindow().getSelectionService().addSelectionListener(this);
 	}
 	
-	public DiagramEditorWithID getLastUsedDiagramEditor() {
-		return lastUsedDiagramEditor;
-	}
-	
+	/**
+	 * get method for the editor with the behavior view
+	 * @return
+	 */
 	public DiagramEditorWithID getBehaviorEditor() {
 	    return editorBehaviorDiagram;
 	}
@@ -85,28 +140,35 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	//public DiagramEditorWithID getDataEditor() {
 	//   return editorDataDiagram;
 	//}
-	
-	@Override
-	public void dispose() {
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
-		super.dispose();
-	}
 		
+	/**
+	 * This method add pages to the multipage editor using the following steps:
+	 * <p>
+	 * Step 1: It creates the subeditors, except the feature editor.<br>
+	 * Step 2: It add the pages, except the feature editor, page using the subeditors and the editor input.<br>
+	 * Step 3: It creates a new root model using the create Model feature in the opened diagram if there is no.<br>
+	 * Step 4: It save after the creation of the root model.<br>
+	 * Step 5: It creates the feature editor and adds the page. To do that the created root model is needed.<br> 
+	 * Step 6: Its set the names of the pages.
+	 * @exception PartInitException
+	 * @exception FileNotFoundException
+	 * @exception UnsupportedModelException
+	 */
 	@Override
 	protected void addPages() {
-		//create editors (except feature editor)
+		//Step 1
 		editorBehaviorDiagram = new DiagramEditorWithID(PAGE_ID_BEHAVIOR, getEditorInput());
 		//editorDataDiagram = new DiagramEditorWithID(PAGE_ID_DATA, getEditorInput());
 		textViewerIORM = new TextViewerWithID(PAGE_ID_IORM_TEXT);
 		textViewerCROM = new TextViewerWithID(PAGE_ID_CROM_TEXT);
-		//add pages (except feature page)
+		//Step 2
 		try { 
 			editorBehaviorDiagramIndex = addPage(editorBehaviorDiagram, getEditorInput());
 			//editorDataDiagramIndex = addPage(editorDataDiagram, getEditorInput());
 			textViewerIORMIndex = addPage(textViewerIORM, getEditorInput());
 			textViewerCROMIndex = addPage(textViewerCROM, getEditorInput());
 		} catch (PartInitException e) { e.printStackTrace(); }
-		//create root model in graphiti business model
+		//Step 3
 		ICreateFeature createModelFeature = null;
 		ICreateFeature[] createFeatures = editorBehaviorDiagram.getDiagramTypeProvider().getFeatureProvider().getCreateFeatures();
 		for(int i = 0; i<createFeatures.length; i++) {
@@ -116,10 +178,9 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 		CreateModelContext createModelFeatureContext = new CreateModelContext();
 		createModelFeatureContext.setDiagramEditor(editorBehaviorDiagram);
 		createModelFeature.create(createModelFeatureContext);
-		//save after creation of root model
+		//Step 4
 		doSave(null);
-		
-		//create feature editor and add feature page
+		//Step 5
 		try {
 			editorFeatures = new FeatureEditorWithID(PAGE_ID_FEATURE, getEditorInput(), this);
 		} catch (FileNotFoundException e) { e.printStackTrace(); }
@@ -127,15 +188,22 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 		try {
 			editorFeaturesIndex = addPage(editorFeatures, getEditorInput());
 		} catch (PartInitException e) { e.printStackTrace(); }
-		//set page names
+		//Step 6
 		setPageText(editorBehaviorDiagramIndex, BEHAVIOR_PAGE_NAME);
 		//setPageText(editorDataDiagramIndex, DATA_PAGE_NAME);
 		setPageText(textViewerIORMIndex, TEXT_IORM_PAGE_NAME);
 		setPageText(textViewerCROMIndex, TEXT_CROM_PAGE_NAME);	
 		setPageText(editorFeaturesIndex, FEATURE_PAGE_NAME);
-		//set behavior page as is active for the user to see first
 	}
 	
+	/**
+	 * save method
+	 * <p>
+	 * This operation calls the save methods of the subeditors and synchronizes the feature configuration
+	 * in the feature editor with the one in the role model. This is needed because there can be inconsistencies
+	 * after undoing and redoing an feature configuration change. 
+	 * @param monitor the monitor used for the save activity
+	 */
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		if(editorBehaviorDiagram.isDirty()) editorBehaviorDiagram.doSave(monitor);
@@ -146,42 +214,38 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 			editorFeatures.synchronizeConfigurationEditorAndModelConfiguration();
 	}
 		
-	//save at pagechange, set last used Diagram Editor
+	/**
+	 * sets the selected page as active page
+	 * <p>
+	 * This operation calls the save method to avoid save competition between subeditors
+	 * @param newPageIndex the index of the page to change to
+	 */
 	protected void pageChange(int newPageIndex) {
-		if(newPageIndex == editorBehaviorDiagramIndex)	
-			lastUsedDiagramEditor = editorBehaviorDiagram; 
-		//if(newPageIndex == editorDataDiagramIndex)
-			//lastUsedDiagramEditor = editorDataDiagram; 
 		doSave(null);
 		super.pageChange(newPageIndex);
 	}
 	
-	public void resourceChanged(final IResourceChangeEvent event){
-		if(event.getType() == IResourceChangeEvent.PRE_CLOSE){
-			Display.getDefault().asyncExec(new Runnable(){
-				public void run(){
-					IWorkbenchPage[] pages = getSite().getWorkbenchWindow().getPages();
-						for (int i = 0; i<pages.length; i++){
-							if(((FileEditorInput)editorBehaviorDiagram.getEditorInput()).getFile().getProject().equals(event.getResource())){
-								IEditorPart editorPart = pages[i].findEditor(editorBehaviorDiagram.getEditorInput());
-								pages[i].closeEditor(editorPart,true);
-				}	}	}	}	
-			);	
-	}	}
-	
-	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		if (editorBehaviorDiagram.equals(getActiveEditor())) 
-			editorBehaviorDiagram.selectionChanged(getActiveEditor(), selection);
-	    //if (editorDataDiagram.equals(getActiveEditor()))
-	    	//editorDataDiagram.selectionChanged(getActiveEditor(), selection);
-	}
-
-	//disable save as
+	/**
+	 * disables the save as function
+	 */
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
 	}
-	
+		
+	/**
+	 * operation not used
+	 */
 	@Override
 	public void doSaveAs() {}
+	
+	/**
+	 * operation not used
+	 */
+	public void resourceChanged(final IResourceChangeEvent event) {}
+	
+	/**
+	 * operation not used
+	 */
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) {}
 }
