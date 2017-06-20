@@ -32,5 +32,4 @@ public class CreateModelContext extends CreateContext {
 	public DiagramEditorWithID getDiagramEditor() {
 		return diagramEditor;
 	}
-
 }

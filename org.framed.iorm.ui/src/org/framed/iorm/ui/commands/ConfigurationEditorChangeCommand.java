@@ -24,11 +24,10 @@ import org.framed.iorm.ui.subeditors.FeatureEditorWithID;
 public class ConfigurationEditorChangeCommand extends Command {
 
 	/**
-	 * name literals for features and commands name. 
+	 * name literals for features and commands name gather from {@link NameLiterals}. 
 	 */
 	private final String CHANGECONFIGURATION_FEATURE_NAME = NameLiterals.CHANGECONFIGURATION_FEATURE_NAME,
 				   		 CONFIGURATION_CHANGE_COMMAND_NAME = NameLiterals.CONFIGURATION_CHANGE_COMMAND_NAME;
-	
 	
 	/**
 	 * the feature editor that uses the command
@@ -59,13 +58,16 @@ public class ConfigurationEditorChangeCommand extends Command {
 
 	/**
 	 * This method executes the graphiti custom feature {@link ChangeConfigurationFeature} using the following steps:<br>
-	 * Step 1: It uses the diagram editor to get the get the custom feature<br>
-	 * Step 2: It creates a {@link ChangeConfigurationContext} and sets the needed informations in it.<br>
-	 * Step 3: It executes the {@link ChangeConfigurationFeature} and catches a {@link FeatureModelInconsistentException}
+	 * Step 1: It changes the confuiguration in the feature editor
+	 * Step 2: It uses the diagram editor to get the get the custom feature<br>
+	 * Step 3: It creates a {@link ChangeConfigurationContext} and sets the needed informations in it.<br>
+	 * Step 4: It executes the {@link ChangeConfigurationFeature} and catches a {@link FeatureModelInconsistentException}
 	 */
 	@Override
 	public void execute() {	 
+		//Step 1
 		featureEditor.setSelection(item, select);
+		//Step 2
 		ICustomFeature changeConfigurationFeature = null;
 		ICustomFeature[] customFeatures = behaviorDiagramEditor.getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(new ChangeConfigurationContext());
 		for(int i = 0; i<customFeatures.length; i++) {
@@ -73,16 +75,16 @@ public class ConfigurationEditorChangeCommand extends Command {
 				changeConfigurationFeature = customFeatures[i];
 		}
 		if(changeConfigurationFeature != null) {
+			//Step 3
 			ChangeConfigurationContext changeConfigurationContext = new ChangeConfigurationContext();
 			changeConfigurationContext.setTreeItem(item);
 			changeConfigurationContext.setBehaviorEditor(behaviorDiagramEditor);
 			if(changeConfigurationFeature.canExecute(changeConfigurationContext)) {
+				//Step 4
 				try {
 					changeConfigurationFeature.execute(changeConfigurationContext);
 				} catch(FeatureModelInconsistentException e) { e.printStackTrace(); }
-			}	
-		}
-	}
+	}	}	}
 			
 	/**
 	 * sets the class variable featureEditor

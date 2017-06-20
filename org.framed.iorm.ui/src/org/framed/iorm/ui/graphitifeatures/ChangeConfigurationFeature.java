@@ -16,36 +16,68 @@ import org.framed.iorm.ui.exceptions.FeatureModelInconsistentException;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.util.MethodUtil;
 
+/**
+ * This graphiti custom feature is used change the role models configuration.
+ * <p>
+ * It is called by {@link ConfigurationEditorChangeCommand} and uses the {@link ChangeConfigurationContext}.
+ * @see ConfigurationEditorChangeCommand
+ * @see ChangeConfigurationContext
+ * @author Kevin Kassin
+ */
 public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 	
-	//name literals
+	/**
+	 * the name of the feature gathered from {@link NameLiterals}
+	 */
 	private String CHANGECONFIGURATION_FEATURE_NAME = NameLiterals.CHANGECONFIGURATION_FEATURE_NAME; 
 	
-	boolean hasDoneChanges = false;
-	
+	/**
+	 * Class constructor
+	 * @param featureProvider the feature provider the feature belogs to
+	 */
 	public ChangeConfigurationFeature(IFeatureProvider featureProvider) {
 		super(featureProvider);
 	}
 	 
+	/**
+	 * get method for the features name
+	 * @return the name of the feature
+	 */
 	@Override
 	public String getName() {
 		return CHANGECONFIGURATION_FEATURE_NAME;
 	}
-	 
+	
+	/**
+	 * This methods checks if the feature can be executed.
+	 * <p>
+	 * It return true if<br>
+	 * (1) all needed informations in the context are set<br>
+	 * (2) the diagram to work has a root model
+	 */
 	@Override
 	public boolean canExecute(ICustomContext context) {
 		ChangeConfigurationContext cfmc = (ChangeConfigurationContext) context;
 		return (cfmc.getTreeItem() != null &&
+				cfmc.getBehaviorEditor() != null &&
 				MethodUtil.getDiagramRootModel(getDiagram()) != null);
 	}
 	 
+	/**
+	 * This method changes the role models configuration using the following steps:<br>
+	 * Step 1: gets the root model of the diagram<br>
+	 * Step 2: deletes or add a feature in the root model<br>
+	 * Step 3: updates the public list of the features of the role model in the {@link DiagramEditorWithID}
+	 */
 	@Override
 	public void execute(ICustomContext context) throws FeatureModelInconsistentException {
 		List<FRaMEDFeature> featuresFound = new ArrayList<FRaMEDFeature>();
 		ChangeConfigurationContext cfmc = (ChangeConfigurationContext) context;
 		
+		//Step 1
 		Model rootModel = MethodUtil.getDiagramRootModel(getDiagram());
 		EList<FRaMEDFeature> ConfigurationFeatures = rootModel.getFramedConfiguration().getFeatures();
+		//Step 2
 		if(!(cfmc.getTreeItem().getChecked())) {
 			for(FRaMEDFeature feature : ConfigurationFeatures) {
 				if(feature.getName().equals(FeatureName.getByName(cfmc.getTreeItem().getText()))) {
@@ -54,8 +86,7 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 			if(featuresFound.size() == 0) throw new FeatureModelInconsistentException();
 			for(FRaMEDFeature feature : featuresFound) {
 				ConfigurationFeatures.remove(feature);
-			}
-		}
+		}	}
 		if(cfmc.getTreeItem().getChecked()) {
 			for(FRaMEDFeature feature : ConfigurationFeatures) {
 				if(feature.getName().equals(FeatureName.getByName(cfmc.getTreeItem().getText()))) {
@@ -67,12 +98,7 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 			framedFeature.setManuallySelected(true);
 			ConfigurationFeatures.add(framedFeature);		
 		}
-		//set list of selected features in the editor
+		//Step 3
 		cfmc.getBehaviorEditor().setSelectedFeatures(ConfigurationFeatures);
-	}
-	 
-	@Override
-	public boolean hasDoneChanges() {
-		return hasDoneChanges; 	
 	}
 }
