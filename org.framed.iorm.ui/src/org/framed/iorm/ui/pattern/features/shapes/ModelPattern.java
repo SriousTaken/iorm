@@ -3,6 +3,8 @@ package org.framed.iorm.ui.pattern.features.shapes;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.emf.common.util.URI;
@@ -15,11 +17,14 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.pattern.AbstractPattern;
 import org.eclipse.graphiti.pattern.IPattern;
+import org.framed.iorm.featuremodel.FRaMEDFeature;
 import org.framed.iorm.model.Model;
 import org.framed.iorm.model.OrmFactory;
+import org.framed.iorm.ui.contexts.CreateModelContext;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.URLLiterals;
+import org.framed.iorm.ui.subeditors.DiagramEditorWithID;
 
 public class ModelPattern extends AbstractPattern implements IPattern {
 	//TODO: singleton für model
@@ -86,16 +91,18 @@ public class ModelPattern extends AbstractPattern implements IPattern {
 	//create feature
 	//~~~~~~~~~~~~~~
 	@Override
-	public Object[] create(ICreateContext context) {
+	public Object[] create(ICreateContext createContext) {
 		Model newModel = OrmFactory.eINSTANCE.createModel();
 		try {
-			setStandartConfiguration(newModel);
+			setStandartConfiguration(newModel, createContext);
 		} catch (URISyntaxException | IOException e) { e.printStackTrace(); }
-		addGraphicalRepresentation(context, newModel);
+		addGraphicalRepresentation(createContext, newModel);
 		return new Object[] { newModel };
 	}
 	
-	private void setStandartConfiguration(Model model) throws URISyntaxException, IOException {
+	private void setStandartConfiguration(Model model, ICreateContext createContext) throws URISyntaxException, IOException {
+		CreateModelContext createModelContext = (CreateModelContext) createContext;
+		
 		ResourceSet resourceSet = new ResourceSetImpl();
 		Resource resourceStandartConfiguration =
 			resourceSet.createResource(URI.createURI(FileLocator.resolve(fileURLToStandartConfiguration).toURI().toString()));
@@ -107,6 +114,7 @@ public class ModelPattern extends AbstractPattern implements IPattern {
 		}
 		Model standardConfigurationModel = (Model) resourceStandartConfiguration.getContents().get(0);
 		model.setFramedConfiguration(standardConfigurationModel.getFramedConfiguration());
+		createModelContext.getDiagramEditor().setSelectedFeatures(model.getFramedConfiguration().getFeatures());
 	}
 	
 }

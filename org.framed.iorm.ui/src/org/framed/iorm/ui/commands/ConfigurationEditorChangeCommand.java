@@ -1,7 +1,6 @@
 package org.framed.iorm.ui.commands;
 
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.ui.actions.UndoAction;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.swt.widgets.TreeItem;
 import org.framed.iorm.ui.contexts.ChangeConfigurationContext;
@@ -10,30 +9,60 @@ import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.subeditors.DiagramEditorWithID;
 import org.framed.iorm.ui.subeditors.FeatureEditorWithID;
 
+/**
+ * This command is used when configuration of a role model is changed.
+ * <p>
+ * It is called by {@link FeatureEditorWithID} when an item is clicked to change the configuration. Its 
+ * executions uses {@link ChangeConfigurationContext} as context and the graphiti custom feature {@link 
+ * ChangeConfigurationFeature} to change the role model. Its undo functions is not used, since this is 
+ * handled by the standart undo function of the diagram editors.
+ * @see FeatureEditorWithID 
+ * @see ChangeConfigurationContext
+ * @see ChangeConfigurationFeature
+ * @author Kevin Kassin
+ */
 public class ConfigurationEditorChangeCommand extends Command {
 
-	//name literals
+	/**
+	 * name literals for features and commands name. 
+	 */
 	private final String CHANGECONFIGURATION_FEATURE_NAME = NameLiterals.CHANGECONFIGURATION_FEATURE_NAME,
-				   CONFIGURATION_CHANGE_COMMAND_NAME = NameLiterals.CONFIGURATION_CHANGE_COMMAND_NAME;
+				   		 CONFIGURATION_CHANGE_COMMAND_NAME = NameLiterals.CONFIGURATION_CHANGE_COMMAND_NAME;
 	
-	//feature editor that uses the command
+	
+	/**
+	 * the feature editor that uses the command
+	 */
 	private FeatureEditorWithID featureEditor;
 	
-	//diagram editors that used by the command
-	private DiagramEditorWithID behaviorDiagramEditor,
-								dataDiagramEditor,
-								lastUsedDiagramEditor;
+	/**
+	 * the diagram editors that used by the command
+	 */
+	private DiagramEditorWithID behaviorDiagramEditor;
 	
-	//new value of feature selection
+	/**
+	 * the boolean value of a feature selection
+	 */
 	private boolean select;
 	
-	//tree item that presents the feature 
+	/**
+	 * the tree item that presents a feature 
+	 */
 	private TreeItem item;
 
+	/**
+	 * Class constructor
+	 */
 	public ConfigurationEditorChangeCommand() {
 		super.setLabel(CONFIGURATION_CHANGE_COMMAND_NAME);
 	}
 
+	/**
+	 * This method executes the graphiti custom feature {@link ChangeConfigurationFeature} using the following steps:<br>
+	 * Step 1: It uses the diagram editor to get the get the custom feature<br>
+	 * Step 2: It creates a {@link ChangeConfigurationContext} and sets the needed informations in it.<br>
+	 * Step 3: It executes the {@link ChangeConfigurationFeature} and catches a {@link FeatureModelInconsistentException}
+	 */
 	@Override
 	public void execute() {	 
 		featureEditor.setSelection(item, select);
@@ -46,6 +75,7 @@ public class ConfigurationEditorChangeCommand extends Command {
 		if(changeConfigurationFeature != null) {
 			ChangeConfigurationContext changeConfigurationContext = new ChangeConfigurationContext();
 			changeConfigurationContext.setTreeItem(item);
+			changeConfigurationContext.setBehaviorEditor(behaviorDiagramEditor);
 			if(changeConfigurationFeature.canExecute(changeConfigurationContext)) {
 				try {
 					changeConfigurationFeature.execute(changeConfigurationContext);
@@ -53,43 +83,35 @@ public class ConfigurationEditorChangeCommand extends Command {
 			}	
 		}
 	}
-	
-	@Override
-	public boolean canUndo() {
-		return true;
-	}
-	
-	@Override
-	public void undo() {
-		System.out.println("asd");
-		//do standart undo
-		String undoActionID = new UndoAction(behaviorDiagramEditor).getId();
-		behaviorDiagramEditor.getActionRegistry().getAction(undoActionID).run();
-		//update check status of item in feature editor additionally
-		item.setChecked(!(item.getChecked())); this.
-		featureEditor.updateItemCheckedStatusOnRedo(item);
-	}
-		
+			
+	/**
+	 * sets the class variable featureEditor
+	 * @param featureEditor the feature editor to set
+	 */
 	public void setFeatureEditor(FeatureEditorWithID featureEditor) {
 		this.featureEditor = featureEditor;
 	}
 	  
+	/**
+	 * sets the class variable beahaviorDiagramEditor
+	 * @param behaviorDiagramEditor the diagram editor to set
+	 */
 	public void setBehaviorDiagramEditor(DiagramEditorWithID behaviorDiagramEditor) {
 		this.behaviorDiagramEditor = behaviorDiagramEditor;
 	}
-	
-	public void setDiagramEditor(DiagramEditorWithID dataDiagramEditor) {
-		this.dataDiagramEditor = dataDiagramEditor;
-	}
-	
-	public void setLastUsedDiagramEditor(DiagramEditorWithID lastUsedDiagramEditor) {
-		this.lastUsedDiagramEditor = lastUsedDiagramEditor;
-	}
-	
+		
+	/**
+	 * sets the class variable item
+	 * @param item the item to set
+	 */
 	public void setItem(TreeItem item) {
 		this.item = item;
 	}
 	  
+	/**
+	 * sets the class variable select
+	 * @param select the boolean value to set as select
+	 */
 	public void setSelect(boolean select) {
 		this.select = select;
 	}

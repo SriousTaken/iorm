@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -326,8 +328,6 @@ public class FeatureEditorWithID extends EditorPart {
 		ConfigurationEditorChangeCommand cmd = new ConfigurationEditorChangeCommand();
 		cmd.setFeatureEditor(this);
 		cmd.setBehaviorDiagramEditor(multipageEditor.getBehaviorEditor());
-		//cmd.setBehaviorDiagramEditor(multipageEditor.getDataEditor());
-		cmd.setLastUsedDiagramEditor(multipageEditor.getLastUsedDiagramEditor());
 		cmd.setItem(item);
 		cmd.setSelect(select);
 		multipageEditor.getBehaviorEditor().getCommandStack().execute(cmd);
@@ -372,15 +372,33 @@ public class FeatureEditorWithID extends EditorPart {
 		configuration.setManual(feature, selection);
 	}
 	
-	public void updateItemCheckedStatusOnRedo(TreeItem item) {
-		SelectableFeature selectableFeature = null;
-		//get SelectableFeature for item
+	//in case of undo/ redo the configuration in the feature configuration editor
+	//gets out of synch(?) -> synchronize at save
+	public void synchronizeConfigurationEditorAndModelConfiguration() {
+		EList<FRaMEDFeature> selectedFeatures = multipageEditor.getBehaviorEditor().getSelectedFeatures();
+		boolean mapEntryFound = false;
 		for(Map.Entry<SelectableFeature, TreeItem> entry : itemMap.entrySet()){
-		    if(entry.getValue().equals(item)) {
-		    	selectableFeature = entry.getKey();
-		}	}
-		//undo the change of the item checked status
-		selectableFeature.setManual(item.getChecked() ? Selection.SELECTED : Selection.UNSELECTED);
+			for(FRaMEDFeature framedFeature : selectedFeatures) {
+				if(entry.getKey().getName().equals(framedFeature.getName().getLiteral())) {
+					if (entry.getKey().getAutomatic() == Selection.UNDEFINED) {
+						//wiederspruch gefunden
+						if(!(entry.getValue().getChecked())) {
+							entry.getValue().setChecked(true);
+							entry.getKey().setManual(Selection.SELECTED);
+						}
+						mapEntryFound = true;
+				}	}	
+			}
+			//if map entry was not found in the list selected features uncheck them
+			if(!mapEntryFound) {
+				if (entry.getKey().getAutomatic() == Selection.UNDEFINED) {
+					//wiederspruch gefunden
+					if((entry.getValue().getChecked())) {
+						entry.getValue().setChecked(false);
+						entry.getKey().setManual(Selection.UNSELECTED);
+			}	}	}
+			mapEntryFound = false;
+		}
 		updateTree();
 	}
 	 

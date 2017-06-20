@@ -11,7 +11,6 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
-import org.framed.iorm.ui.actions.UndoActionForRoleModel;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.subeditors.DiagramEditorWithID;
 import org.framed.iorm.ui.subeditors.TextViewerWithID;
@@ -52,7 +51,6 @@ public class MultipageEditorContributor extends MultiPageEditorActionBarContribu
 						   redoActionID = new RedoAction(editor).getId(),
 						   deleteActionID = new DeleteAction((IWorkbenchPart) editor).getId();
 		
-					//actionBars.setGlobalActionHandler( ActionFactory.UNDO.getId(), new UndoActionForRoleModel(editor));
 					actionBars.setGlobalActionHandler( ActionFactory.UNDO.getId(), editor.getActionRegistry().getAction(undoActionID));
 					actionBars.setGlobalActionHandler( ActionFactory.REDO.getId(), editor.getActionRegistry().getAction(redoActionID));
 					actionBars.setGlobalActionHandler( ActionFactory.DELETE.getId(), editor.getActionRegistry().getAction(deleteActionID));

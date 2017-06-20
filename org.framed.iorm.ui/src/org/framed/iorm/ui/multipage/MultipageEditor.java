@@ -20,6 +20,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.part.FileEditorInput;
+import org.framed.iorm.ui.contexts.CreateModelContext;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.subeditors.DiagramEditorWithID;
@@ -112,7 +113,8 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 			if(createFeatures[i].getCreateName().equals(MODEL_FEATURE_NAME)) 
 				createModelFeature = createFeatures[i];
 		}
-		CreateContext createModelFeatureContext = new CreateContext();
+		CreateModelContext createModelFeatureContext = new CreateModelContext();
+		createModelFeatureContext.setDiagramEditor(editorBehaviorDiagram);
 		createModelFeature.create(createModelFeatureContext);
 		//save after creation of root model
 		doSave(null);
@@ -138,6 +140,10 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	public void doSave(IProgressMonitor monitor) {
 		if(editorBehaviorDiagram.isDirty()) editorBehaviorDiagram.doSave(monitor);
 		//if(editorDataDiagram.isDirty()) editorDataDiagram.doSave(monitor);
+		
+		//at the first save of a new diagram there is no editor feature yet
+		if(editorFeatures != null)
+			editorFeatures.synchronizeConfigurationEditorAndModelConfiguration();
 	}
 		
 	//save at pagechange, set last used Diagram Editor

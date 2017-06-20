@@ -67,6 +67,8 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 			framedFeature.setManuallySelected(true);
 			ConfigurationFeatures.add(framedFeature);		
 		}
+		//set list of selected features in the editor
+		cfmc.getBehaviorEditor().setSelectedFeatures(ConfigurationFeatures);
 	}
 	 
 	@Override
