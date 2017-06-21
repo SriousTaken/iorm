@@ -58,21 +58,21 @@
     <extension point="org.eclipse.ui.newWizards">
        <category
              id="org.framed.iorm.ui.wizard_category"
-             name="Role Models">
+             name="Compartment Role Object Models">
        </category>
        <wizard
              category="org.framed.iorm.ui.wizard_category"
              class="org.framed.iorm.ui.wizards.RoleModelWizard"
              icon="icons/wizard/icon_role_model_wizard.png"
              id="org.framed.iorm.ui.model_wizard"
-             name="Role Model">
+             name="Compartment Role Object Model">
        </wizard>
        <wizard
              category="org.framed.iorm.ui.wizard_category"
              class="org.framed.iorm.ui.wizards.RoleModelProjectWizard"
              icon="icons/wizard/icon_role_model_project_wizard.png"
              id="org.framed.iorm.ui.project_wizard"
-             name="Role Model Project"
+             name="CROM Project"
              project="true">
        </wizard>
     </extension>

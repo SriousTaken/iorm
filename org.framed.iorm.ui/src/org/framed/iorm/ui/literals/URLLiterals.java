@@ -29,7 +29,7 @@ public class URLLiterals {
 	/**
 	 * string used as prefix for file pathes for icon of create features
 	 */
-	private static final String IMG_FILE_PATH_ROOT = "icons/features/icon_";
+	private static final String IMG_FILE_PATH_PREFIX = "icons/features/icon_";
 	
 	/**
 	 * file paths to icons used for create features
@@ -41,10 +41,10 @@ public class URLLiterals {
 	 * (4) the file path to the icon for the operation create feature or<br>
 	 * (5) the file path to the icon for the inheritance create feature
 	 */
-	public static final String IMG_FILEPATH_FEATURE_NATURALTYPE = IMG_FILE_PATH_ROOT + "naturaltype.PNG",
-							   IMG_FILEPATH_FEATURE_DATATYPE = IMG_FILE_PATH_ROOT + "datatype.PNG",
-							   IMG_FILEPATH_FEATURE_ATTRIBUTE = IMG_FILE_PATH_ROOT + "attribute.png",
-							   IMG_FILEPATH_FEATURE_OPERATION = IMG_FILE_PATH_ROOT + "operation.png",
-							   IMG_FILEPATH_FEATURE_INHERITANCE = IMG_FILE_PATH_ROOT + "inheritance.png";
+	public static final String IMG_FILEPATH_FEATURE_NATURALTYPE = IMG_FILE_PATH_PREFIX + "naturaltype.png",
+							   IMG_FILEPATH_FEATURE_DATATYPE = IMG_FILE_PATH_PREFIX + "datatype.png",
+							   IMG_FILEPATH_FEATURE_ATTRIBUTE = IMG_FILE_PATH_PREFIX + "attribute.gif",
+							   IMG_FILEPATH_FEATURE_OPERATION = IMG_FILE_PATH_PREFIX + "operation.gif",
+							   IMG_FILEPATH_FEATURE_INHERITANCE = IMG_FILE_PATH_PREFIX + "inheritance.png";
 	
 }

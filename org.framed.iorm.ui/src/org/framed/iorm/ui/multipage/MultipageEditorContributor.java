@@ -27,8 +27,7 @@ public class MultipageEditorContributor extends MultiPageEditorActionBarContribu
 	 * for reference check the Strings in {@link IdentifierLiterals}
 	 * @see IdentifierLiterals
 	 */
-	public final String PAGE_ID_BEHAVIOR = IdentifierLiterals.PAGE_ID_BEHAVIOR,
- 			  			PAGE_ID_DATA = IdentifierLiterals.PAGE_ID_DATA,
+	public final String PAGE_ID_DIAGRAM = IdentifierLiterals.PAGE_ID_DIAGRAM,
  			  			PAGE_ID_IORM_TEXT = IdentifierLiterals.PAGE_ID_IORM_TEXT,
  			  			PAGE_ID_CROM_TEXT = IdentifierLiterals.PAGE_ID_CROM_TEXT,
  			  			PAGE_ID_FEATURE = IdentifierLiterals.PAGE_ID_FEATURE;

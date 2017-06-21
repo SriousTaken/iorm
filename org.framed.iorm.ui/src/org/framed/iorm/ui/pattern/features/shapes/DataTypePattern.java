@@ -49,7 +49,8 @@ import org.framed.iorm.ui.util.PropertyUtil;
 public class DataTypePattern extends AbstractPattern{
 	
 	//name literals
-	private final String DATATYPE_FEATURE_NAME = NameLiterals.DATATYPE_FEATURE_NAME;
+	private final String DATATYPE_FEATURE_NAME = NameLiterals.DATATYPE_FEATURE_NAME,
+						 STANDARD_DATATYPE_NAME = NameLiterals.STANDARD_DATATYPE_NAME;
 	
 	//text literals
 	private final String DIRECTEDITING_DATATYPE = TextLiterals.DIRECTEDITING_DATATYPE;
@@ -253,6 +254,7 @@ public class DataTypePattern extends AbstractPattern{
 		//create new data type
 		org.framed.iorm.model.Shape newDataType = OrmFactory.eINSTANCE.createShape();
 		newDataType.setType(Type.DATA_TYPE);
+		newDataType.setName(STANDARD_DATATYPE_NAME);
 		//add new natural type to the elements of the model
 		Model model = MethodUtil.getDiagramRootModel(getDiagram());
 		if(newDataType.eResource() != null) getDiagram().eResource().getContents().add(newDataType);

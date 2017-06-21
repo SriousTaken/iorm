@@ -321,16 +321,15 @@ public class FeatureEditorWithID extends EditorPart {
 	        item.setForeground(null);
 	        item.setChecked(feature.getManual() == Selection.SELECTED);
 	        break;
-	    }
-	}
+	}	}
 	
 	public void changeSelection(final TreeItem item, final boolean select) {
 		ConfigurationEditorChangeCommand cmd = new ConfigurationEditorChangeCommand();
 		cmd.setFeatureEditor(this);
-		cmd.setBehaviorDiagramEditor(multipageEditor.getBehaviorEditor());
+		cmd.setBehaviorDiagramEditor(multipageEditor.getDiagramEditor());
 		cmd.setItem(item);
 		cmd.setSelect(select);
-		multipageEditor.getBehaviorEditor().getCommandStack().execute(cmd);
+		multipageEditor.getDiagramEditor().getCommandStack().execute(cmd);
 	}
 	
 	public void setSelection(final TreeItem item, final boolean select) {
@@ -375,7 +374,7 @@ public class FeatureEditorWithID extends EditorPart {
 	//in case of undo/ redo the configuration in the feature configuration editor
 	//gets out of synch(?) -> synchronize at save
 	public void synchronizeConfigurationEditorAndModelConfiguration() {
-		EList<FRaMEDFeature> selectedFeatures = multipageEditor.getBehaviorEditor().getSelectedFeatures();
+		EList<FRaMEDFeature> selectedFeatures = multipageEditor.getDiagramEditor().getSelectedFeatures();
 		boolean mapEntryFound = false;
 		for(Map.Entry<SelectableFeature, TreeItem> entry : itemMap.entrySet()){
 			for(FRaMEDFeature framedFeature : selectedFeatures) {

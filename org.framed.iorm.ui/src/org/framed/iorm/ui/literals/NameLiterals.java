@@ -24,9 +24,13 @@ public class NameLiterals {
 	 * can be:<br>
 	 * (1) the standard name for attributes or<br>
 	 * (2) the standard name for operations or<br>
+	 * (3) the standard name for naturals types or<br>
+	 * (4) the standard name for data types
 	 */
 	public static final String STANDARD_ATTRIBUTE_NAME = "attribute:type",
-							   STANDARD_OPERATION_NAME = "operation():type";
+							   STANDARD_OPERATION_NAME = "operation():type",
+							   STANDARD_NATURALTYPE_NAME = "naturalType",
+							   STANDARD_DATATYPE_NAME = "dataType";
 
 	/**
 	 * name literals for commands
@@ -61,15 +65,13 @@ public class NameLiterals {
 	 * name literals for editor pages
 	 * <p>
 	 * can be:<br>
-	 * (1) the name for the behavior diagram page or<br>
-	 * (2) the name for the data diagram page or<br>
-	 * (3) the name for the iorm textviewer page or<br>
-	 * (4) the name for the crom textviewer page or<br>
-	 * (5) the name for the feature configuration editor page
+	 * (1) the name for the diagram page or<br>
+	 * (2) the name for the iorm textviewer page or<br>
+	 * (3) the name for the crom textviewer page or<br>
+	 * (4) the name for the feature configuration editor page
 	 */
-	public static final String BEHAVIOR_PAGE_NAME = "Behavior Diagram",
-							   DATA_PAGE_NAME = "Data Diagram",	
-							   TEXT_IORM_PAGE_NAME = "IORM Text",
-							   TEXT_CROM_PAGE_NAME = "CROM Text",
-							   FEATURE_PAGE_NAME = "Feature Configuration";
+	public static final String DIAGRAM_PAGE_NAME = "CROM Diagram",
+							   TEXT_IORM_PAGE_NAME = "IORM",
+							   TEXT_CROM_PAGE_NAME = "CROM",
+							   FEATURE_PAGE_NAME = "Configuration";
 }

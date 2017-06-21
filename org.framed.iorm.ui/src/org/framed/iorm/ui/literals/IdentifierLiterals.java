@@ -25,8 +25,7 @@ public class IdentifierLiterals {
 	 * <p>
 	 * the identifiers of the subeditors of the {@link MultipageEditor}
 	 */
-	public static final String PAGE_ID_BEHAVIOR = "page_behavior",
-							   PAGE_ID_DATA = "page_data",
+	public static final String PAGE_ID_DIAGRAM = "page_diagram",
 							   PAGE_ID_IORM_TEXT = "page_iorm_text",
 							   PAGE_ID_CROM_TEXT = "page_crom_text",
 							   PAGE_ID_FEATURE = "page_feature_configuration";

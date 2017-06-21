@@ -7,19 +7,14 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.graphiti.features.ICreateFeature;
-import org.eclipse.graphiti.features.context.impl.CreateContext;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.part.FileEditorInput;
 import org.framed.iorm.ui.contexts.CreateModelContext;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
@@ -42,13 +37,12 @@ import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 public class MultipageEditor extends FormEditor implements IResourceChangeListener, ISelectionListener {
 	
 	/**
-	 * name literals for the pages of the multipage editor
+	 * name literals for the pages of the multipage editor and the model feature
 	 * <p>
 	 * for reference check the Strings in {@link NameLiterals}
 	 * @see NameLiterals
 	 */
-	private final String BEHAVIOR_PAGE_NAME = NameLiterals.BEHAVIOR_PAGE_NAME,
-						 DATA_PAGE_NAME = NameLiterals.DATA_PAGE_NAME,
+	private final String DIAGRAM_PAGE_NAME = NameLiterals.DIAGRAM_PAGE_NAME,
 						 TEXT_IORM_PAGE_NAME = NameLiterals.TEXT_IORM_PAGE_NAME,
 						 TEXT_CROM_PAGE_NAME = NameLiterals.TEXT_CROM_PAGE_NAME,
 						 FEATURE_PAGE_NAME = NameLiterals.FEATURE_PAGE_NAME,
@@ -60,8 +54,7 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	 * for reference check the Strings in {@link IdentifierLiterals}
 	 * @see IdentifierLiterals
 	 */
-	private final String  PAGE_ID_BEHAVIOR = IdentifierLiterals.PAGE_ID_BEHAVIOR,
-			   			  PAGE_ID_DATA = IdentifierLiterals.PAGE_ID_DATA,
+	private final String  PAGE_ID_DIAGRAM = IdentifierLiterals.PAGE_ID_DIAGRAM,
 			   			  PAGE_ID_IORM_TEXT = IdentifierLiterals.PAGE_ID_IORM_TEXT,
 			   			  PAGE_ID_CROM_TEXT = IdentifierLiterals.PAGE_ID_CROM_TEXT,
 			   			  PAGE_ID_FEATURE = IdentifierLiterals.PAGE_ID_FEATURE;
@@ -69,11 +62,10 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	/**
 	 * the subeditors of the multipage editor of type {@link DiagramEditorWithID}
 	 * <p>
-	 * (1) the editor with the behavior view 
-	 * (2) the editor with the data view
+	 * the editor with the diagram
 	 */
-	private DiagramEditorWithID editorBehaviorDiagram;
-							   //editorDataDiagram;
+	private DiagramEditorWithID editorDiagram;
+	
 	/**
 	 * the subeditors of the multipage editor of type {@link TextViewerWithID}
 	 * <p>
@@ -81,7 +73,7 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	 * (2) the textviewer for the transformed diagram in the crom model
 	 */
 	private TextViewerWithID textViewerIORM,
-							textViewerCROM;
+							 textViewerCROM;
 	/**
 	 * the subeditors of the multipage editor of type {@link FeatureEditorWithID}
 	 * <p>
@@ -92,8 +84,7 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	/**
 	 * the indices if the subeditor of the multipage editor
 	 */
-	private int editorBehaviorDiagramIndex,
-				//editorDataDiagramIndex,
+	private int editorDiagramIndex,
 				textViewerIORMIndex,
 				textViewerCROMIndex,
 				editorFeaturesIndex;
@@ -130,25 +121,22 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	}
 	
 	/**
-	 * get method for the editor with the behavior view
+	 * get method for the editor with the diagram
 	 * @return
 	 */
-	public DiagramEditorWithID getBehaviorEditor() {
-	    return editorBehaviorDiagram;
+	public DiagramEditorWithID getDiagramEditor() {
+	    return editorDiagram;
 	}
-	
-	//public DiagramEditorWithID getDataEditor() {
-	//   return editorDataDiagram;
-	//}
 		
 	/**
 	 * This method add pages to the multipage editor using the following steps:
 	 * <p>
 	 * Step 1: It creates the subeditors, except the feature editor.<br>
-	 * Step 2: It add the pages, except the feature editor, page using the subeditors and the editor input.<br>
+	 * Step 2: It add the diagram page, the pages uses the subeditors and the editor input.<br>
 	 * Step 3: It creates a new root model using the create Model feature in the opened diagram if there is no.<br>
 	 * Step 4: It save after the creation of the root model.<br>
-	 * Step 5: It creates the feature editor and adds the page. To do that the created root model is needed.<br> 
+	 * Step 5: It creates the feature editor and adds the page. To do that the created root model is needed.
+	 * 		   It also add the pages of the iorm and crom text viewers.<br> 
 	 * Step 6: Its set the names of the pages.
 	 * @exception PartInitException
 	 * @exception FileNotFoundException
@@ -157,26 +145,22 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	@Override
 	protected void addPages() {
 		//Step 1
-		editorBehaviorDiagram = new DiagramEditorWithID(PAGE_ID_BEHAVIOR, getEditorInput());
-		//editorDataDiagram = new DiagramEditorWithID(PAGE_ID_DATA, getEditorInput());
+		editorDiagram = new DiagramEditorWithID(PAGE_ID_DIAGRAM, getEditorInput());
 		textViewerIORM = new TextViewerWithID(PAGE_ID_IORM_TEXT);
 		textViewerCROM = new TextViewerWithID(PAGE_ID_CROM_TEXT);
 		//Step 2
 		try { 
-			editorBehaviorDiagramIndex = addPage(editorBehaviorDiagram, getEditorInput());
-			//editorDataDiagramIndex = addPage(editorDataDiagram, getEditorInput());
-			textViewerIORMIndex = addPage(textViewerIORM, getEditorInput());
-			textViewerCROMIndex = addPage(textViewerCROM, getEditorInput());
+			editorDiagramIndex = addPage(editorDiagram, getEditorInput());		
 		} catch (PartInitException e) { e.printStackTrace(); }
 		//Step 3
 		ICreateFeature createModelFeature = null;
-		ICreateFeature[] createFeatures = editorBehaviorDiagram.getDiagramTypeProvider().getFeatureProvider().getCreateFeatures();
+		ICreateFeature[] createFeatures = editorDiagram.getDiagramTypeProvider().getFeatureProvider().getCreateFeatures();
 		for(int i = 0; i<createFeatures.length; i++) {
 			if(createFeatures[i].getCreateName().equals(MODEL_FEATURE_NAME)) 
 				createModelFeature = createFeatures[i];
 		}
 		CreateModelContext createModelFeatureContext = new CreateModelContext();
-		createModelFeatureContext.setDiagramEditor(editorBehaviorDiagram);
+		createModelFeatureContext.setDiagramEditor(editorDiagram);
 		createModelFeature.create(createModelFeatureContext);
 		//Step 4
 		doSave(null);
@@ -187,10 +171,11 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 		  catch (UnsupportedModelException e) { e.printStackTrace(); }	
 		try {
 			editorFeaturesIndex = addPage(editorFeatures, getEditorInput());
+			textViewerIORMIndex = addPage(textViewerIORM, getEditorInput());
+			textViewerCROMIndex = addPage(textViewerCROM, getEditorInput());
 		} catch (PartInitException e) { e.printStackTrace(); }
 		//Step 6
-		setPageText(editorBehaviorDiagramIndex, BEHAVIOR_PAGE_NAME);
-		//setPageText(editorDataDiagramIndex, DATA_PAGE_NAME);
+		setPageText(editorDiagramIndex, DIAGRAM_PAGE_NAME);
 		setPageText(textViewerIORMIndex, TEXT_IORM_PAGE_NAME);
 		setPageText(textViewerCROMIndex, TEXT_CROM_PAGE_NAME);	
 		setPageText(editorFeaturesIndex, FEATURE_PAGE_NAME);
@@ -206,10 +191,8 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	 */
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		if(editorBehaviorDiagram.isDirty()) editorBehaviorDiagram.doSave(monitor);
-		//if(editorDataDiagram.isDirty()) editorDataDiagram.doSave(monitor);
-		
-		//at the first save of a new diagram there is no editor feature yet
+		if(editorDiagram.isDirty()) editorDiagram.doSave(monitor);
+		//at the first save of a new diagram there is no editor feature
 		if(editorFeatures != null)
 			editorFeatures.synchronizeConfigurationEditorAndModelConfiguration();
 	}
@@ -221,7 +204,6 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	 * @param newPageIndex the index of the page to change to
 	 */
 	protected void pageChange(int newPageIndex) {
-		doSave(null);
 		super.pageChange(newPageIndex);
 	}
 	

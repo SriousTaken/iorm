@@ -49,7 +49,8 @@ import org.framed.iorm.ui.util.PropertyUtil;
 public class NaturalTypePattern extends AbstractPattern implements IPattern {
 
 	//name literals
-	private final String NATURALTYPE_FEATURE_NAME = NameLiterals.NATURALTYPE_FEATURE_NAME;
+	private final String NATURALTYPE_FEATURE_NAME = NameLiterals.NATURALTYPE_FEATURE_NAME,
+						 STANDARD_NATURALTYPE_NAME = NameLiterals.STANDARD_NATURALTYPE_NAME;
 	
 	//text literals
 	private final String DIRECTEDITING_NATURALTYPE = TextLiterals.DIRECTEDITING_NATURALTYPE;
@@ -243,6 +244,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		//create new natural type
 		org.framed.iorm.model.Shape newNaturalType = OrmFactory.eINSTANCE.createShape();
 		newNaturalType.setType(Type.NATURAL_TYPE);
+		newNaturalType.setName(STANDARD_NATURALTYPE_NAME);
 		//add new natural type to the elements of the model
 		Model model = MethodUtil.getDiagramRootModel((Diagram) getDiagram());
 		if(newNaturalType.eResource() != null) getDiagram().eResource().getContents().add(newNaturalType);
