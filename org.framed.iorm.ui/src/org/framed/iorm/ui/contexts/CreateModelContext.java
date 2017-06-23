@@ -1,7 +1,7 @@
 package org.framed.iorm.ui.contexts;
 
 import org.eclipse.graphiti.features.context.impl.CreateContext;
-import org.framed.iorm.ui.subeditors.DiagramEditorWithID;;
+import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;;
 
 /**
  * This context is used to save needed information for the create feature of the model
@@ -15,13 +15,13 @@ public class CreateModelContext extends CreateContext {
 	/**
 	 * the diagram editor the create feature works on
 	 */
-	private DiagramEditorWithID diagramEditor;
+	private FRaMEDDiagramEditor diagramEditor;
 	
 	/**
 	 * set the class variable diagramEditor
 	 * @param diagramEditor the diagram editor to set
 	 */
-	public void setDiagramEditor(DiagramEditorWithID diagramEditor) {
+	public void setDiagramEditor(FRaMEDDiagramEditor diagramEditor) {
 		this.diagramEditor = diagramEditor;
 	}
 	
@@ -29,7 +29,7 @@ public class CreateModelContext extends CreateContext {
 	 * get method for the diagram editor
 	 * @return the class variable diagram editor
 	 */
-	public DiagramEditorWithID getDiagramEditor() {
+	public FRaMEDDiagramEditor getDiagramEditor() {
 		return diagramEditor;
 	}
 }

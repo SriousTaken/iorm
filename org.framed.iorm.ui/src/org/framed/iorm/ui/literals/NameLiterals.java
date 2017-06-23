@@ -74,4 +74,14 @@ public class NameLiterals {
 							   TEXT_IORM_PAGE_NAME = "IORM",
 							   TEXT_CROM_PAGE_NAME = "CROM",
 							   FEATURE_PAGE_NAME = "Configuration";
+	
+	/**
+	 * name literals for the editor page that shows the status the of the multipage editor
+	 * <p>
+	 * can be:<br>
+	 * (1) the name of the status page if there are no unsaved changes or<br>
+	 * (2) the name of the status page if there are unsaved changes
+	 */
+	public static final String STATUS_PAGE_OK = "STATUS: OK",
+							   STATUS_PAGE_UNSAVED_CHANGES = "STATUS: Unsaved changes - the pages are out of sync!";
 }

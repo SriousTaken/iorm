@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -54,7 +53,7 @@ import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 import de.ovgu.featureide.fm.core.io.xml.XmlFeatureModelReader;
 
 @SuppressWarnings("deprecation")
-public class FeatureEditorWithID extends EditorPart {
+public class FRaMEDFeatureEditor extends EditorPart {
 	
 	//id literals
 	private final String FEATUREMODEL_ID = IdentifierLiterals.FEATUREMODEL_ID;
@@ -62,9 +61,6 @@ public class FeatureEditorWithID extends EditorPart {
 	//layout literals
 	private final Color COLOR_VALID_CONFIGURATION = LayoutLiterals.COLOR_VALID_CONFIGURATION,
 						COLOR_INVALID_CONFIGURATION = LayoutLiterals.COLOR_INVALID_CONFIGURATION;
-	
-	//identifier of editor
-	private String id;
 	
 	//multipage editor that uses the feature editor
 	private MultipageEditor multipageEditor;
@@ -89,9 +85,8 @@ public class FeatureEditorWithID extends EditorPart {
 	//status of the configuration
 	private Label infoLabel;
 	
-	public FeatureEditorWithID(String id, IEditorInput editorInput, MultipageEditor multipageEditor) throws FileNotFoundException, UnsupportedModelException {
+	public FRaMEDFeatureEditor(IEditorInput editorInput, MultipageEditor multipageEditor) throws FileNotFoundException, UnsupportedModelException {
 		super();
-		this.id = id;
 		this.multipageEditor = multipageEditor;
 		getResourceFromEditorInput(editorInput);
 		readRootModel();
@@ -107,10 +102,6 @@ public class FeatureEditorWithID extends EditorPart {
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 	    setInput(input);
-	}
-	
-	public String getId() {
-		return id;
 	}
 	
 	public void getResourceFromEditorInput(IEditorInput editorInput) {

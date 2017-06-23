@@ -1,10 +1,11 @@
 package org.framed.iorm.ui.multipage;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.jface.viewers.ISelection;
@@ -15,26 +16,27 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.part.FileEditorInput;
 import org.framed.iorm.ui.contexts.CreateModelContext;
-import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
-import org.framed.iorm.ui.subeditors.DiagramEditorWithID;
-import org.framed.iorm.ui.subeditors.FeatureEditorWithID;
-import org.framed.iorm.ui.subeditors.TextViewerWithID;
+import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;
+import org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor;
+import org.framed.iorm.ui.subeditors.FRaMEDTextViewer;
+import org.framed.iorm.ui.util.MethodUtil;
 
 import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 
 /**
  * This class is used creates the overall editor to edit the role model. 
  * <p>
- * It uses subeditors by the types {@link DiagramEditorWithID}, {@link FeatureEditorWithID} and 
- * {@link TextViewerWithID}. It call the constructors and handles the management of saving these subeditors.
- * @see DiagramEditorWithID
- * @see FeatureEditorWithID
- * @see TextViewerWithID
+ * It uses subeditors by the types {@link FRaMEDDiagramEditor}, {@link FRaMEDFeatureEditor} and 
+ * {@link FRaMEDTextViewer}. It call the constructors and handles the management of saving these subeditors.
+ * @see FRaMEDDiagramEditor
+ * @see FRaMEDFeatureEditor
+ * @see FRaMEDTextViewer
  * @author Kevin Kassin
  */
-public class MultipageEditor extends FormEditor implements IResourceChangeListener, ISelectionListener {
+public class MultipageEditor extends FormEditor implements ISelectionListener {
 	
 	/**
 	 * name literals for the pages of the multipage editor and the model feature
@@ -46,40 +48,43 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 						 TEXT_IORM_PAGE_NAME = NameLiterals.TEXT_IORM_PAGE_NAME,
 						 TEXT_CROM_PAGE_NAME = NameLiterals.TEXT_CROM_PAGE_NAME,
 						 FEATURE_PAGE_NAME = NameLiterals.FEATURE_PAGE_NAME,
+						 STATUS_PAGE_OK = NameLiterals.STATUS_PAGE_OK,
+						 STATUS_PAGE_UNSAVED_CHANGES = NameLiterals.STATUS_PAGE_UNSAVED_CHANGES,
 						 MODEL_FEATURE_NAME = NameLiterals.MODEL_FEATURE_NAME;
-	
+			
 	/**
-	 * identifier literals for the pages of the multipage editor
-	 * <p>
-	 * for reference check the Strings in {@link IdentifierLiterals}
-	 * @see IdentifierLiterals
-	 */
-	private final String  PAGE_ID_DIAGRAM = IdentifierLiterals.PAGE_ID_DIAGRAM,
-			   			  PAGE_ID_IORM_TEXT = IdentifierLiterals.PAGE_ID_IORM_TEXT,
-			   			  PAGE_ID_CROM_TEXT = IdentifierLiterals.PAGE_ID_CROM_TEXT,
-			   			  PAGE_ID_FEATURE = IdentifierLiterals.PAGE_ID_FEATURE;
-	
-	/**
-	 * the subeditors of the multipage editor of type {@link DiagramEditorWithID}
+	 * the subeditors of the multipage editor of type {@link FRaMEDDiagramEditor}
 	 * <p>
 	 * the editor with the diagram
 	 */
-	private DiagramEditorWithID editorDiagram;
+	private FRaMEDDiagramEditor editorDiagram;
 	
 	/**
-	 * the subeditors of the multipage editor of type {@link TextViewerWithID}
+	 * the subeditors of the multipage editor of type {@link FRaMEDTextViewer}
 	 * <p>
 	 * (1) the textviewer for the iorm diagram
 	 * (2) the textviewer for the transformed diagram in the crom model
 	 */
-	private TextViewerWithID textViewerIORM,
+	private FRaMEDTextViewer textViewerIORM,
 							 textViewerCROM;
+	
 	/**
-	 * the subeditors of the multipage editor of type {@link FeatureEditorWithID}
+	 * the subeditor status page
+	 * <p>
+	 * This editor is not intended to be opened. Its function is to show the status of the multipage editor.
+	 * The 2 statuses can be that everything is ok (the status pages name is "STATUS: OK") or that that there are
+	 * unsaved changes to the file opened in the editor and the pages content are out of sync (the status pages
+	 * name is "STATUS: Unsaved changes - the pages are out of sync!").<br>
+	 * As editor input is has an empty text file in the role model project associated.
+	 */
+	private FRaMEDTextViewer statusPage;
+							 
+	/**
+	 * the subeditors of the multipage editor of type {@link FRaMEDFeatureEditor}
 	 * <p>
 	 * the editor that is usd to change the configuration of the role model
 	 */
-	private FeatureEditorWithID editorFeatures;
+	private FRaMEDFeatureEditor editorFeatures;
 	
 	/**
 	 * the indices if the subeditor of the multipage editor
@@ -87,14 +92,14 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	private int editorDiagramIndex,
 				textViewerIORMIndex,
 				textViewerCROMIndex,
-				editorFeaturesIndex;
+				editorFeaturesIndex,
+				statusPageIndex;
 	
 	/**
 	 * Class constructor
 	 */
 	public MultipageEditor() {
 		super();
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 	}
 	
 	/**
@@ -102,7 +107,6 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	 */
 	@Override
 	public void dispose() {
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 		super.dispose();
 	}
 
@@ -124,30 +128,33 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	 * get method for the editor with the diagram
 	 * @return
 	 */
-	public DiagramEditorWithID getDiagramEditor() {
+	public FRaMEDDiagramEditor getDiagramEditor() {
 	    return editorDiagram;
 	}
 		
 	/**
 	 * This method add pages to the multipage editor using the following steps:
 	 * <p>
-	 * Step 1: It creates the subeditors, except the feature editor.<br>
-	 * Step 2: It add the diagram page, the pages uses the subeditors and the editor input.<br>
+	 * Step 1: It creates the diagram subeditor.<br>
+	 * Step 2: It add the diagram page, the pages use the subeditors and the editor input.<br>
 	 * Step 3: It creates a new root model using the create Model feature in the opened diagram if there is no.<br>
 	 * Step 4: It save after the creation of the root model.<br>
 	 * Step 5: It creates the feature editor and adds the page. To do that the created root model is needed.
-	 * 		   It also add the pages of the iorm and crom text viewers.<br> 
-	 * Step 6: Its set the names of the pages.
+	 * 		   It also creates the editores and add the pages for the iorm and crom text viewers.
+	 * 		   It also creates the text editor for the status page.<br>  
+	 * Step 6: It fetches the empty textfile created by the {@link RoleModelProjectWizard} in the project in which 
+	 * 		   the diagram is created and add the the status page with this input.<br>
+	 * Step 7: Its set the names of the pages.
 	 * @exception PartInitException
 	 * @exception FileNotFoundException
 	 * @exception UnsupportedModelException
+	 * @exception URISyntaxException
+	 * @exception IOException
 	 */
 	@Override
 	protected void addPages() {
 		//Step 1
-		editorDiagram = new DiagramEditorWithID(PAGE_ID_DIAGRAM, getEditorInput());
-		textViewerIORM = new TextViewerWithID(PAGE_ID_IORM_TEXT);
-		textViewerCROM = new TextViewerWithID(PAGE_ID_CROM_TEXT);
+		editorDiagram = new FRaMEDDiagramEditor();
 		//Step 2
 		try { 
 			editorDiagramIndex = addPage(editorDiagram, getEditorInput());		
@@ -166,19 +173,44 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 		doSave(null);
 		//Step 5
 		try {
-			editorFeatures = new FeatureEditorWithID(PAGE_ID_FEATURE, getEditorInput(), this);
+			editorFeatures = new FRaMEDFeatureEditor(getEditorInput(), this);
 		} catch (FileNotFoundException e) { e.printStackTrace(); }
 		  catch (UnsupportedModelException e) { e.printStackTrace(); }	
+			textViewerIORM = new FRaMEDTextViewer();
+			textViewerCROM = new FRaMEDTextViewer();
+			statusPage = new FRaMEDTextViewer();
 		try {
 			editorFeaturesIndex = addPage(editorFeatures, getEditorInput());
 			textViewerIORMIndex = addPage(textViewerIORM, getEditorInput());
 			textViewerCROMIndex = addPage(textViewerCROM, getEditorInput());
+			//Step 6
+			IFile emptyTextFile = null;
+			try {
+				emptyTextFile = MethodUtil.getEmptyTextFileForDiagram(getEditorInput());
+			} catch (URISyntaxException | IOException e) { e.printStackTrace(); }
+			statusPageIndex = addPage(statusPage, new FileEditorInput(emptyTextFile));
 		} catch (PartInitException e) { e.printStackTrace(); }
-		//Step 6
+		//Step 7
 		setPageText(editorDiagramIndex, DIAGRAM_PAGE_NAME);
 		setPageText(textViewerIORMIndex, TEXT_IORM_PAGE_NAME);
 		setPageText(textViewerCROMIndex, TEXT_CROM_PAGE_NAME);	
 		setPageText(editorFeaturesIndex, FEATURE_PAGE_NAME);
+		setPageText(statusPageIndex, STATUS_PAGE_OK);
+	}
+	
+	/**
+	 * This method catches property changes of the dirty state of the multipage editor.
+	 * <p>
+	 * The property change is caught to update the status pages name depending on the dirty status after the
+	 * property change is triggered.
+	 */
+	@Override
+	protected void handlePropertyChange(int propertyId) {
+		super.handlePropertyChange(propertyId);
+		if(statusPage != null) {
+			if(this.isDirty()) setPageText(statusPageIndex, STATUS_PAGE_UNSAVED_CHANGES);
+			else setPageText(statusPageIndex, STATUS_PAGE_OK);
+		}	
 	}
 	
 	/**
@@ -200,11 +232,15 @@ public class MultipageEditor extends FormEditor implements IResourceChangeListen
 	/**
 	 * sets the selected page as active page
 	 * <p>
-	 * This operation calls the save method to avoid save competition between subeditors
+	 * changes the page to the selected one by the user as long the user dont chooses the status page which 
+	 * is not intended to be opened. 
+	 * @see #statusPage
 	 * @param newPageIndex the index of the page to change to
 	 */
+	@Override
 	protected void pageChange(int newPageIndex) {
-		super.pageChange(newPageIndex);
+		if(newPageIndex != statusPageIndex) super.pageChange(newPageIndex);
+		else setActivePage(getCurrentPage());	
 	}
 	
 	/**

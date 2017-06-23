@@ -12,26 +12,15 @@ import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
-import org.framed.iorm.ui.subeditors.DiagramEditorWithID;
-import org.framed.iorm.ui.subeditors.TextViewerWithID;
+import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;
+import org.framed.iorm.ui.subeditors.FRaMEDTextViewer;
 
 /**
  * This class sets the actions for the action bars depending of which type the active editor is.
  * @author Kevin Kassin
  */
 public class MultipageEditorContributor extends MultiPageEditorActionBarContributor {
-	
-	/**
-	 * identifier literals for the pages of the multipage editor
-	 * <p>
-	 * for reference check the Strings in {@link IdentifierLiterals}
-	 * @see IdentifierLiterals
-	 */
-	public final String PAGE_ID_DIAGRAM = IdentifierLiterals.PAGE_ID_DIAGRAM,
- 			  			PAGE_ID_IORM_TEXT = IdentifierLiterals.PAGE_ID_IORM_TEXT,
- 			  			PAGE_ID_CROM_TEXT = IdentifierLiterals.PAGE_ID_CROM_TEXT,
- 			  			PAGE_ID_FEATURE = IdentifierLiterals.PAGE_ID_FEATURE;
-	
+		
 	/**
 	 * the editor that is active at the moment 
 	 */
@@ -64,23 +53,19 @@ public class MultipageEditorContributor extends MultiPageEditorActionBarContribu
 	public void setActivePage(IEditorPart part) {
 		if (activeEditorPart == part) return;
 		activeEditorPart = part;
-
 		IActionBars actionBars = getActionBars();
 		if (actionBars != null) {
-			//page is DiagramEditor
-			if((part instanceof DiagramEditorWithID)) {
-				DiagramEditorWithID editor = (DiagramEditorWithID) part;
+			if((part instanceof FRaMEDDiagramEditor)) {
+				FRaMEDDiagramEditor editor = (FRaMEDDiagramEditor) part;
 				String undoActionID = new UndoAction(editor).getId(),
 					   redoActionID = new RedoAction(editor).getId(),
 					   deleteActionID = new DeleteAction((IWorkbenchPart) editor).getId();
-		
 				actionBars.setGlobalActionHandler( ActionFactory.UNDO.getId(), editor.getActionRegistry().getAction(undoActionID));
 				actionBars.setGlobalActionHandler( ActionFactory.REDO.getId(), editor.getActionRegistry().getAction(redoActionID));
 				actionBars.setGlobalActionHandler( ActionFactory.DELETE.getId(), editor.getActionRegistry().getAction(deleteActionID));
-				}	
-			//page is TextViewer		
-			if((part instanceof TextViewerWithID)) {
-				TextViewerWithID editor = (TextViewerWithID) part;
+				}		
+			if((part instanceof FRaMEDTextViewer)) {
+				FRaMEDTextViewer editor = (FRaMEDTextViewer) part;
 				actionBars.setGlobalActionHandler( ActionFactory.COPY.getId(), getAction(editor, ITextEditorActionConstants.COPY));
 				actionBars.setGlobalActionHandler( ActionFactory.SELECT_ALL.getId(), getAction(editor, ITextEditorActionConstants.SELECT_ALL));
 				actionBars.setGlobalActionHandler( ActionFactory.FIND.getId(), getAction(editor, ITextEditorActionConstants.FIND));

@@ -3,7 +3,7 @@ package org.framed.iorm.ui.contexts;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.swt.widgets.TreeItem;
-import org.framed.iorm.ui.subeditors.DiagramEditorWithID;
+import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;
 
 /**
  * This context is used to save needed information for the graphiti custom feature {@link
@@ -24,7 +24,7 @@ public class ChangeConfigurationContext extends CustomContext implements ICustom
 	/**
 	 * the diagram editor the custom feature works 
 	 */
-	private DiagramEditorWithID behaviorEditor;
+	private FRaMEDDiagramEditor behaviorEditor;
 	
 	/**
 	 * sets the class variable treeItem
@@ -38,7 +38,7 @@ public class ChangeConfigurationContext extends CustomContext implements ICustom
 	 * sets the class variable behaviorEditor
 	 * @param behaviorEditor the diagram editor to set
 	 */
-	public void setBehaviorEditor(DiagramEditorWithID behaviorEditor) {
+	public void setBehaviorEditor(FRaMEDDiagramEditor behaviorEditor) {
 		this.behaviorEditor = behaviorEditor;
 	}
 	
@@ -54,7 +54,7 @@ public class ChangeConfigurationContext extends CustomContext implements ICustom
 	 * get method for the diagram editor
 	 * @return the class variable behaviorEditor
 	 */
-	public DiagramEditorWithID getBehaviorEditor() {
+	public FRaMEDDiagramEditor getBehaviorEditor() {
 		return behaviorEditor;
 	}
 }

@@ -18,7 +18,7 @@ public class LayoutLiterals {
 	 * (2) the size of the shadows of graphiti shapes
 	 */
 	public static final int PUFFER_BETWEEN_ELEMENTS = 3,
-							SHADOW_SIZE = 5;
+							SHADOW_SIZE = 3;
 	
 	/**
 	 * general color values

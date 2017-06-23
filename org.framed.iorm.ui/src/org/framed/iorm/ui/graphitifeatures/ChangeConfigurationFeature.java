@@ -68,7 +68,7 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 	 * This method changes the role models configuration using the following steps:<br>
 	 * Step 1: gets the root model of the diagram<br>
 	 * Step 2: deletes or add a feature in the root model<br>
-	 * Step 3: updates the public list of the features of the role model in the {@link DiagramEditorWithID}
+	 * Step 3: updates the public list of the features of the role model in the {@link FRaMEDDiagramEditor}
 	 */
 	@Override
 	public void execute(ICustomContext context) throws FeatureModelInconsistentException {

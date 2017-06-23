@@ -4,7 +4,7 @@ import org.framed.iorm.ui.literals.TextLiterals;
 
 /**
  * This exceptions is thrown if a inconsistent state between the role models configuration and
- * configuration in the {@link FeatureEditorWithID}.
+ * configuration in the {@link FRaMEDFeatureEditor}.
  * @author Kevin Kassin
  * @serial 
  */

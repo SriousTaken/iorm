@@ -2,6 +2,8 @@ package org.framed.iorm.ui.literals;
 
 import java.net.URL;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
@@ -12,7 +14,9 @@ import org.osgi.framework.Bundle;
 public class URLLiterals {
 	
 	/**
-	 * bundle used to get access to the package "org.framed.iorm.featuremodel"
+	 * bundles to acces packages
+	 * <p>
+	 * the bundle used to get access to the package "org.framed.iorm.featuremodel"
 	 */
 	private static final Bundle BUNDLE_FEATUREMODEL = Platform.getBundle("org.framed.iorm.featuremodel");
 	
@@ -26,6 +30,11 @@ public class URLLiterals {
 	public static final URL URL_TO_FEATUREMODEL = BUNDLE_FEATUREMODEL.getEntry("model.xml"),
 						  	URL_TO_STANDARD_CONFIGURATION = BUNDLE_FEATUREMODEL.getEntry("/standardframedconfiguration/standardFramedConfiguration.diagram");
 
+	/**
+	 * Path to get the empty text file in a project for the status page 
+	 */
+	public static final IPath PATH_TO_EMPTY_TEXTFILE = new Path("/text/empty.txt");
+	
 	/**
 	 * string used as prefix for file pathes for icon of create features
 	 */

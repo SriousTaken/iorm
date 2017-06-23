@@ -6,17 +6,17 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.framed.iorm.ui.contexts.ChangeConfigurationContext;
 import org.framed.iorm.ui.exceptions.FeatureModelInconsistentException;
 import org.framed.iorm.ui.literals.NameLiterals;
-import org.framed.iorm.ui.subeditors.DiagramEditorWithID;
-import org.framed.iorm.ui.subeditors.FeatureEditorWithID;
+import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;
+import org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor;
 
 /**
  * This command is used when configuration of a role model is changed.
  * <p>
- * It is called by {@link FeatureEditorWithID} when an item is clicked to change the configuration. Its 
+ * It is called by {@link FRaMEDFeatureEditor} when an item is clicked to change the configuration. Its 
  * executions uses {@link ChangeConfigurationContext} as context and the graphiti custom feature {@link 
  * ChangeConfigurationFeature} to change the role model. Its undo functions is not used, since this is 
  * handled by the standart undo function of the diagram editors.
- * @see FeatureEditorWithID 
+ * @see FRaMEDFeatureEditor 
  * @see ChangeConfigurationContext
  * @see ChangeConfigurationFeature
  * @author Kevin Kassin
@@ -32,12 +32,12 @@ public class ConfigurationEditorChangeCommand extends Command {
 	/**
 	 * the feature editor that uses the command
 	 */
-	private FeatureEditorWithID featureEditor;
+	private FRaMEDFeatureEditor featureEditor;
 	
 	/**
 	 * the diagram editors that used by the command
 	 */
-	private DiagramEditorWithID behaviorDiagramEditor;
+	private FRaMEDDiagramEditor behaviorDiagramEditor;
 	
 	/**
 	 * the boolean value of a feature selection
@@ -90,7 +90,7 @@ public class ConfigurationEditorChangeCommand extends Command {
 	 * sets the class variable featureEditor
 	 * @param featureEditor the feature editor to set
 	 */
-	public void setFeatureEditor(FeatureEditorWithID featureEditor) {
+	public void setFeatureEditor(FRaMEDFeatureEditor featureEditor) {
 		this.featureEditor = featureEditor;
 	}
 	  
@@ -98,7 +98,7 @@ public class ConfigurationEditorChangeCommand extends Command {
 	 * sets the class variable beahaviorDiagramEditor
 	 * @param behaviorDiagramEditor the diagram editor to set
 	 */
-	public void setBehaviorDiagramEditor(DiagramEditorWithID behaviorDiagramEditor) {
+	public void setBehaviorDiagramEditor(FRaMEDDiagramEditor behaviorDiagramEditor) {
 		this.behaviorDiagramEditor = behaviorDiagramEditor;
 	}
 		

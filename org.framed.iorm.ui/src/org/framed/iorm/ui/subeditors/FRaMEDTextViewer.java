@@ -2,17 +2,10 @@ package org.framed.iorm.ui.subeditors;
 
 import org.eclipse.ui.editors.text.TextEditor;
 
-public class TextViewerWithID extends TextEditor {
+public class FRaMEDTextViewer extends TextEditor {
 	
-	private String id;
-	
-	public TextViewerWithID(String id) {
+	public FRaMEDTextViewer() {
 		super();
-		this.id = id;
-	}
-	
-	public String getId() {
-		return id;
 	}
 	
 	@Override

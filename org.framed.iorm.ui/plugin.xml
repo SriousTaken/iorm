@@ -32,7 +32,7 @@
             extensions="diagram"
             default="true"
             id="IORM_MultipageEditor"
-            name="Role Model Multipage Editor">
+            name="Compartment Role Object Model">
       	</editor>
    	</extension>
 

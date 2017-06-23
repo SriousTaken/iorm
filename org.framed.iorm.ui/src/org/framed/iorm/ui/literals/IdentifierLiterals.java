@@ -19,17 +19,7 @@ public class IdentifierLiterals {
 	 * the editor id of the {@link MultipageEditor}
 	 */
 	public static final String EDITOR_ID = "IORM_MultipageEditor";
-	
-	/**
-	 * subeditor IDs
-	 * <p>
-	 * the identifiers of the subeditors of the {@link MultipageEditor}
-	 */
-	public static final String PAGE_ID_DIAGRAM = "page_diagram",
-							   PAGE_ID_IORM_TEXT = "page_iorm_text",
-							   PAGE_ID_CROM_TEXT = "page_crom_text",
-							   PAGE_ID_FEATURE = "page_feature_configuration";
-	
+
 	/**
 	 * string used as prefix for image identifiers for icon of create features
 	 */
@@ -38,7 +28,7 @@ public class IdentifierLiterals {
 	/**
 	 * image IDs
 	 * <p>
-	 * the identifier of images used in the {@link DiagramEditorWithID} for features
+	 * the identifier of images used in the {@link FRaMEDDiagramEditor} for features
 	 */
 	public static final String IMG_ID_FEATURE_NATURALTYPE = IMG_ID_PREFIX + "img_naturaltype",
 							   IMG_ID_FEATURE_DATATYPE = IMG_ID_PREFIX + "img_datatype",
@@ -49,7 +39,7 @@ public class IdentifierLiterals {
 	/**
 	 * feature model ID
 	 * <p>
-	 * the idenfier of the feature model the {@link FeatureEditorWithID} uses
+	 * the idenfier of the feature model the {@link FRaMEDFeatureEditor} uses
 	 */
 	public static final String FEATUREMODEL_ID = "org.framed.iorm.featuremodel";
 	
