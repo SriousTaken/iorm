@@ -21,12 +21,28 @@ import org.framed.iorm.ui.literals.URLLiterals;
 
 public class MethodUtil {
 	
+	/**
+	 * the layout integers this class need to perform the operation {@link #calculateHorizontalCenter}
+	 * gathered from {@link LayoutLiterals}
+	 */
 	private static final int HEIGHT_NAME_SHAPE = LayoutLiterals.HEIGHT_NAME_SHAPE,
-			 		  DATATYPE_CORNER_SIZE = LayoutLiterals.DATATYPE_CORNER_SIZE;
+			 		  	 	 DATATYPE_CORNER_SIZE = LayoutLiterals.DATATYPE_CORNER_SIZE;
 	
+	/**
+	 * the path to the empty text file that is created in the role model projects
+	 * by the {@link org.framed.iorm.ui.wizards.RoleModelProjectWizard} and is used
+	 * to perform the operation {@link #getEmptyTextFileForDiagram}
+	 */
 	private static final IPath PATH_TO_EMPTY_TEXTFILE = URLLiterals.PATH_TO_EMPTY_TEXTFILE;
 	
-	//TODO:  wo called?
+	/**
+	 * This operation calculates where the horizontal center of a class or role is.
+	 * <p>
+	 * Depending on the the type of the class or role and its height the horizontal center position is returned.
+	 * @param type the type of the class or role
+	 * @param heightOfClassOrRole the height of the class or role
+	 * @return the horizontal center position
+	 */
 	public static final int calculateHorizontalCenter(Type type, int heightOfClassOrRole) {
 		if(type == Type.NATURAL_TYPE) 
 			return ((heightOfClassOrRole-HEIGHT_NAME_SHAPE)/2)+HEIGHT_NAME_SHAPE;
@@ -35,7 +51,6 @@ public class MethodUtil {
 		return 0;
 	}
 	
-	//TODO: wo called
 	public static final Model getDiagramRootModel(Diagram diagram) {
 		List<Model> models=  new ArrayList<Model>();
 		for(EObject eObject : diagram.eResource().getContents()) {

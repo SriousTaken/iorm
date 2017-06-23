@@ -12,15 +12,15 @@ import org.framed.iorm.featuremodel.FeatureName;
 import org.framed.iorm.featuremodel.FeaturemodelFactory;
 import org.framed.iorm.model.Model;
 import org.framed.iorm.ui.contexts.ChangeConfigurationContext;
-import org.framed.iorm.ui.exceptions.FeatureModelInconsistentException;
+import org.framed.iorm.ui.exceptions.ConfigurationInconsistentException;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.util.MethodUtil;
 
 /**
  * This graphiti custom feature is used change the role models configuration.
  * <p>
- * It is called by {@link ConfigurationEditorChangeCommand} and uses the {@link ChangeConfigurationContext}.
- * @see ConfigurationEditorChangeCommand
+ * It is called by {@link org.framed.iorm.ui.commands.ConfigurationEditorChangeCommand} and uses the {@link ChangeConfigurationContext}.
+ * @see org.framed.iorm.ui.commands.ConfigurationEditorChangeCommand
  * @see ChangeConfigurationContext
  * @author Kevin Kassin
  */
@@ -71,7 +71,7 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 	 * Step 3: updates the public list of the features of the role model in the {@link FRaMEDDiagramEditor}
 	 */
 	@Override
-	public void execute(ICustomContext context) throws FeatureModelInconsistentException {
+	public void execute(ICustomContext context) throws ConfigurationInconsistentException {
 		List<FRaMEDFeature> featuresFound = new ArrayList<FRaMEDFeature>();
 		ChangeConfigurationContext cfmc = (ChangeConfigurationContext) context;
 		
@@ -84,7 +84,7 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 				if(feature.getName().equals(FeatureName.getByName(cfmc.getTreeItem().getText()))) {
 					featuresFound.add(feature);
 			}	}
-			if(featuresFound.size() == 0) throw new FeatureModelInconsistentException();
+			if(featuresFound.size() == 0) throw new ConfigurationInconsistentException();
 			for(FRaMEDFeature feature : featuresFound) {
 				ConfigurationFeatures.remove(feature);
 		}	}
@@ -93,7 +93,7 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 				if(feature.getName().equals(FeatureName.getByName(cfmc.getTreeItem().getText()))) {
 						featuresFound.add(feature);
 			}	}
-			if(featuresFound.size() != 0) throw new FeatureModelInconsistentException();
+			if(featuresFound.size() != 0) throw new ConfigurationInconsistentException();
 			FRaMEDFeature framedFeature = FeaturemodelFactory.eINSTANCE.createFRaMEDFeature();
 			framedFeature.setName(FeatureName.getByName(cfmc.getTreeItem().getText()));
 			framedFeature.setManuallySelected(true);

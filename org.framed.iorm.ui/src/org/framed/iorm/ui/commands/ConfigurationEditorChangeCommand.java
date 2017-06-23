@@ -4,7 +4,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.swt.widgets.TreeItem;
 import org.framed.iorm.ui.contexts.ChangeConfigurationContext;
-import org.framed.iorm.ui.exceptions.FeatureModelInconsistentException;
+import org.framed.iorm.ui.exceptions.ConfigurationInconsistentException;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;
 import org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor;
@@ -14,11 +14,11 @@ import org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor;
  * <p>
  * It is called by {@link FRaMEDFeatureEditor} when an item is clicked to change the configuration. Its 
  * executions uses {@link ChangeConfigurationContext} as context and the graphiti custom feature {@link 
- * ChangeConfigurationFeature} to change the role model. Its undo functions is not used, since this is 
+ * org.framed.iorm.ui.graphitifeatures.ChangeConfigurationFeature} to change the role model. Its undo functions is not used, since this is 
  * handled by the standart undo function of the diagram editors.
  * @see FRaMEDFeatureEditor 
  * @see ChangeConfigurationContext
- * @see ChangeConfigurationFeature
+ * @see org.framed.iorm.ui.graphitifeatures.ChangeConfigurationFeature
  * @author Kevin Kassin
  */
 public class ConfigurationEditorChangeCommand extends Command {
@@ -61,7 +61,7 @@ public class ConfigurationEditorChangeCommand extends Command {
 	 * Step 1: It changes the confuiguration in the feature editor
 	 * Step 2: It uses the diagram editor to get the get the custom feature<br>
 	 * Step 3: It creates a {@link ChangeConfigurationContext} and sets the needed informations in it.<br>
-	 * Step 4: It executes the {@link ChangeConfigurationFeature} and catches a {@link FeatureModelInconsistentException}
+	 * Step 4: It executes the {@link ChangeConfigurationFeature} and catches a {@link ConfigurationInconsistentException}
 	 */
 	@Override
 	public void execute() {	 
@@ -83,7 +83,7 @@ public class ConfigurationEditorChangeCommand extends Command {
 				//Step 4
 				try {
 					changeConfigurationFeature.execute(changeConfigurationContext);
-				} catch(FeatureModelInconsistentException e) { e.printStackTrace(); }
+				} catch(ConfigurationInconsistentException e) { e.printStackTrace(); }
 	}	}	}
 			
 	/**

@@ -1,4 +1,4 @@
-package org.framed.iorm.ui.pattern.features.shapes;
+package org.framed.iorm.ui.pattern.shapes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,6 @@ import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
@@ -29,6 +28,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.pattern.AbstractPattern;
+import org.eclipse.graphiti.pattern.IPattern;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
@@ -46,62 +46,61 @@ import org.framed.iorm.ui.util.DirectEditingUtil;
 import org.framed.iorm.ui.util.MethodUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
 
-public class DataTypePattern extends AbstractPattern{
-	
+public class NaturalTypePattern extends AbstractPattern implements IPattern {
+
 	//name literals
-	private final String DATATYPE_FEATURE_NAME = NameLiterals.DATATYPE_FEATURE_NAME,
-						 STANDARD_DATATYPE_NAME = NameLiterals.STANDARD_DATATYPE_NAME;
+	private final String NATURALTYPE_FEATURE_NAME = NameLiterals.NATURALTYPE_FEATURE_NAME,
+						 STANDARD_NATURALTYPE_NAME = NameLiterals.STANDARD_NATURALTYPE_NAME;
 	
 	//text literals
-	private final String DIRECTEDITING_DATATYPE = TextLiterals.DIRECTEDITING_DATATYPE;
+	private final String DIRECTEDITING_NATURALTYPE = TextLiterals.DIRECTEDITING_NATURALTYPE;
 	
 	//ID literals
-	private final String SHAPE_ID_DATATYPE_TYPEBODY = IdentifierLiterals.SHAPE_ID_DATATYPE_TYPEBODY,
-						 SHAPE_ID_DATATYPE_SHADOW = IdentifierLiterals.SHAPE_ID_DATATYPE_SHADOW,
-						 SHAPE_ID_DATATYPE_NAME = IdentifierLiterals.SHAPE_ID_DATATYPE_NAME,
-					     SHAPE_ID_DATATYPE_FIRSTLINE = IdentifierLiterals.SHAPE_ID_DATATYPE_FIRSTLINE,
-					 	 SHAPE_ID_DATATYPE_SECONDLINE = IdentifierLiterals.SHAPE_ID_DATATYPE_SECONDLINE,
-						 SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER = IdentifierLiterals.SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER, 
-						 SHAPE_ID_DATATYPE_OPERATIONCONTAINER = IdentifierLiterals.SHAPE_ID_DATATYPE_OPERATIONCONTAINER,
-					     IMG_ID_FEATURE_DATATYPE = IdentifierLiterals.IMG_ID_FEATURE_DATATYPE;
-	
+	private final String SHAPE_ID_NATURALTYPE_TYPEBODY = IdentifierLiterals.SHAPE_ID_NATURALTYPE_TYPEBODY,
+						 SHAPE_ID_NATURALTYPE_SHADOW = IdentifierLiterals.SHAPE_ID_NATURALTYPE_SHADOW,
+						 SHAPE_ID_NATURALTYPE_NAME = IdentifierLiterals.SHAPE_ID_NATURALTYPE_NAME,
+						 SHAPE_ID_NATURALTYPE_FIRSTLINE = IdentifierLiterals.SHAPE_ID_NATURALTYPE_FIRSTLINE,
+						 SHAPE_ID_NATURALTYPE_SECONDLINE = IdentifierLiterals.SHAPE_ID_NATURALTYPE_SECONDLINE,
+						 SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER = IdentifierLiterals.SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER, 
+						 SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER = IdentifierLiterals.SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER,
+						 IMG_ID_FEATURE_NATURALTYPE = IdentifierLiterals.IMG_ID_FEATURE_NATURALTYPE;
+
 	//layout literals
 	private final int MIN_WIDTH = LayoutLiterals.MIN_WIDTH_FOR_CLASS_OR_ROLE, 
-					  MIN_HEIGHT = LayoutLiterals.MIN_HEIGHT_FOR_CLASS_OR_ROLE,
+					  MIN_HEIGHT = LayoutLiterals.MIN_HEIGHT_FOR_CLASS_OR_ROLE, 
 					  HEIGHT_NAME_SHAPE = LayoutLiterals.HEIGHT_NAME_SHAPE,
-					  HEIGHT_ATTRITBUTE_SHAPE = LayoutLiterals.HEIGHT_ATTRITBUTE_SHAPE,
-					  HEIGHT_OPERATION_SHAPE = LayoutLiterals.HEIGHT_OPERATION_SHAPE,
-					  DATATYPE_CORNER_SIZE = LayoutLiterals.DATATYPE_CORNER_SIZE,
 					  PUFFER_BETWEEN_ELEMENTS = LayoutLiterals.PUFFER_BETWEEN_ELEMENTS,
-					  SHADOW_SIZE = LayoutLiterals.SHADOW_SIZE;
+					  SHADOW_SIZE = LayoutLiterals.SHADOW_SIZE,
+					  HEIGHT_ATTRITBUTE_SHAPE = LayoutLiterals.HEIGHT_ATTRITBUTE_SHAPE,
+					  HEIGHT_OPERATION_SHAPE = LayoutLiterals.HEIGHT_OPERATION_SHAPE;
 	private final IColorConstant COLOR_TEXT = LayoutLiterals.COLOR_TEXT,
 								 COLOR_LINES = LayoutLiterals.COLOR_LINES,
 								 COLOR_BACKGROUND = LayoutLiterals.COLOR_BACKGROUND,
 								 COLOR_SHADOW = LayoutLiterals.COLOR_SHADOW;
 	
 	//services
-	private final IPeCreateService pictogramElementCreateService = Graphiti.getPeCreateService();
-	private final IGaService graphicAlgorithmService = Graphiti.getGaService();
+	private static final IPeCreateService pictogramElementCreateService = Graphiti.getPeCreateService();
+	private static final IGaService graphicAlgorithmService = Graphiti.getGaService();
 	
-	public DataTypePattern() {
+	public NaturalTypePattern() {
 		super(null);
 	}
 	
 	@Override
 	public String getCreateName() {
-		return DATATYPE_FEATURE_NAME;
+		return NATURALTYPE_FEATURE_NAME;
 	}
 	
 	@Override
 	public String getCreateImageId() {
-		return IMG_ID_FEATURE_DATATYPE;
+		return IMG_ID_FEATURE_NATURALTYPE;
 	}
 	
 	@Override
 	public boolean isMainBusinessObjectApplicable(Object businessObject) {
 		if(businessObject instanceof org.framed.iorm.model.Shape) {
 			org.framed.iorm.model.Shape shape = (org.framed.iorm.model.Shape) businessObject;
-			if(shape.getType() == Type.DATA_TYPE) return true;
+			if(shape.getType() == Type.NATURAL_TYPE) return true;
 		}
 		return false;
 	}
@@ -117,15 +116,15 @@ public class DataTypePattern extends AbstractPattern{
 		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
 		return isMainBusinessObjectApplicable(businessObject);
 	}
-	
+		
 	// add features
 	//~~~~~~~~~~~~~
 	@Override
 	public boolean canAdd(IAddContext addContext) {
-		//new Object is a data type
+		//new Object is a natural type
 		if(addContext.getNewObject() instanceof org.framed.iorm.model.Shape) {
 			org.framed.iorm.model.Shape shape = (org.framed.iorm.model.Shape) addContext.getNewObject();
-			if(shape.getType()==Type.DATA_TYPE) {
+			if(shape.getType()==Type.NATURAL_TYPE) {
 				//target container is diagram with root model
 				ContainerShape containerShape = getDiagram();
 				if(containerShape instanceof Diagram) {
@@ -138,51 +137,43 @@ public class DataTypePattern extends AbstractPattern{
 	@Override
 	public PictogramElement add(IAddContext addContext) {
 		//TODO: Group
-			
+		
 		//get container and new object
-		org.framed.iorm.model.Shape addedDataType = (org.framed.iorm.model.Shape) addContext.getNewObject();
+		org.framed.iorm.model.Shape addedNaturalType = (org.framed.iorm.model.Shape) addContext.getNewObject();
 		ContainerShape targetDiagram = getDiagram();
 		
-		//get width, height and polygon points
+		//get width and height
 		int width = addContext.getWidth(), height = addContext.getHeight();
 		if(addContext.getWidth() < MIN_WIDTH) width = MIN_WIDTH;
 		if(addContext.getHeight() < MIN_HEIGHT) height = MIN_HEIGHT;
-		int points[] = new int[] { 0, 0+DATATYPE_CORNER_SIZE,			//Point 1  
-								   0+DATATYPE_CORNER_SIZE, 0, 			//P2
-								   width-DATATYPE_CORNER_SIZE, 0, 		//P3
-								   width, DATATYPE_CORNER_SIZE,  		//P4
-								   width, height-DATATYPE_CORNER_SIZE,	//P5 
-								   width-DATATYPE_CORNER_SIZE, height,	//P6
-								   DATATYPE_CORNER_SIZE, height,	    //P7
-								   0, height-DATATYPE_CORNER_SIZE };	//P8
 		
 		//container for body shape and shadow
 		ContainerShape containerShape = pictogramElementCreateService.createContainerShape(targetDiagram, false);
-		
+					  
 		//drop shadow
 		ContainerShape dropShadowShape = pictogramElementCreateService.createContainerShape(containerShape, true);
-		Polygon dropShadowPolygon = graphicAlgorithmService.createPolygon(dropShadowShape, points);
-		dropShadowPolygon.setForeground(manageColor(COLOR_SHADOW));
-		dropShadowPolygon.setBackground(manageColor(COLOR_SHADOW));
-		graphicAlgorithmService.setLocationAndSize(dropShadowPolygon, addContext.getX()+SHADOW_SIZE, addContext.getY()+SHADOW_SIZE, width, height);
+		Rectangle dropShadowRectangle = graphicAlgorithmService.createRectangle(dropShadowShape);
+		dropShadowRectangle.setForeground(manageColor(COLOR_SHADOW));
+		dropShadowRectangle.setBackground(manageColor(COLOR_SHADOW));
+		graphicAlgorithmService.setLocationAndSize(dropShadowRectangle, addContext.getX()+SHADOW_SIZE, addContext.getY()+SHADOW_SIZE, width, height);
 		
 		//body shape of type
-		ContainerShape typeBodyShape = pictogramElementCreateService.createContainerShape(containerShape, true);
-		Polygon typeBodyPolygon = graphicAlgorithmService.createPolygon(typeBodyShape, points);
-		typeBodyPolygon.setForeground(manageColor(COLOR_LINES));
-		typeBodyPolygon.setBackground(manageColor(COLOR_BACKGROUND));
-		graphicAlgorithmService.setLocationAndSize(typeBodyPolygon, addContext.getX(), addContext.getY(), width, height);
-			
+		ContainerShape typeBodyShape = pictogramElementCreateService.createContainerShape(containerShape, true);		
+		Rectangle typeBodyRectangle = graphicAlgorithmService.createRectangle(typeBodyShape);
+		typeBodyRectangle.setForeground(manageColor(COLOR_LINES));
+		typeBodyRectangle.setBackground(manageColor(COLOR_BACKGROUND));
+		graphicAlgorithmService.setLocationAndSize(typeBodyRectangle, addContext.getX(), addContext.getY(), width, height);
+		
 		//name
 		Shape nameShape = pictogramElementCreateService.createShape(typeBodyShape, false);
-		Text text = graphicAlgorithmService.createText(nameShape, addedDataType.getName());	
+		Text text = graphicAlgorithmService.createText(nameShape, addedNaturalType.getName());	
 		text.setForeground(manageColor(COLOR_TEXT));	
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);	
-		graphicAlgorithmService.setLocationAndSize(text, DATATYPE_CORNER_SIZE, 0, width-2*DATATYPE_CORNER_SIZE, HEIGHT_NAME_SHAPE);
+		graphicAlgorithmService.setLocationAndSize(text, 0, 0, width, HEIGHT_NAME_SHAPE);	
 		
 		//first line
 		Shape firstLineShape = pictogramElementCreateService.createShape(typeBodyShape, false);
-		Polyline firstPolyline = graphicAlgorithmService.createPolyline(firstLineShape, new int[] {PUFFER_BETWEEN_ELEMENTS, HEIGHT_NAME_SHAPE, width-2*PUFFER_BETWEEN_ELEMENTS, HEIGHT_NAME_SHAPE});
+		Polyline firstPolyline = graphicAlgorithmService.createPolyline(firstLineShape, new int[] {0, HEIGHT_NAME_SHAPE, width, HEIGHT_NAME_SHAPE});
 		firstPolyline.setForeground(manageColor(COLOR_LINES));
 		
 		//attribute container
@@ -190,10 +181,9 @@ public class DataTypePattern extends AbstractPattern{
 		Rectangle attributeRectangle = graphicAlgorithmService.createRectangle(attributeContainer);
 		attributeRectangle.setLineVisible(false);
 		attributeRectangle.setBackground(manageColor(COLOR_BACKGROUND));
-		int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.DATA_TYPE, height);
+		int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.NATURAL_TYPE, height);
 		graphicAlgorithmService.setLocationAndSize(attributeRectangle, PUFFER_BETWEEN_ELEMENTS, HEIGHT_NAME_SHAPE+PUFFER_BETWEEN_ELEMENTS, 
-												   width-2*PUFFER_BETWEEN_ELEMENTS, horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS);
-		
+									 			   addContext.getWidth()-2*PUFFER_BETWEEN_ELEMENTS, horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS);
 		//second line
 		Shape secondLineShape = pictogramElementCreateService.createShape(typeBodyShape, false);	
 		Polyline secondPolyline = graphicAlgorithmService.createPolyline(secondLineShape, new int[] {0, horizontalCenter, width, horizontalCenter});
@@ -205,26 +195,26 @@ public class DataTypePattern extends AbstractPattern{
 		operationRectangle.setLineVisible(false);
 		operationRectangle.setBackground(manageColor(COLOR_BACKGROUND));
 		graphicAlgorithmService.setLocationAndSize(operationRectangle, PUFFER_BETWEEN_ELEMENTS, horizontalCenter+PUFFER_BETWEEN_ELEMENTS, 
-												   width-2*PUFFER_BETWEEN_ELEMENTS, horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS);
+									 			   addContext.getWidth()-2*PUFFER_BETWEEN_ELEMENTS, horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS);
 		
 		//setProperties
-		PropertyUtil.setShape_IdValue(typeBodyPolygon, SHAPE_ID_DATATYPE_TYPEBODY);
-		PropertyUtil.setShape_IdValue(dropShadowPolygon, SHAPE_ID_DATATYPE_SHADOW);
-		PropertyUtil.setShape_IdValue(text, SHAPE_ID_DATATYPE_NAME);
-		PropertyUtil.setShape_IdValue(firstPolyline, SHAPE_ID_DATATYPE_FIRSTLINE);
-		PropertyUtil.setShape_IdValue(attributeRectangle, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER);
-		PropertyUtil.setShape_IdValue(secondPolyline, SHAPE_ID_DATATYPE_SECONDLINE);
-		PropertyUtil.setShape_IdValue(operationRectangle, SHAPE_ID_DATATYPE_OPERATIONCONTAINER);
+		PropertyUtil.setShape_IdValue(typeBodyRectangle, SHAPE_ID_NATURALTYPE_TYPEBODY);
+		PropertyUtil.setShape_IdValue(dropShadowRectangle, SHAPE_ID_NATURALTYPE_SHADOW);
+		PropertyUtil.setShape_IdValue(text, SHAPE_ID_NATURALTYPE_NAME);
+		PropertyUtil.setShape_IdValue(firstPolyline, SHAPE_ID_NATURALTYPE_FIRSTLINE);
+		PropertyUtil.setShape_IdValue(attributeRectangle, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER);
+		PropertyUtil.setShape_IdValue(secondPolyline, SHAPE_ID_NATURALTYPE_SECONDLINE);
+		PropertyUtil.setShape_IdValue(operationRectangle, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER);
 		//set links
-		link(containerShape, addedDataType);
-		link(dropShadowShape, addedDataType);
-		link(typeBodyShape, addedDataType);
-		link(nameShape, addedDataType);
-		link(firstLineShape, addedDataType);	
-		link(attributeContainer, addedDataType);
-		link(secondLineShape, addedDataType);
-		link(operationContainer, addedDataType);
-		//set directEditing informations
+		link(containerShape, addedNaturalType);
+		link(typeBodyShape, addedNaturalType);
+		link(dropShadowShape, addedNaturalType);
+		link(nameShape, addedNaturalType);
+		link(firstLineShape, addedNaturalType);
+		link(attributeContainer, addedNaturalType);
+		link(secondLineShape, addedNaturalType);
+		link(operationContainer, addedNaturalType);
+		//directEditing right at creation
 		IDirectEditingInfo directEditingInfo = getFeatureProvider().getDirectEditingInfo();
 		directEditingInfo.setMainPictogramElement(typeBodyShape);
 		directEditingInfo.setPictogramElement(nameShape);
@@ -234,7 +224,7 @@ public class DataTypePattern extends AbstractPattern{
 		//set container as layout target
 		layoutPictogramElement(containerShape);
 		return containerShape;
-	}		
+	}
 	
 	//create feature
 	//~~~~~~~~~~~~~~
@@ -251,49 +241,49 @@ public class DataTypePattern extends AbstractPattern{
 
 	@Override
 	public Object[] create(ICreateContext createContext) {
-		//create new data type
-		org.framed.iorm.model.Shape newDataType = OrmFactory.eINSTANCE.createShape();
-		newDataType.setType(Type.DATA_TYPE);
-		newDataType.setName(STANDARD_DATATYPE_NAME);
+		//create new natural type
+		org.framed.iorm.model.Shape newNaturalType = OrmFactory.eINSTANCE.createShape();
+		newNaturalType.setType(Type.NATURAL_TYPE);
+		newNaturalType.setName(STANDARD_NATURALTYPE_NAME);
 		//add new natural type to the elements of the model
-		Model model = MethodUtil.getDiagramRootModel(getDiagram());
-		if(newDataType.eResource() != null) getDiagram().eResource().getContents().add(newDataType);
-		model.getElements().add(newDataType);
-		newDataType.setContainer(model);
+		Model model = MethodUtil.getDiagramRootModel((Diagram) getDiagram());
+		if(newNaturalType.eResource() != null) getDiagram().eResource().getContents().add(newNaturalType);
+		model.getElements().add(newNaturalType);
+		newNaturalType.setContainer(model);
 		//create segments
 		Segment attributeSegment = OrmFactory.eINSTANCE.createSegment(),
 				operationSegment = OrmFactory.eINSTANCE.createSegment();
 		getDiagram().eResource().getContents().add(attributeSegment);
 		getDiagram().eResource().getContents().add(operationSegment);
-		newDataType.setFirstSegment(attributeSegment);
-		newDataType.setSecondSegment(operationSegment);
+		newNaturalType.setFirstSegment(attributeSegment);
+		newNaturalType.setSecondSegment(operationSegment);
 		//enable direct editing
 		getFeatureProvider().getDirectEditingInfo().setActive(true);
 		//add to graphiti representation
-		addGraphicalRepresentation(createContext, newDataType);
-		return new Object[] { newDataType };
+		addGraphicalRepresentation(createContext, newNaturalType);
+		return new Object[] { newNaturalType };
 	}
 	
-	//direct editing feature
-	//~~~~~~~~~~~~~~~~~~~~~~~
+	//direct editing
+	//~~~~~~~~~~~~~~
 	private Object getBusinessObject(IDirectEditingContext editingContext) {
 		PictogramElement pictogramElement = editingContext.getPictogramElement();
 		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
 		return businessObject;
 	}
-		
+	
 	@Override
 	public int getEditingType() {
 		return TYPE_TEXT;
 	}
-		
+	
 	@Override
 	public boolean canDirectEdit(IDirectEditingContext editingContext) {
 		Object businessObject = getBusinessObject(editingContext);
 		GraphicsAlgorithm graphicsAlgorithm = editingContext.getGraphicsAlgorithm();
 		if(businessObject instanceof org.framed.iorm.model.Shape && graphicsAlgorithm instanceof Text) {
 			org.framed.iorm.model.Shape shape = (org.framed.iorm.model.Shape) businessObject;
-			if(shape.getType() == Type.DATA_TYPE) {
+			if(shape.getType() == Type.NATURAL_TYPE) {
 				return true;
 		}	}
 		return false;
@@ -301,16 +291,16 @@ public class DataTypePattern extends AbstractPattern{
 
 	@Override
 	public String getInitialValue(IDirectEditingContext editingContext) {
-		org.framed.iorm.model.Shape dateType = (org.framed.iorm.model.Shape) getBusinessObject(editingContext);
-		return dateType.getName();
+		org.framed.iorm.model.Shape naturalType = (org.framed.iorm.model.Shape) getBusinessObject(editingContext);
+		return naturalType.getName();
 	}
-		
+	
 	@Override
 	public String checkValueValid(String newName, IDirectEditingContext editingContext) {
-		if(!(DirectEditingUtil.matchesIdentifier(newName))) return DIRECTEDITING_DATATYPE;
-	    return null;
+		if(!(DirectEditingUtil.matchesIdentifier(newName))) return DIRECTEDITING_NATURALTYPE;
+        return null;
 	}
-		
+	
 	@Override
 	public void setValue(String value, IDirectEditingContext editingContext) {	     
 		org.framed.iorm.model.Shape naturalType = (org.framed.iorm.model.Shape) getBusinessObject(editingContext);
@@ -328,7 +318,7 @@ public class DataTypePattern extends AbstractPattern{
 			if(businessObjects.size()==1) {
 				if(businessObjects.get(0) instanceof org.framed.iorm.model.Shape) {
 					org.framed.iorm.model.Shape shape = (org.framed.iorm.model.Shape) businessObjects.get(0);
-					if(shape.getType() == Type.DATA_TYPE) return true;
+					if(shape.getType() == Type.NATURAL_TYPE) return true;
 				}
 			}
 		}
@@ -336,131 +326,131 @@ public class DataTypePattern extends AbstractPattern{
 	}
 
 	@Override
-	public boolean layout(ILayoutContext layoutContext) {
+	public boolean layout(ILayoutContext layoutContext) {	
 		boolean layoutChanged = false;
 		ContainerShape container = (ContainerShape) layoutContext.getPictogramElement();
-		Polygon typeBodyPolygon = null;
+		Rectangle typeBodyRectangle = null;
 		//return false is container is overall container that has typeBodyShape and dropShadowShape as children
 		if(container.getGraphicsAlgorithm() == null)  return false; 
 		//container is typeBodyShape, else return false
-		if(PropertyUtil.isShape_IdValue(container.getGraphicsAlgorithm(), SHAPE_ID_DATATYPE_TYPEBODY))
-			typeBodyPolygon = (Polygon) container.getGraphicsAlgorithm(); 
+		if(PropertyUtil.isShape_IdValue(container.getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_TYPEBODY))
+			typeBodyRectangle = (Rectangle) container.getGraphicsAlgorithm(); 
 		else return false;
-		//get the drop shadow polygon to the type body polygon
-		Polygon dropShadowPolygon = (Polygon) container.getContainer().getChildren().get(0).getGraphicsAlgorithm();
-		
+		//get the drop shadow rectangle to the type body rectangle
+		Rectangle dropShadowRectangle = (Rectangle) container.getContainer().getChildren().get(0).getGraphicsAlgorithm();
+		        
 		//ensure the minimal width and height
-		if(typeBodyPolygon.getWidth() < MIN_WIDTH) typeBodyPolygon.setWidth(MIN_WIDTH);
-		if(typeBodyPolygon.getHeight() < MIN_HEIGHT) typeBodyPolygon.setHeight(MIN_HEIGHT);
-		int containerWidth = typeBodyPolygon.getWidth();
-	    int containerHeight = typeBodyPolygon.getHeight();
-	    //set the size of the drop shadow to the new size of the type body
-	    dropShadowPolygon.setWidth(containerWidth);
-	    dropShadowPolygon.setHeight(containerHeight);
+        if(typeBodyRectangle.getWidth() < MIN_WIDTH) typeBodyRectangle.setWidth(MIN_WIDTH);
+		if(typeBodyRectangle.getHeight() < MIN_HEIGHT) typeBodyRectangle.setHeight(MIN_HEIGHT);
+		int containerWidth = typeBodyRectangle.getWidth();
+        int containerHeight = typeBodyRectangle.getHeight();
+        //set the size of the drop shadow to the new size of the type body
+        dropShadowRectangle.setWidth(containerWidth);
+        dropShadowRectangle.setHeight(containerHeight);
         //set the x and y value of the drop shadow to the values of the type body
-	    dropShadowPolygon.setX(typeBodyPolygon.getX()+SHADOW_SIZE);
-	    dropShadowPolygon.setY(typeBodyPolygon.getY()+SHADOW_SIZE);
-	    
-	    for (Shape shape : container.getChildren()){
-	    	GraphicsAlgorithm graphicsAlgorithm = shape.getGraphicsAlgorithm();
-	        //name
-	        if (graphicsAlgorithm instanceof Text) {
-	        	Text text = (Text) graphicsAlgorithm;	
-	            if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_DATATYPE_NAME)) {
-	            	graphicAlgorithmService.setLocationAndSize(text, DATATYPE_CORNER_SIZE, 0, containerWidth-2*DATATYPE_CORNER_SIZE, HEIGHT_NAME_SHAPE);
+        dropShadowRectangle.setX(typeBodyRectangle.getX()+SHADOW_SIZE);
+        dropShadowRectangle.setY(typeBodyRectangle.getY()+SHADOW_SIZE);
+        
+        for (Shape shape : container.getChildren()){
+            GraphicsAlgorithm graphicsAlgorithm = shape.getGraphicsAlgorithm();                         	                 
+            //name
+            if (graphicsAlgorithm instanceof Text) {
+            	Text text = (Text) graphicsAlgorithm;	
+            	if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_NATURALTYPE_NAME)) {
+            		graphicAlgorithmService.setLocationAndSize(text, 0, 0, containerWidth, HEIGHT_NAME_SHAPE);
+            		layoutChanged=true;
+            	}	
+            }
+            //first and second line
+            if (graphicsAlgorithm instanceof Polyline) {	   
+	            Polyline polyline = (Polyline) graphicsAlgorithm;  
+	            if(PropertyUtil.isShape_IdValue(polyline, SHAPE_ID_NATURALTYPE_SECONDLINE)) {   
+	            	polyline.getPoints().set(0, graphicAlgorithmService.createPoint(0, (((containerHeight)-HEIGHT_NAME_SHAPE)/2)+HEIGHT_NAME_SHAPE));
+	            	polyline.getPoints().set(1, graphicAlgorithmService.createPoint(containerWidth, (((containerHeight)-HEIGHT_NAME_SHAPE)/2)+HEIGHT_NAME_SHAPE));
+	            	layoutChanged=true;
+	            }
+	            if(PropertyUtil.isShape_IdValue(polyline, SHAPE_ID_NATURALTYPE_FIRSTLINE)) {
+	            	polyline.getPoints().set(1, graphicAlgorithmService.createPoint(containerWidth, polyline.getPoints().get(1).getY()));
 	            	layoutChanged=true;
 	            }	
-	       }
-	       //first and second line
-	       if (graphicsAlgorithm instanceof Polyline) {	   
-	    	   Polyline polyline = (Polyline) graphicsAlgorithm;  
-		       if(PropertyUtil.isShape_IdValue(polyline, SHAPE_ID_DATATYPE_SECONDLINE)) {   
-		            polyline.getPoints().set(0, graphicAlgorithmService.createPoint(0, (((containerHeight)-HEIGHT_NAME_SHAPE-DATATYPE_CORNER_SIZE)/2)+HEIGHT_NAME_SHAPE));
-		            polyline.getPoints().set(1, graphicAlgorithmService.createPoint(containerWidth, (((containerHeight-HEIGHT_NAME_SHAPE-DATATYPE_CORNER_SIZE))/2)+HEIGHT_NAME_SHAPE));
-		            layoutChanged=true;
-		      }
-		      if(PropertyUtil.isShape_IdValue(polyline, SHAPE_ID_DATATYPE_FIRSTLINE)) {
-		            polyline.getPoints().set(1, graphicAlgorithmService.createPoint(containerWidth-PUFFER_BETWEEN_ELEMENTS, polyline.getPoints().get(1).getY()));
-		            layoutChanged=true;
-		      }	
-	       }
-	       //attribute and operation container
-	       if (graphicsAlgorithm instanceof Rectangle) {
-	    	   Rectangle rectangle = (Rectangle) graphicsAlgorithm;  
-		       if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER)) {
-		    	   int newHeight = (((containerHeight)-HEIGHT_NAME_SHAPE-DATATYPE_CORNER_SIZE)/2)-PUFFER_BETWEEN_ELEMENTS,
-		               newWidth = (typeBodyPolygon.getWidth()-2*PUFFER_BETWEEN_ELEMENTS);            				
-		           rectangle.setHeight(newHeight);
-		           rectangle.setWidth(newWidth);
-		           ContainerShape attributeContainerShape = (ContainerShape) shape;	       
-		           EList<Shape> attributes = attributeContainerShape.getChildren();
-		            			            	
-		           //set all attributes visible
-		           for(int j = 0; j<attributes.size(); j++) attributes.get(j).setVisible(true);	   	
-		           //check if not all attributes fit in the attribute field
-		           if(attributeContainerShape.getChildren().size()*HEIGHT_ATTRITBUTE_SHAPE>newHeight) {	            		
-		        	   int fittingAttributes = (newHeight-HEIGHT_ATTRITBUTE_SHAPE)/HEIGHT_ATTRITBUTE_SHAPE;	   
-		        	   //set not fitting attributes to invisible
-		        	   for(int k = fittingAttributes; k<attributes.size(); k++) {
-		        	   attributeContainerShape.getChildren().get(k).setVisible(false);
-		        	   }	            			
-		            }	            			
-		            layoutChanged=true;
-		       }
-		       if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_OPERATIONCONTAINER)) {
-		    	   int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.DATA_TYPE, containerHeight);
-		           int newHeight = horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS;
-		           int newWidth = typeBodyPolygon.getWidth()-2*PUFFER_BETWEEN_ELEMENTS;		
-		           int newY = horizontalCenter+PUFFER_BETWEEN_ELEMENTS;	            	
-		           rectangle.setHeight(newHeight);
-		           rectangle.setWidth(newWidth);
-		           rectangle.setY(newY);
-		           ContainerShape operationContainerShape = (ContainerShape) shape;
-		           EList<Shape> operations = operationContainerShape.getChildren();
-		           
-			       //set place of operations
-			       for(int m = 0; m<operations.size(); m++) {
-			    	   operationContainerShape.getChildren().get(m).getGraphicsAlgorithm().setY(newY+m*HEIGHT_OPERATION_SHAPE);
-			       }
-			       
-			       //set all operations visible
-			       for(int n = 0; n<operations.size(); n++) operations.get(n).setVisible(true);
-			       		//check if not all operations fit in the operations field
-			       		if(operations.size()*HEIGHT_OPERATION_SHAPE>newHeight) {	            		
-			       			int fittingOperations = (newHeight-HEIGHT_OPERATION_SHAPE)/HEIGHT_OPERATION_SHAPE;	   
-			       			//set not fitting operations to invisible
-			       			for(int o = fittingOperations; o<operations.size(); o++) {
-			       				operationContainerShape.getChildren().get(o).setVisible(false);            				
-			       }   	}  	}    
-		           layoutChanged=true;
-		}	}
-	    return layoutChanged;
+	            }
+            //attribute and operation container
+            if (graphicsAlgorithm instanceof Rectangle) {
+            	Rectangle rectangle = (Rectangle) graphicsAlgorithm;  
+	            if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER)) {
+	            	int newHeight = (((containerHeight)-HEIGHT_NAME_SHAPE)/2)-PUFFER_BETWEEN_ELEMENTS,
+	            		newWidth = (typeBodyRectangle.getWidth()-2*PUFFER_BETWEEN_ELEMENTS);            				
+	            	rectangle.setHeight(newHeight);
+	            	rectangle.setWidth(newWidth);
+	            	ContainerShape attributeContainerShape = (ContainerShape) shape;	       
+	            	EList<Shape> attributes = attributeContainerShape.getChildren();
+	            			            	
+	            	//set all attributes visible
+	            	for(int j = 0; j<attributes.size(); j++) attributes.get(j).setVisible(true);	   
+	            		
+	            	//check if not all attributes fit in the attribute field
+	            	if(attributeContainerShape.getChildren().size()*HEIGHT_ATTRITBUTE_SHAPE>newHeight) {	            		
+	            		int fittingAttributes = (newHeight-HEIGHT_ATTRITBUTE_SHAPE)/HEIGHT_ATTRITBUTE_SHAPE;	   
+	            		//set not fitting attributes to invisible
+	            		for(int k = fittingAttributes; k<attributes.size(); k++) {
+	            			attributeContainerShape.getChildren().get(k).setVisible(false);
+	            		}	            			
+	            	}	            			
+	            	layoutChanged=true;
+	            }
+	            if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER)) {
+	            	int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.NATURAL_TYPE, containerHeight);
+	            	int newHeight = horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS;
+	            	int newWidth = typeBodyRectangle.getWidth()-2*PUFFER_BETWEEN_ELEMENTS;		
+	            	int newY = horizontalCenter+PUFFER_BETWEEN_ELEMENTS;	            	
+	            	rectangle.setHeight(newHeight);
+	            	rectangle.setWidth(newWidth);
+	            	rectangle.setY(newY);
+	            	ContainerShape operationContainerShape = (ContainerShape) shape;
+	            	EList<Shape> operations = operationContainerShape.getChildren();
+	            	
+	            	//set place of attributes
+	            	for(int m = 0; m<operations.size(); m++) {
+	            		operationContainerShape.getChildren().get(m).getGraphicsAlgorithm().setY(newY+m*HEIGHT_OPERATION_SHAPE);
+            		}
+	     
+	            	//set all attributes visible
+	            	for(int n = 0; n<operations.size(); n++) operations.get(n).setVisible(true);
+	            	//check if not all attributes fit in the attribute field
+	            	if(operationContainerShape.getChildren().size()*HEIGHT_OPERATION_SHAPE>newHeight) {	            		
+	            		int fittingAttributes = (newHeight-HEIGHT_OPERATION_SHAPE)/HEIGHT_OPERATION_SHAPE;	   
+	            		//set not fitting attributes to invisible
+	            		for(int o = fittingAttributes; o<operations.size(); o++) {
+	            			operationContainerShape.getChildren().get(o).setVisible(false);            				
+	            		}	            			
+	            	}	       
+	            	layoutChanged=true;
+	    }	}	}        
+        return layoutChanged;
 	}
-	
-	
 	
 	//update feature
 	//~~~~~~~~~~~~~~
 	@Override
 	public boolean canUpdate(IUpdateContext updateContext) {
-		//check if object to update is a Data Type
+		//check if object to update is a Natural Type
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
 		Object businessObject =  getBusinessObjectForPictogramElement(pictogramElement);
 		if(businessObject instanceof org.framed.iorm.model.Shape) {
 			org.framed.iorm.model.Shape shape = (org.framed.iorm.model.Shape) businessObject;
-			if(shape.getType() == Type.DATA_TYPE) {
+			if(shape.getType() == Type.NATURAL_TYPE) {
 				return true;
 		}	}
 		return false;
 	}
-	
+
 	@Override
 	public IReason updateNeeded(IUpdateContext updateContext) {
-		//check for changed names 
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
-		if( pictogramElement.getGraphicsAlgorithm() != null &&
-			PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_DATATYPE_TYPEBODY)) {
-			//pictogram name of data type, attributes and operations
+		
+		if(pictogramElement.getGraphicsAlgorithm() != null &&
+		   PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_TYPEBODY)) {
+			//pictogram name of natural type, attributes and operations
 			String pictogramTypeName = getPictogramTypeName(pictogramElement);
 			List<String> pictogramAttributeNames = getpictogramAttributeNames(pictogramElement);
 			List<String> pictogramOperationNames = getpictogramOperationNames(pictogramElement);
@@ -490,7 +480,7 @@ public class DataTypePattern extends AbstractPattern{
 				//Name
 				if (shape.getGraphicsAlgorithm() instanceof Text) {
 					Text text = (Text) shape.getGraphicsAlgorithm();
-					if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_DATATYPE_NAME)) return text.getValue();
+					if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_NATURALTYPE_NAME)) return text.getValue();
 		} 	}	}
 		return null;
 	}
@@ -504,7 +494,7 @@ public class DataTypePattern extends AbstractPattern{
 					ContainerShape innerContainerShape = (ContainerShape) shape;
 					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
 						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER)) {
+						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER)) {
 									for(Shape attributeShape : innerContainerShape.getChildren()) {
 										Text text = (Text) attributeShape.getGraphicsAlgorithm();
 										pictogrammAttributeNames.add(text.getValue());
@@ -521,7 +511,7 @@ public class DataTypePattern extends AbstractPattern{
 					ContainerShape innerContainerShape = (ContainerShape) shape;
 					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
 						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_OPERATIONCONTAINER)) {
+						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER)) {
 									for(Shape operationShape : innerContainerShape.getChildren()) {
 										Text text = (Text) operationShape.getGraphicsAlgorithm();
 										pictogramOperationNames.add(text.getValue());
@@ -547,7 +537,7 @@ public class DataTypePattern extends AbstractPattern{
 					ContainerShape innerContainerShape = (ContainerShape) shape;
 					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
 						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER)) {
+						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER)) {
 							for(Shape attributeShape : innerContainerShape.getChildren()) {
 								NamedElement attribute = (NamedElement) getBusinessObjectForPictogramElement(attributeShape);
 								businessAttributeNames.add(attribute.getName());
@@ -564,7 +554,7 @@ public class DataTypePattern extends AbstractPattern{
 					ContainerShape innerContainerShape = (ContainerShape) shape;
 					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
 						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_OPERATIONCONTAINER)) {
+						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER)) {
 							for(Shape operationShape : innerContainerShape.getChildren()) {
 								NamedElement operation = (NamedElement) getBusinessObjectForPictogramElement(operationShape);
 								businessOperationNames.add(operation.getName());
@@ -586,16 +576,16 @@ public class DataTypePattern extends AbstractPattern{
 		//set type name in pictogram model
         if (pictogramElement instanceof ContainerShape) {     
             ContainerShape containerShape = (ContainerShape) pictogramElement;
-            int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.DATA_TYPE, containerShape.getGraphicsAlgorithm().getHeight());
+            int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.NATURAL_TYPE, containerShape.getGraphicsAlgorithm().getHeight());
             for (Shape shape : containerShape.getChildren()) {
                 if (shape.getGraphicsAlgorithm() instanceof Text) {
                     Text text = (Text) shape.getGraphicsAlgorithm();
-                    if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_DATATYPE_NAME)) {
+                    if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_NATURALTYPE_NAME)) {
                     	text.setValue(businessTypeName);
                     	returnValue = true;
                     }           
                 }
-                //set attribute and operation names and their places in pictogram model
+                //set attribute and operation names and thier places in pictogram model
                 if(shape instanceof ContainerShape) {
                 	ContainerShape innerContainerShape = (ContainerShape) shape;
 					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
@@ -603,7 +593,7 @@ public class DataTypePattern extends AbstractPattern{
 						//Attributes
 						counter = 0;
 						newY = HEIGHT_NAME_SHAPE+PUFFER_BETWEEN_ELEMENTS;
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER)) {
+						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER)) {
 							for(Shape attributeShape : innerContainerShape.getChildren()) {
 								Text text = (Text) attributeShape.getGraphicsAlgorithm();
 								text.setValue(businessAttributeNames.get(counter));
@@ -615,7 +605,7 @@ public class DataTypePattern extends AbstractPattern{
 						//Operations
 						counter = 0;
 						newY = horizontalCenter+PUFFER_BETWEEN_ELEMENTS;
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_OPERATIONCONTAINER)) {
+						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER)) {
 							for(Shape operationShape : innerContainerShape.getChildren()) {
 								Text text = (Text) operationShape.getGraphicsAlgorithm();
 								text.setValue(businessOperationNames.get(counter));									
@@ -624,14 +614,14 @@ public class DataTypePattern extends AbstractPattern{
 								counter++;
 		}	}	}	}	}	}
         return returnValue;
-	}
+	}	
 	
 	//move feature
 	//~~~~~~~~~~~~
 	//disable that the user can move the drop shadow manually
 	@Override
 	public boolean canMoveShape(IMoveShapeContext moveContext) {
-		if(PropertyUtil.isShape_IdValue(moveContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_DATATYPE_SHADOW)) {
+		if(PropertyUtil.isShape_IdValue(moveContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_SHADOW)) {
 			return false;
 		}
 		ContainerShape typeBodyShape = (ContainerShape) moveContext.getPictogramElement();
@@ -639,96 +629,58 @@ public class DataTypePattern extends AbstractPattern{
 		//copied and expanded from super.canMoveShape(IMoveShapeContext moveContext)
 		return moveContext.getSourceContainer() != null && 
 			   (moveContext.getSourceContainer().equals(moveContext.getTargetContainer()) ||
-			    moveContext.getTargetContainer().equals(dropShadowShape)) && 
+				moveContext.getTargetContainer().equals(dropShadowShape)) && 
 			   isPatternRoot(moveContext.getPictogramElement());
 	}
-		
+	
 	//move the type body and the drop shadow 
 	@Override
 	public void moveShape(IMoveShapeContext moveContext) {
 		ContainerShape typeBodyShape = (ContainerShape) moveContext.getPictogramElement();
-		Polygon typeBodyPolygon = (Polygon) typeBodyShape.getGraphicsAlgorithm();
+		Rectangle typeBodyRectangle = (Rectangle) typeBodyShape.getGraphicsAlgorithm();
 		ContainerShape dropShadowShape = (ContainerShape) ((ContainerShape) typeBodyShape).getContainer().getChildren().get(0);
-		Polygon dropShadowPolygon = (Polygon) dropShadowShape.getGraphicsAlgorithm();
-			
+		Rectangle dropShadowRectangle = (Rectangle) dropShadowShape.getGraphicsAlgorithm();
+		
 		if(moveContext.getSourceContainer().equals(moveContext.getTargetContainer())) {
-			dropShadowPolygon.setX(moveContext.getX()+SHADOW_SIZE);
-			dropShadowPolygon.setY(moveContext.getY()+SHADOW_SIZE);
+			dropShadowRectangle.setX(moveContext.getX()+SHADOW_SIZE);
+			dropShadowRectangle.setY(moveContext.getY()+SHADOW_SIZE);
 			super.moveShape(moveContext);
 		} else {
 			//targetContainer of moveContext is dropShadowShape
 			//set targetContainer to diagram and use special calculation for the new position of type body and drop shadow 
-			dropShadowPolygon.setX(typeBodyPolygon.getX()+moveContext.getX()+2*SHADOW_SIZE);
-			dropShadowPolygon.setY(typeBodyPolygon.getY()+moveContext.getY()+2*SHADOW_SIZE);
+			dropShadowRectangle.setX(typeBodyRectangle.getX()+moveContext.getX()+2*SHADOW_SIZE);
+			dropShadowRectangle.setY(typeBodyRectangle.getY()+moveContext.getY()+2*SHADOW_SIZE);
 			MoveShapeContext changedMoveContextForTypeBody = new MoveShapeContext(moveContext.getShape());
 			changedMoveContextForTypeBody.setTargetContainer(dropShadowShape.getContainer());
-			changedMoveContextForTypeBody.setX(typeBodyPolygon.getX()+moveContext.getX()+SHADOW_SIZE);
-			changedMoveContextForTypeBody.setY(typeBodyPolygon.getY()+moveContext.getY()+SHADOW_SIZE);
+			changedMoveContextForTypeBody.setX(typeBodyRectangle.getX()+moveContext.getX()+SHADOW_SIZE);
+			changedMoveContextForTypeBody.setY(typeBodyRectangle.getY()+moveContext.getY()+SHADOW_SIZE);
 			super.moveShape(changedMoveContextForTypeBody);
 		}
-	}
 		
+	}
+	
 	//resize feature
 	//~~~~~~~~~~~~~~
 	//disable that the user can resize the drop shadow manually
 	@Override
 	public boolean canResizeShape(IResizeShapeContext resizeContext) {
-		if(PropertyUtil.isShape_IdValue(resizeContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_DATATYPE_SHADOW)) {
+		if(PropertyUtil.isShape_IdValue(resizeContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_SHADOW)) {
 			return false;
 		}
 		return super.canResizeShape(resizeContext);
 	}
-		
-	@Override
-	public void resizeShape(IResizeShapeContext resizeContext) {
-		ContainerShape typeBodyShape = (ContainerShape) resizeContext.getPictogramElement();
-		Polygon typeBodyPolygon = (Polygon) typeBodyShape.getGraphicsAlgorithm();
-		ContainerShape dropShadowShape = (ContainerShape) ((ContainerShape) typeBodyShape).getContainer().getChildren().get(0);
-		Polygon dropShadowPolygon = (Polygon) dropShadowShape.getGraphicsAlgorithm();
-		int X = resizeContext.getX();
-		int Y = resizeContext.getY();
-		int height = MIN_HEIGHT, width = MIN_WIDTH;
-		if(resizeContext.getHeight() > MIN_HEIGHT) height = resizeContext.getHeight();
-		if(resizeContext.getWidth() > MIN_WIDTH) width = resizeContext.getWidth();
-			
-		//set size of polygon
-		graphicAlgorithmService.setLocationAndSize(typeBodyPolygon, X, Y, width, height);
-			
-		//resize the shape polygon
-		//Point 1 stays the same
-		//P2 stays the same		
-		//P3 x=width-DATATYPE_CORNER_SIZE, y=0		
-		typeBodyPolygon.getPoints().set(2, graphicAlgorithmService.createPoint(width-DATATYPE_CORNER_SIZE, 0));
-		dropShadowPolygon.getPoints().set(2, graphicAlgorithmService.createPoint(width-DATATYPE_CORNER_SIZE, 0));
-		//P4 x= width, y=DATATYPE_CORNER_SIZE
-		typeBodyPolygon.getPoints().set(3, graphicAlgorithmService.createPoint(width, DATATYPE_CORNER_SIZE));
-		dropShadowPolygon.getPoints().set(3, graphicAlgorithmService.createPoint(width, DATATYPE_CORNER_SIZE));
-		//P5 x=width, y=height-DATATYPE_CORNER_SIZE
-		typeBodyPolygon.getPoints().set(4, graphicAlgorithmService.createPoint(width, height-DATATYPE_CORNER_SIZE));
-		dropShadowPolygon.getPoints().set(4, graphicAlgorithmService.createPoint(width, height-DATATYPE_CORNER_SIZE));
-		//P6 x=width-DATATYPE_CORNER_SIZE y=height
-		typeBodyPolygon.getPoints().set(5, graphicAlgorithmService.createPoint(width-DATATYPE_CORNER_SIZE, height));
-		dropShadowPolygon.getPoints().set(5, graphicAlgorithmService.createPoint(width-DATATYPE_CORNER_SIZE, height));
-		//P7 x=DATATYPE_CORNER_SIZE, x=height
-		typeBodyPolygon.getPoints().set(6, graphicAlgorithmService.createPoint(DATATYPE_CORNER_SIZE, height));
-		dropShadowPolygon.getPoints().set(6, graphicAlgorithmService.createPoint(DATATYPE_CORNER_SIZE, height));
-		//P8 x=0, y=height-DATATYPE_CORNER_SIZE 
-		typeBodyPolygon.getPoints().set(7, graphicAlgorithmService.createPoint(0, height-DATATYPE_CORNER_SIZE));
-		dropShadowPolygon.getPoints().set(7, graphicAlgorithmService.createPoint(0, height-DATATYPE_CORNER_SIZE));
-		layoutPictogramElement(resizeContext.getShape());
-	}
-		
+	
 	//delete feature
 	//~~~~~~~~~~~~~~
 	//disable that the user can delete the drop shadow manually
 	@Override
 	public boolean canDelete(IDeleteContext deleteContext) {
-		if(PropertyUtil.isShape_IdValue(deleteContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_DATATYPE_SHADOW)) {
+		if(PropertyUtil.isShape_IdValue(deleteContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_SHADOW)) {
 			return false;
 		}
 		return super.canDelete(deleteContext);
 	}
-			
+		
 	//delete parent container (the one that contains drop shadow shape and type body shape)
 	@Override
 	public void delete(IDeleteContext deleteContext) {

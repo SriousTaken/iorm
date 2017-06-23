@@ -4,7 +4,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
-import org.eclipse.ui.IEditorInput;
 import org.framed.iorm.featuremodel.FRaMEDFeature;
 
 public class FRaMEDDiagramEditor extends DiagramEditor  {

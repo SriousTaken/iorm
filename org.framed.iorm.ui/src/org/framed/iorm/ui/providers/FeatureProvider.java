@@ -9,13 +9,13 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.features.impl.DefaultRemoveFeature;
 import org.eclipse.graphiti.pattern.DefaultFeatureProviderWithPatterns;
 import org.framed.iorm.ui.graphitifeatures.ChangeConfigurationFeature;
-import org.framed.iorm.ui.pattern.features.connections.InheritancePattern;
-import org.framed.iorm.ui.pattern.features.shapes.AttributeOperationCommonPattern;
-import org.framed.iorm.ui.pattern.features.shapes.AttributePattern;
-import org.framed.iorm.ui.pattern.features.shapes.DataTypePattern;
-import org.framed.iorm.ui.pattern.features.shapes.ModelPattern;
-import org.framed.iorm.ui.pattern.features.shapes.NaturalTypePattern;
-import org.framed.iorm.ui.pattern.features.shapes.OperationPattern;
+import org.framed.iorm.ui.pattern.connections.InheritancePattern;
+import org.framed.iorm.ui.pattern.shapes.AttributeOperationCommonPattern;
+import org.framed.iorm.ui.pattern.shapes.AttributePattern;
+import org.framed.iorm.ui.pattern.shapes.DataTypePattern;
+import org.framed.iorm.ui.pattern.shapes.ModelPattern;
+import org.framed.iorm.ui.pattern.shapes.NaturalTypePattern;
+import org.framed.iorm.ui.pattern.shapes.OperationPattern;
 
 public class FeatureProvider extends DefaultFeatureProviderWithPatterns {
 	

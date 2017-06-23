@@ -8,7 +8,7 @@ import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
 /**
- * This class saves severals static Strings, bundles and URLs used to access files.
+ * This class saves severals static Strings, bundles, paths and URLs used to access files.
  * @author Kevin Kassin
  */
 public class URLLiterals {
@@ -31,7 +31,7 @@ public class URLLiterals {
 						  	URL_TO_STANDARD_CONFIGURATION = BUNDLE_FEATUREMODEL.getEntry("/standardframedconfiguration/standardFramedConfiguration.diagram");
 
 	/**
-	 * Path to get the empty text file in a project for the status page 
+	 * Path to get the empty text file in a role model project for the status page 
 	 */
 	public static final IPath PATH_TO_EMPTY_TEXTFILE = new Path("/text/empty.txt");
 	

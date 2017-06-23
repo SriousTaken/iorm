@@ -16,7 +16,7 @@ public class IdentifierLiterals {
 	/**
 	 * editor ID
 	 * <p>
-	 * the editor id of the {@link MultipageEditor}
+	 * the editor id of the {@link org.framed.iorm.ui.multipage.MultipageEditor}
 	 */
 	public static final String EDITOR_ID = "IORM_MultipageEditor";
 
@@ -28,7 +28,7 @@ public class IdentifierLiterals {
 	/**
 	 * image IDs
 	 * <p>
-	 * the identifier of images used in the {@link FRaMEDDiagramEditor} for features
+	 * the identifier of images used in the {@link org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor} for features
 	 */
 	public static final String IMG_ID_FEATURE_NATURALTYPE = IMG_ID_PREFIX + "img_naturaltype",
 							   IMG_ID_FEATURE_DATATYPE = IMG_ID_PREFIX + "img_datatype",
@@ -39,7 +39,7 @@ public class IdentifierLiterals {
 	/**
 	 * feature model ID
 	 * <p>
-	 * the idenfier of the feature model the {@link FRaMEDFeatureEditor} uses
+	 * the idenfier of the feature model the {@link org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor} uses
 	 */
 	public static final String FEATUREMODEL_ID = "org.framed.iorm.featuremodel";
 	
@@ -53,7 +53,7 @@ public class IdentifierLiterals {
 	 * (4) first line or<br>
 	 * (5) second line or<br>
 	 * (6) attribute container rectangle or<br>
-	 * (7) operation container rectangleor<br>
+	 * (7) operation container rectangle
 	 */
 	public static final String SHAPE_ID_NATURALTYPE_TYPEBODY = "shape_nt_typebody",
 						 	   SHAPE_ID_NATURALTYPE_SHADOW = "shape_nt_shadow",
@@ -73,7 +73,7 @@ public class IdentifierLiterals {
 	 * (4) first line or<br>
 	 * (5) second line or<br>
 	 * (6) attribute container rectangle or<br>
-	 * (7) operation container rectangleor<br>
+	 * (7) operation container rectangle 
 	 */
 	public static final String SHAPE_ID_DATATYPE_TYPEBODY = "shape_dt_typebody",
 						 	   SHAPE_ID_DATATYPE_SHADOW = "shape_dt_shadow",
@@ -86,22 +86,28 @@ public class IdentifierLiterals {
 	/**
 	 * identifers used for attributes
 	 * <p>
-	 * the identifier for the attribute rectangle<br>
+	 * the identifier for the attribute rectangle
 	 */
 	public static final String SHAPE_ID_ATTRIBUTE_TEXT = "shape_att_text";
 	
 	/**
 	 * identifers used for operation
 	 * <p>
-	 * the identifier for the operation rectangle<br>
+	 * the identifier for the operation rectangle
 	 */
 	public static final String SHAPE_ID_OPERATION_TEXT = "shape_op_text";
 	
 	/**
 	 * identifers used for the inheritance connection
 	 * <p>
-	 * the identifier for the decorated inheritance polyline<br>
+	 * the identifier for the decorated inheritance polyline
 	 */
 	public static final String SHAPE_ID_INHERITANCE_CONNECTION = "shape_inheritance_con";
-	
+
+	/**
+	 * key values used to identify properties in {@link org.framed.iorm.ui.util.PropertyUtil}
+	 * <p>
+	 * the key value for the property shape id
+	 */
+	public static final String KEY_SHAPE_ID = "shape-id";
 }

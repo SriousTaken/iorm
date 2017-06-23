@@ -1,4 +1,4 @@
-package org.framed.iorm.ui.pattern.features.shapes;
+package org.framed.iorm.ui.pattern.shapes;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

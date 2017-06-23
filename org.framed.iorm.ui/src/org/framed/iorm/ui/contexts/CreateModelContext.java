@@ -5,9 +5,9 @@ import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;;
 
 /**
  * This context is used to save needed information for the create feature of the model
- * in the {@link ModelPattern}.
+ * in the {@link org.framed.iorm.ui.pattern.shapes.ModelPattern}.
  * <p>
- * It extends {@link CreateContext} by adding one variable and its get- and set methods.
+ * It extends {@link CreateContext} by adding one variable and its get and set methods.
  * @author Kevin Kassin
  */
 public class CreateModelContext extends CreateContext {

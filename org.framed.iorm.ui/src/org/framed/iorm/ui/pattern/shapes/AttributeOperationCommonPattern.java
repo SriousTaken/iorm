@@ -1,4 +1,4 @@
-package org.framed.iorm.ui.pattern.features.shapes;
+package org.framed.iorm.ui.pattern.shapes;
 
 import org.eclipse.graphiti.features.IDirectEditingInfo;
 import org.eclipse.graphiti.features.context.IAddContext;

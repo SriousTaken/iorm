@@ -128,6 +128,9 @@ public class RoleModelWizardPage extends WizardPage {
 		return textField.getText().trim();
 	}
 
+	/**
+	 * creates the poject explorer in the framed editor
+	 */
 	private final void createProjectNameGroup(Composite parent) {
 		// project specification group
 		Composite projectGroup = new Composite(parent, SWT.NONE);

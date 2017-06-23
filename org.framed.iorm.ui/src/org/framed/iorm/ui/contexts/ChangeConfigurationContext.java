@@ -6,11 +6,11 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;
 
 /**
- * This context is used to save needed information for the graphiti custom feature {@link
- * ChangeConfigurationFeature}.
+ * This context is used to save needed information for the Graphiti custom feature {@link
+ * org.framed.iorm.ui.graphitifeatures.ChangeConfigurationFeature}.
  * <p>
- * It extends the {@link CustomContext} by two variables and their get- and setmethods.
- * @see ChangeConfigurationFeature
+ * It extends the {@link CustomContext} by two variables and their get and set methods.
+ * @see org.framed.iorm.ui.graphitifeatures.ChangeConfigurationFeature
  * @see CustomContext
  * @author Kevin Kassin
  */

@@ -1,4 +1,4 @@
-package org.framed.iorm.ui.pattern.features.connections;
+package org.framed.iorm.ui.pattern.connections;
 
 import org.eclipse.graphiti.features.context.IAddConnectionContext;
 import org.eclipse.graphiti.features.context.IAddContext;
@@ -63,7 +63,7 @@ public class InheritancePattern extends AbstractConnectionPattern {
 	private static final IPeCreateService pictogramElementCreateSerive = Graphiti.getPeCreateService();
 	
 	/**
-	 * the graphic algorith serive used to create polylines and polygons for the inheritances
+	 * the graphic algorithm service used to create polylines and polygons for the inheritances
 	 */
 	private static final IGaService graphicAlgorithmService = Graphiti.getGaService();
 		

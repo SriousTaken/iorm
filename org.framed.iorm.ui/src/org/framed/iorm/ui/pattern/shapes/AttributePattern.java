@@ -1,4 +1,4 @@
-package org.framed.iorm.ui.pattern.features.shapes;
+package org.framed.iorm.ui.pattern.shapes;
 
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -10,26 +10,27 @@ import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 
-public class OperationPattern extends AbstractPattern implements IPattern {
-	
+public class AttributePattern extends AbstractPattern implements IPattern {
+
 	//name literals
-	private final String STANDARD_OPERATION_NAME = NameLiterals.STANDARD_OPERATION_NAME,
-						 OPERATION_FEATURE_NAME = NameLiterals.OPERATION_FEATURE_NAME;
-	//id literals
-	private final String IMG_ID_FEATURE_OPERATION = IdentifierLiterals.IMG_ID_FEATURE_OPERATION;
+	private final String ATTRIBUTE_STANDARD_NAME = NameLiterals.STANDARD_ATTRIBUTE_NAME,
+						 ATTRIBUTE_FEATURE_NAME = NameLiterals.ATTRIBUTE_FEATURE_NAME;
 	
-	public OperationPattern() {
+	//id literals
+	private final String IMG_ID_FEATURE_ATTRIBUTE = IdentifierLiterals.IMG_ID_FEATURE_ATTRIBUTE;
+		
+	public AttributePattern() {
 		super(null);
 	}
 	
 	@Override
 	public String getCreateName() {
-		return OPERATION_FEATURE_NAME;
+		return ATTRIBUTE_FEATURE_NAME;
 	}
 	
 	@Override
 	public String getCreateImageId() {
-		return IMG_ID_FEATURE_OPERATION;
+		return IMG_ID_FEATURE_ATTRIBUTE;
 	}
 	
 	@Override
@@ -58,25 +59,25 @@ public class OperationPattern extends AbstractPattern implements IPattern {
 		if(businessObject instanceof org.framed.iorm.model.Shape) {
 			org.framed.iorm.model.Shape shape = (org.framed.iorm.model.Shape) businessObject; 
 			if(shape.getType() == Type.NATURAL_TYPE) return true;
-			if(shape.getType() == Type.DATA_TYPE) return true;	
+			if(shape.getType() == Type.DATA_TYPE) return true;
 		}
 		return false;
 	}
 
 	@Override
 	public Object[] create(ICreateContext createContext) {
-		//create new operation
-		NamedElement newOperation = OrmFactory.eINSTANCE.createNamedElement();
-		newOperation.setName(STANDARD_OPERATION_NAME);
-		//add new operation to the operation segment of the class or role
+		//create new attribute
+		NamedElement newAttribute = OrmFactory.eINSTANCE.createNamedElement();
+		newAttribute.setName(ATTRIBUTE_STANDARD_NAME);
+		//add new attribute to the attribute segment of the class or role
 		org.framed.iorm.model.Shape classOrRole = 
 				(org.framed.iorm.model.Shape) getBusinessObjectForPictogramElement(createContext.getTargetContainer());
-		if(newOperation.eResource() != null) getDiagram().eResource().getContents().add(newOperation);
-		classOrRole.getSecondSegment().getElements().add(newOperation);
+		if(newAttribute.eResource() != null) getDiagram().eResource().getContents().add(newAttribute);
+		classOrRole.getFirstSegment().getElements().add(newAttribute);
 		//enable direct editing
 		getFeatureProvider().getDirectEditingInfo().setActive(true);
 		//add to graphiti representation
-		addGraphicalRepresentation(createContext, newOperation);
-		return new Object[] { newOperation };
+		addGraphicalRepresentation(createContext, newAttribute);
+		return new Object[] { newAttribute };
 	}
 }

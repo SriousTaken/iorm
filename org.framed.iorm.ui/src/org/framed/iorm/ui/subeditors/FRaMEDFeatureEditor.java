@@ -38,26 +38,22 @@ import org.framed.iorm.featuremodel.FRaMEDFeature;
 import org.framed.iorm.featuremodel.FeaturemodelFactory;
 import org.framed.iorm.model.Model;
 import org.framed.iorm.ui.commands.ConfigurationEditorChangeCommand;
-import org.framed.iorm.ui.literals.IdentifierLiterals;
+import org.framed.iorm.ui.exceptions.FeatureModelNotReadableException;
 import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.URLLiterals;
 import org.framed.iorm.ui.multipage.MultipageEditor;
 import org.framed.iorm.ui.util.MethodUtil;
 
-import de.ovgu.featureide.fm.core.base.impl.FeatureModel;
+import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.configuration.Configuration;
 import de.ovgu.featureide.fm.core.configuration.SelectableFeature;
 import de.ovgu.featureide.fm.core.configuration.Selection;
 import de.ovgu.featureide.fm.core.configuration.TreeElement;
 import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
-import de.ovgu.featureide.fm.core.io.xml.XmlFeatureModelReader;
+import de.ovgu.featureide.fm.core.io.manager.FeatureModelManager;
 
-@SuppressWarnings("deprecation")
 public class FRaMEDFeatureEditor extends EditorPart {
-	
-	//id literals
-	private final String FEATUREMODEL_ID = IdentifierLiterals.FEATUREMODEL_ID;
-	
+		
 	//layout literals
 	private final Color COLOR_VALID_CONFIGURATION = LayoutLiterals.COLOR_VALID_CONFIGURATION,
 						COLOR_INVALID_CONFIGURATION = LayoutLiterals.COLOR_INVALID_CONFIGURATION;
@@ -69,7 +65,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	private IFile file;
 	private Resource resource;
 	private Model rootModel;
-	private FeatureModel featureModel;
+	private IFeatureModel featureModel;
 	
 	//configuration of the editor 
 	private Configuration configuration;
@@ -90,7 +86,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 		this.multipageEditor = multipageEditor;
 		getResourceFromEditorInput(editorInput);
 		readRootModel();
-		readFeatureModel();
+		readFeatureModel(editorInput);
 		loadConfiguration();
 		try {
 			createStandardFramedConfiguration();
@@ -128,18 +124,16 @@ public class FRaMEDFeatureEditor extends EditorPart {
 			throw new NullPointerException("The resource could not be loaded.");
 	}
 		
-	private void readFeatureModel() throws FileNotFoundException, UnsupportedModelException {
-		FeatureModel featureModel = new FeatureModel(FEATUREMODEL_ID);
+	private void readFeatureModel(IEditorInput editorInput) {
 		File featureModelFile = null;
 	  	try {
 	    	featureModelFile = new File(FileLocator.resolve(URL_TO_FEATUREMODEL).toURI());
-	    } catch (URISyntaxException e) { e.printStackTrace(); }
-	      catch (IOException e) { e.printStackTrace(); };
-	    if(featureModelFile != null) {
-	    	new XmlFeatureModelReader(featureModel).readFromFile(featureModelFile);
-	    } else 
-	    	throw new NullPointerException("The feature model file could not be loaded.");
-	    this.featureModel = featureModel;
+	    } catch (URISyntaxException | IOException e) { e.printStackTrace(); }
+	  	FeatureModelManager featureModelManager = FeatureModelManager.getInstance(featureModelFile.toPath());
+	  	if(featureModelManager.getLastProblems().containsError()) {
+	  		throw new FeatureModelNotReadableException();
+	  	}
+	  	featureModel = featureModelManager.getObject();
 	}
 	
 	private void loadConfiguration() {

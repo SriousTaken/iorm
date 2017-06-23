@@ -23,15 +23,18 @@ public class TextLiterals {
 	/**
 	 * messages used in exceptions
 	 * <p>
-	 * the message for the {@link FeatureModelInconsistentException} 
+	 * can be:<br>
+	 * (1) the message for the {@link org.framed.iorm.ui.exceptions.ConfigurationInconsistentException} or<br>
+	 * (2) the message for the {@link org.framed.iorm.ui.exceptions.FeatureModelNotReadableException}
 	 */
-	public static final String FEATUREMODEL_INCONSISTENT_MESSAGE = "The feature models used in edited file and the editor are inconsistent!";
+	public static final String CONFIGURATION_INCONSISTENT_MESSAGE = "The configurations used in edited file and the feature editor are inconsistent!",
+						       FEATUREMODEL_NOT_READABLE_MESSAGE = "The feature model could not be read!";
 	
 	/**
 	 * messages used in the Eclipse wizards
 	 * <p>
 	 * can be:<br>
-	 * (1) the message for the {@link RoleModelWizardPage} or<br>
+	 * (1) the message for the {@link org.framed.iorm.ui.wizards.RoleModelWizardPage} or<br>
 	 * (2) the message for the user if his input for the diagrams name is invalid
 	 */
 	public static final String WIZARD_PAGE_DESC = "Enter the name of the Role Model",

@@ -27,7 +27,7 @@ import org.framed.iorm.ui.util.MethodUtil;
 import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 
 /**
- * This class is used creates the overall editor to edit the role model. 
+ * This class is creates the overall editor to edit the role model. 
  * <p>
  * It uses subeditors by the types {@link FRaMEDDiagramEditor}, {@link FRaMEDFeatureEditor} and 
  * {@link FRaMEDTextViewer}. It call the constructors and handles the management of saving these subeditors.
@@ -142,7 +142,7 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 * Step 5: It creates the feature editor and adds the page. To do that the created root model is needed.
 	 * 		   It also creates the editores and add the pages for the iorm and crom text viewers.
 	 * 		   It also creates the text editor for the status page.<br>  
-	 * Step 6: It fetches the empty textfile created by the {@link RoleModelProjectWizard} in the project in which 
+	 * Step 6: It fetches the empty textfile created by the {@link org.framed.iorm.ui.wizards.RoleModelProjectWizard} in the project in which 
 	 * 		   the diagram is created and add the the status page with this input.<br>
 	 * Step 7: Its set the names of the pages.
 	 * @exception PartInitException
