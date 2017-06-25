@@ -1,7 +1,6 @@
 package org.framed.iorm.ui.subeditors;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -35,7 +34,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.framed.iorm.featuremodel.FRaMEDConfiguration;
 import org.framed.iorm.featuremodel.FRaMEDFeature;
-import org.framed.iorm.featuremodel.FeaturemodelFactory;
 import org.framed.iorm.model.Model;
 import org.framed.iorm.ui.commands.ConfigurationEditorChangeCommand;
 import org.framed.iorm.ui.exceptions.FeatureModelNotReadableException;
@@ -49,82 +47,134 @@ import de.ovgu.featureide.fm.core.configuration.Configuration;
 import de.ovgu.featureide.fm.core.configuration.SelectableFeature;
 import de.ovgu.featureide.fm.core.configuration.Selection;
 import de.ovgu.featureide.fm.core.configuration.TreeElement;
-import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 import de.ovgu.featureide.fm.core.io.manager.FeatureModelManager;
 
+/**
+ * the feature editor used by the {@link MultipageEditor}
+ * <p>
+ * It loads the feature model and its standard configuration. With that informations it can build
+ * a tree in which the user can make changes of the configuration. After a change in the tree view
+ * a command is used to make the chosen changes to the configuration of the edited diagram.
+ * @author Kevin Kassin
+ */
 public class FRaMEDFeatureEditor extends EditorPart {
 		
-	//layout literals
-	private final Color COLOR_VALID_CONFIGURATION = LayoutLiterals.COLOR_VALID_CONFIGURATION,
-						COLOR_INVALID_CONFIGURATION = LayoutLiterals.COLOR_INVALID_CONFIGURATION;
-	
-	//multipage editor that uses the feature editor
-	private MultipageEditor multipageEditor;
-	
-	//file, resource, diagram and models of the editors input
-	private IFile file;
-	private Resource resource;
-	private Model rootModel;
-	private IFeatureModel featureModel;
-	
-	//configuration of the editor 
-	private Configuration configuration;
-	
-	//path to feature model and standart configuration
+	/**
+	 * URLs to the feature model and its standard configuration gathered from {@link URLLiterals}
+	 */
 	private final URL URL_TO_FEATUREMODEL = URLLiterals.URL_TO_FEATUREMODEL,
 					  URL_TO_STANDARD_CONFIGURATION = URLLiterals.URL_TO_STANDARD_CONFIGURATION;
 	
-	//graphical representation and its items
-	private Tree tree;
-	private final Map<SelectableFeature, TreeItem> itemMap = new HashMap<SelectableFeature, TreeItem>();
+	/**
+	 * the color values used for the {@link #infoLabel} showing if the chosen configuration is valid or not 
+	 * gathered {@link LayoutLiterals}
+	 */
+	private final Color COLOR_VALID_CONFIGURATION = LayoutLiterals.COLOR_VALID_CONFIGURATION,
+						COLOR_INVALID_CONFIGURATION = LayoutLiterals.COLOR_INVALID_CONFIGURATION;
 	
-	//status of the configuration
+	/**
+	 * the text label that used to show if the chosen configuration is valid or not
+	 */
 	private Label infoLabel;
 	
-	public FRaMEDFeatureEditor(IEditorInput editorInput, MultipageEditor multipageEditor) throws FileNotFoundException, UnsupportedModelException {
+	/**
+	 * the multipage editor that uses this feature editor
+	 * <p>
+	 * this variable is used to access the diagram editor of the file edited
+	 */
+	private MultipageEditor multipageEditor;
+	
+	/**
+	 * the configuration that used to manage the features in the tree view of the editor 
+	 */
+	private Configuration configuration;
+	
+	/**
+	 * the tree view of the editor that is used by the user to edit the configuration of the diagram 
+	 */
+	private Tree tree;
+	
+	/**
+	 * the item of the tree view {@link #tree}
+	 */
+	private final Map<SelectableFeature, TreeItem> itemMap = new HashMap<SelectableFeature, TreeItem>();
+	
+	//constructor and its called function
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	/**
+	 * Class constructor
+	 * <p>
+	 * It uses the following operations in order:<br>
+	 * (1) {@link #getResourceFromEditorInput}<br>
+	 * (2) {@link #readRootModel}<br>
+	 * (3) {@link #readFeatureModel}<br>
+	 * (4) {@link #getResourceFromEditorInput}<br>
+	 * (5) {@link #loadConfiguration}<br>
+	 * (6) {@link #createStandardFramedConfiguration}
+	 * @param editorInput the opened diagram
+	 * @param multipageEditor the multipage editor that uses this editor
+	 */
+	public FRaMEDFeatureEditor(IEditorInput editorInput, MultipageEditor multipageEditor) {
 		super();
 		this.multipageEditor = multipageEditor;
-		getResourceFromEditorInput(editorInput);
-		readRootModel();
-		readFeatureModel(editorInput);
-		loadConfiguration();
+		Resource resource = getResourceFromEditorInput(editorInput);
+		Model rootModel = readRootModel(resource);
+		IFeatureModel featureModel = readFeatureModel();
+		loadConfiguration(rootModel, featureModel);
 		try {
-			createStandardFramedConfiguration();
-		} catch (URISyntaxException e) { e.printStackTrace(); } 
-		  catch (IOException e) { e.printStackTrace(); }
+			createStandardFramedConfiguration(rootModel);
+		} catch (URISyntaxException | IOException e) { e.printStackTrace(); }
 	}
 	
+	/**
+	 * initialize method
+	 */
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 	    setInput(input);
 	}
 	
-	public void getResourceFromEditorInput(IEditorInput editorInput) {
+	/**
+	 * fetches the {@link Resource} for a given {@link IEditorInput}
+	 * @param editorInput the editor input to get the resource for
+	 * @return the resource if edtior input is of type {@link IFileEditorInput} and the resource and be loaded 
+	 * and returns null else
+	 */
+	public Resource getResourceFromEditorInput(IEditorInput editorInput) {
 		ResourceSet resourceSet = new ResourceSetImpl();
 	 	if (editorInput instanceof IFileEditorInput) {
 	    	IFileEditorInput fileInput = (IFileEditorInput) editorInput;
-	    	file = fileInput.getFile();
-	    
-	    	resource = resourceSet.createResource(URI.createURI(file.getLocationURI().toString()));
+	    	IFile file = fileInput.getFile();
+	    	Resource resource = resourceSet.createResource(URI.createURI(file.getLocationURI().toString()));
 	    	try {
 	    		resource.load(null);
+	    		return resource;
 	    	} catch (IOException e) { 
 	    		e.printStackTrace();
-	    		resource = null;
 	    	}
 	    }
+	 	return null;
 	}
 	
-	public void readRootModel() {
+	/**
+	 * fetches the root model for a resource
+	 * @param resource the resource to get the root model from
+	 * @return the root model of the resource is not null and the diagram has a root model and return null else
+	 */
+	private Model readRootModel(Resource resource) {
 		if (resource != null) {
 			Diagram diagram = (Diagram) resource.getContents().get(0);
-			rootModel = MethodUtil.getDiagramRootModel(diagram);
+			return MethodUtil.getDiagramRootModel(diagram);
 		} else
 			throw new NullPointerException("The resource could not be loaded.");
 	}
 		
-	private void readFeatureModel(IEditorInput editorInput) {
+	/**
+	 * fetches the feature model file and gets its feature model
+	 * @return the feature model that is used for the {@link MultipageEditor}
+	 */
+	private IFeatureModel readFeatureModel() {
 		File featureModelFile = null;
 	  	try {
 	    	featureModelFile = new File(FileLocator.resolve(URL_TO_FEATUREMODEL).toURI());
@@ -133,26 +183,44 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	  	if(featureModelManager.getLastProblems().containsError()) {
 	  		throw new FeatureModelNotReadableException();
 	  	}
-	  	featureModel = featureModelManager.getObject();
+	  	return featureModelManager.getObject();
 	}
 	
-	private void loadConfiguration() {
+	/**
+	 * gets the configuration of the editor using the previously fetched root model and feature model
+	 * @param rootModel the root model to get the {@link org.framed.iorm.featuremodel.FRaMEDConfiguration} from
+	 * @param featureModel the feature model to instantiate the configuration with
+	 */
+	private void loadConfiguration(Model rootModel, IFeatureModel featureModel) {
 	    FRaMEDConfiguration framedConfiguration = rootModel.getFramedConfiguration();
 	    configuration = new Configuration(featureModel);
 	    configuration.getPropagator().update();
-	    // if a feature is noted in the .diagram file its set as selected
 	    if (framedConfiguration != null) {
 	    	for (FRaMEDFeature f : framedConfiguration.getFeatures())
 	    		configuration.setManual(f.getName().getLiteral(), Selection.SELECTED);
 	    }
 	}
 	
-	private void createStandardFramedConfiguration() throws URISyntaxException, IOException {
-	    FRaMEDConfiguration framedConfiguration = rootModel.getFramedConfiguration();
+	/**
+	 * sets the features of the previously loaded configuration depending of the standard configuration using the 
+	 * following steps:
+	 * <p>
+	 * Step 1: It gets the framed configuation of the root model and checks if its was already set. This is needed to make
+	 * sure this the configuration of the editor is only set on creation of a diagram, not on a load of an already created
+	 * diagram before.<br>
+	 * Step 2: It gets the root model of the standard configuration file to be used in step 3.<br>
+	 * Step 3: Apply each feature setting in the standard configuration to the feature editors configuration.
+	 * @param rootModel the root model to get framed configuration from
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
+	private void createStandardFramedConfiguration(Model rootModel) throws URISyntaxException, IOException {
+	    //Step 1
+		FRaMEDConfiguration framedConfiguration = rootModel.getFramedConfiguration();
 	    if (framedConfiguration == null || 
 	    	framedConfiguration.getFeatures() == null || 
 	        framedConfiguration.getFeatures().size() < 1) {
-	    	//load standard configuration for framed
+	    	//Step 2
 	    	ResourceSet resourceSet = new ResourceSetImpl();
 	    	Resource resourceStandartConfiguration =
 	          resourceSet.createResource(URI.createURI(FileLocator.resolve(URL_TO_STANDARD_CONFIGURATION).toURI().toString()));
@@ -162,31 +230,34 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	        	resourceStandartConfiguration = null;
 	    	}
 	    	Model standardConfigurationModel = (Model) resourceStandartConfiguration.getContents().get(0);
-	    	rootModel.setFramedConfiguration(FeaturemodelFactory.eINSTANCE.createFRaMEDConfiguration());
-
-	    	//apply each feature in the standard configuration to the FeatureIDE Configuration
+	    	//Step 3
 	    	for (FRaMEDFeature framedFeature : standardConfigurationModel.getFramedConfiguration().getFeatures()) {
 	    		if (framedFeature.isManuallySelected()) {
 	    			configuration.setManual(framedFeature.getName().getLiteral(), Selection.SELECTED);
 	    		} else {
 	    			configuration.setManual(framedFeature.getName().getLiteral(), Selection.UNDEFINED);
-	    		}
-	      }
-	    }
-	}
+}	}   }	}
 	
-	//visualisation related operation
+	//tree related operation
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	/**
+	 * creates the graphical representation of the tree view creating the following parts:
+	 * <p>
+	 * Step 1: the parent composite<br>
+	 * Step 2: the first composite for the label if configuration is valid or not
+	 * Step 3: the label if configuration is valid or not
+	 * Step 4: the second composite for the tree
+	 * Step 5: the tree view
+	 */
 	@Override
 	public void createPartControl(Composite parent) {
-		 // parent composite
+		 //Step 1
 		 GridLayout gridLayout = new GridLayout(1, false);
 		 gridLayout.verticalSpacing = 4;
 		 gridLayout.marginHeight = 2;
 		 gridLayout.marginWidth = 0;
 		 parent.setLayout(gridLayout);
-
-		 // 1. sub composite
+		 //Step 2
 		 GridData gridData = new GridData();
 		 gridData.horizontalAlignment = SWT.FILL;
 		 gridData.grabExcessHorizontalSpace = true;
@@ -199,8 +270,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 		 final Composite compositeTop = new Composite(parent, SWT.NONE);
 		 compositeTop.setLayout(gridLayout);
 		 compositeTop.setLayoutData(gridData);
-
-		 // info label
+		 //Step 3
 		 gridData = new GridData();
 		 gridData.horizontalAlignment = SWT.FILL;
 		 gridData.grabExcessHorizontalSpace = true;
@@ -208,8 +278,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 		 infoLabel = new Label(compositeTop, SWT.NONE);
 		 infoLabel.setLayoutData(gridData);
 		 updateInfoLabel();	
-
-		 // 2. sub composite
+		 //Step 4
 		 gridData = new GridData();
 		 gridData.horizontalAlignment = SWT.FILL;
 		 gridData.verticalAlignment = SWT.FILL;
@@ -218,22 +287,21 @@ public class FRaMEDFeatureEditor extends EditorPart {
 		 final Composite compositeBottom = new Composite(parent, SWT.BORDER);
 		 compositeBottom.setLayout(new FillLayout());
 		 compositeBottom.setLayoutData(gridData);
-		 
+		 //Step 5
 		 tree = new Tree(compositeBottom, SWT.CHECK);
 		 createSelectionListener();
 		 updateTree();
 		 updateInfoLabel();
 	 }
-	 
-	 private void updateInfoLabel() {
-		    Boolean valid = configuration.isValid();
-		    infoLabel.setText(valid ? "VALID Configuration" : "INVALID Configuration");
-		    infoLabel.setForeground(valid ? COLOR_VALID_CONFIGURATION : COLOR_INVALID_CONFIGURATION);
-		  }
-
-	//tree related operations
-	//~~~~~~~~~~~~~~~~~~~~~~~ 
-	public void createSelectionListener() {
+	
+	/**
+	 * add an selection listener to the tree view
+	 * <p>
+	 * The added selection listener calls this editors operation {@link #changeSelection} that uses 
+	 * the command {@link ConfigurationEditorChangeCommand} to actually change the configuration of the 
+	 * diagram.
+	 */
+	private void createSelectionListener() {
 		tree.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
@@ -257,8 +325,20 @@ public class FRaMEDFeatureEditor extends EditorPart {
 				 					changeSelection(item, true);
 				 					break;
 	}	}	}	}	}	);	}
-		
-	public void updateTree() {
+	 
+	/**
+	 * updates the labels text and color if the configuration is valid or not
+	 */
+	 private void updateInfoLabel() {
+		 Boolean valid = configuration.isValid();
+		 infoLabel.setText(valid ? "VALID Configuration" : "INVALID Configuration");
+		 infoLabel.setForeground(valid ? COLOR_VALID_CONFIGURATION : COLOR_INVALID_CONFIGURATION);
+	}
+
+	/**
+	 * updates the trees structures depending on the current configuration
+	 */
+	private void updateTree() {
 	    tree.removeAll();
 	    final TreeItem root = new TreeItem(tree, 0);
 	    final SelectableFeature rootFeature = configuration.getRoot();
@@ -267,8 +347,37 @@ public class FRaMEDFeatureEditor extends EditorPart {
 		refreshItem(root, rootFeature);
 	    itemMap.put(configuration.getRoot(), root);
 	    buildTree(root, configuration.getRoot().getChildren());
-		}
+	}
+	
+	/**
+	 * set the selection of a item in the tree view
+	 * @param item the item to set the selection of
+	 * @param feature the corresponding feature of the item
+	 */
+	private void refreshItem(TreeItem item, SelectableFeature feature) {
+	    item.setBackground(null);
+	    switch (feature.getAutomatic()) {
+	      case SELECTED:
+	        item.setGrayed(true);
+	        item.setForeground(null);
+	        item.setChecked(true);
+	        break;
+	      case UNSELECTED:
+	        item.setGrayed(true);
+	        item.setChecked(false);
+	        break;
+	      case UNDEFINED:
+	        item.setGrayed(false);
+	        item.setForeground(null);
+	        item.setChecked(feature.getManual() == Selection.SELECTED);
+	        break;
+	}	}
 		
+	/**
+	 * builds the tree view from a specific root on
+	 * @param parent the root the tree is build from on 
+	 * @param children the children of the specific root
+	 */
 	private void buildTree(final TreeItem parent, final TreeElement[] children) {
 		for (int i = 0; i < children.length; i++) {
 		 	final TreeElement child = children[i];
@@ -288,57 +397,12 @@ public class FRaMEDFeatureEditor extends EditorPart {
 		}	}	}
 		parent.setExpanded(true);
 	}
-	 
-	private void refreshItem(TreeItem item, SelectableFeature feature) {
-	    item.setBackground(null);
-	    switch (feature.getAutomatic()) {
-	      case SELECTED:
-	        item.setGrayed(true);
-	        item.setForeground(null);
-	        item.setChecked(true);
-	        break;
-	      case UNSELECTED:
-	        item.setGrayed(true);
-	        item.setChecked(false);
-	        break;
-	      case UNDEFINED:
-	        item.setGrayed(false);
-	        item.setForeground(null);
-	        item.setChecked(feature.getManual() == Selection.SELECTED);
-	        break;
-	}	}
 	
-	public void changeSelection(final TreeItem item, final boolean select) {
-		ConfigurationEditorChangeCommand cmd = new ConfigurationEditorChangeCommand();
-		cmd.setFeatureEditor(this);
-		cmd.setBehaviorDiagramEditor(multipageEditor.getDiagramEditor());
-		cmd.setItem(item);
-		cmd.setSelect(select);
-		multipageEditor.getDiagramEditor().getCommandStack().execute(cmd);
-	}
-	
-	public void setSelection(final TreeItem item, final boolean select) {
-		SelectableFeature feature = (SelectableFeature) item.getData();
-	    if (feature.getAutomatic() == Selection.UNDEFINED) {
-	    	switch (feature.getManual()) {
-	        	case SELECTED:
-	        		set(feature, (select) ? Selection.UNDEFINED : Selection.UNSELECTED);
-	        		break;
-	        	case UNSELECTED:
-	        		set(feature, (select) ? Selection.SELECTED : Selection.UNDEFINED);
-	        		break;
-	        	case UNDEFINED:
-	        		set(feature, (select) ? Selection.SELECTED : Selection.UNSELECTED);
-	        		break;
-	        	default:
-	        		set(feature, Selection.UNDEFINED);
-	        }
-	    	TreeElement configRootFeature = configuration.getRoot();
-	    	updateSelections(itemMap.get(configRootFeature), configRootFeature.getChildren());
-	    }
-	    updateInfoLabel();
-	}
-	    
+	/**
+	 * updates the selections of the tree view from a specific root on
+	 * @param parent the root the tree is build from on 
+	 * @param children the children of the specific root
+	 */
 	private void updateSelections(final TreeItem parent, final TreeElement[] children) {
 		for (int i = 0; i < children.length; i++) {
 			final TreeElement child = children[i];
@@ -350,22 +414,69 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	            		updateSelections(t, currentFeature.getChildren());
 	            		break;
 	    }	}	}	}
-	}	    
-	    
-	protected void set(SelectableFeature feature, Selection selection) {
-		configuration.setManual(feature, selection);
+	}
+	 
+	/**
+	 * uses the command {@link ConfigurationEditorChangeCommand} to change the configuration of the 
+	 * diagram.
+	 * @param item the tree item to change the selection of 
+	 * @param select the new selection
+	 */
+	public void changeSelection(final TreeItem item, final boolean select) {
+		ConfigurationEditorChangeCommand cmd = new ConfigurationEditorChangeCommand();
+		cmd.setFeatureEditor(this);
+		cmd.setBehaviorDiagramEditor(multipageEditor.getDiagramEditor());
+		cmd.setItem(item);
+		cmd.setSelect(select);
+		multipageEditor.getDiagramEditor().getCommandStack().execute(cmd);
 	}
 	
-	//in case of undo/ redo the configuration in the feature configuration editor
-	//gets out of synch(?) -> synchronize at save
+	/**
+	 * sets the selection of a feature in the feature editors configuration
+	 * @param item the item to get corresponding feature from
+	 * @param select the new selection of the feature
+	 */
+	public void setSelection(final TreeItem item, final boolean select) {
+		SelectableFeature feature = (SelectableFeature) item.getData();
+	    if (feature.getAutomatic() == Selection.UNDEFINED) {
+	    	switch (feature.getManual()) {
+	        	case SELECTED:
+	        		configuration.setManual(feature, (select) ? Selection.UNDEFINED : Selection.UNSELECTED);
+	        		break;
+	        	case UNSELECTED:
+	        		configuration.setManual(feature, (select) ? Selection.SELECTED : Selection.UNDEFINED);
+	        		break;
+	        	case UNDEFINED:
+	        		configuration.setManual(feature, (select) ? Selection.SELECTED : Selection.UNSELECTED);
+	        		break;
+	        	default:
+	        		configuration.setManual(feature, Selection.UNDEFINED);
+	        }
+	    	TreeElement configRootFeature = configuration.getRoot();
+	    	updateSelections(itemMap.get(configRootFeature), configRootFeature.getChildren());
+	    }
+	    updateInfoLabel();
+	}
+	    
+	/**
+	 * synchonizes the configuration of the diagram and the feature editor
+	 * <p>
+	 * This is needed because their can be inconsistent states be between these two configuration
+	 * after the use of undo and redo. The method uses the following steps:<br>
+	 * Step 1: It searches for features are chosen in the diagram but aren't checked in the 
+	 * feature model configuration and checks them in the second configuration<br>
+	 * Step 2: If a feature was not chosen in the diagram, but it is checked in the feature model
+	 * configuration, uncheck it in the feature editor
+	 * Step 3: update tree to show the change to the user
+	 */
 	public void synchronizeConfigurationEditorAndModelConfiguration() {
 		EList<FRaMEDFeature> selectedFeatures = multipageEditor.getDiagramEditor().getSelectedFeatures();
 		boolean mapEntryFound = false;
+		//Step 1
 		for(Map.Entry<SelectableFeature, TreeItem> entry : itemMap.entrySet()){
 			for(FRaMEDFeature framedFeature : selectedFeatures) {
 				if(entry.getKey().getName().equals(framedFeature.getName().getLiteral())) {
 					if (entry.getKey().getAutomatic() == Selection.UNDEFINED) {
-						//wiederspruch gefunden
 						if(!(entry.getValue().getChecked())) {
 							entry.getValue().setChecked(true);
 							entry.getKey().setManual(Selection.SELECTED);
@@ -373,7 +484,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 						mapEntryFound = true;
 				}	}	
 			}
-			//if map entry was not found in the list selected features uncheck them
+			//Step 2
 			if(!mapEntryFound) {
 				if (entry.getKey().getAutomatic() == Selection.UNDEFINED) {
 					//wiederspruch gefunden
@@ -383,27 +494,44 @@ public class FRaMEDFeatureEditor extends EditorPart {
 			}	}	}
 			mapEntryFound = false;
 		}
+		//Step 3
 		updateTree();
 	}
 	 
 	//unused methods
 	//~~~~~~~~~~~~~~	
+	
+	/**
+	 * empty implementation of setFocus
+	 */
 	@Override
 	public void setFocus() {}
 
+	/**
+	 * since the resource of this editor is not to save by Graphiti always return false as dirty bit
+	 */
 	@Override
 	public boolean isDirty() {
 	    return false;
 	}
 	
+	/**
+	 * empty implementation of doSave
+	 */
 	@Override
 	public void doSave(IProgressMonitor monitor) {}
 	
+	/**
+	 * disable the saveAs function
+	 */
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
 	}
 	    
+	/**
+	 * empty implementation of doSaveAs
+	 */
 	@Override
 	public void doSaveAs() {}
 }

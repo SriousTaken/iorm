@@ -69,6 +69,7 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 	 * Step 1: gets the root model of the diagram<br>
 	 * Step 2: deletes or add a feature in the root model<br>
 	 * Step 3: updates the public list of the features of the role model in the {@link FRaMEDDiagramEditor}
+	 * @throws ConfigurationInconsistentException
 	 */
 	@Override
 	public void execute(ICustomContext context) throws ConfigurationInconsistentException {

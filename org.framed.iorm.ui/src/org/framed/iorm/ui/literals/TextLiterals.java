@@ -35,8 +35,12 @@ public class TextLiterals {
 	 * <p>
 	 * can be:<br>
 	 * (1) the message for the {@link org.framed.iorm.ui.wizards.RoleModelWizardPage} or<br>
-	 * (2) the message for the user if his input for the diagrams name is invalid
+	 * (2) the message for the user if his input for the diagrams name is invalid or<br>
+	 * (3) the title of the error message if no project is selected at role model creation or<br>
+	 * (4) the error message if no project is selected at role model creation
 	 */
 	public static final String WIZARD_PAGE_DESC = "Enter the name of the Role Model",
-							   WIZARD_MESSAGE_INVALID_INPUT = "A diagrams name cant be empty and cant contains spaces. Numbers are allowed but as first symbol.";
+							   WIZARD_MESSAGE_INVALID_INPUT = "A diagrams name cant be empty and cant contains spaces. Numbers are allowed but as first symbol.",
+							   WIZARD_ERROR_NO_PROJECT_TITLE = "No Project Selected",
+							   WIZARD_ERROR_NO_PROJECT_TEXT = "Please choose a CROM project to create the role model in!";   
 }

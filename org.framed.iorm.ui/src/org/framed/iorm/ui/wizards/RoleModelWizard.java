@@ -3,16 +3,12 @@ package org.framed.iorm.ui.wizards;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.graphiti.examples.common.ExamplesCommonPlugin;
 import org.eclipse.graphiti.examples.common.FileService;
-import org.eclipse.graphiti.examples.common.Messages;
 import org.eclipse.graphiti.examples.common.navigator.nodes.base.AbstractInstancesOfTypeContainerNode;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbench;
@@ -22,6 +18,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
+import org.framed.iorm.ui.literals.TextLiterals;
 
 /**
  * This class creates an Eclipse wizard to create a role model.
@@ -38,10 +35,14 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 						 EDITOR_ID = IdentifierLiterals.EDITOR_ID;
 	
 	/**
-	 * name literals for the wizard page and window gathered from {@link NameLiterals}
+	 * name literals for the file extension of the new diagram, the wizard page and window gathered from {@link NameLiterals}
 	 */
-	private final String WIZARD_PAGE_NAME = NameLiterals.WIZARD_PAGE_NAME,
+	private final String FILE_EXTENSION_FOR_DIAGRAMS = NameLiterals.FILE_EXTENSION_FOR_DIAGRAMS,
+						 WIZARD_PAGE_NAME = NameLiterals.WIZARD_PAGE_NAME,
 						 WIZARD_WINDOW_NAME = NameLiterals.WIZARD_WINDOW_NAME;
+	
+	private final String WIZARD_ERROR_NO_PROJECT_TITLE = TextLiterals.WIZARD_ERROR_NO_PROJECT_TITLE,
+						 WIZARD_ERROR_NO_PROJECT_TEXT = TextLiterals.WIZARD_ERROR_NO_PROJECT_TEXT;
 	
 	/**
 	 * the wizard page used by this wizard
@@ -70,12 +71,11 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 	}
 
 	/**
-	 * performs the creation of a rolemodel using the following steps:
+	 * performs the creation of a role model using the following steps:
 	 * <p>
 	 * Step 1: ask for the diagrams name via the wizard page
 	 * Step 2: checks if project is selected into which the diagram can be created
 	 * Step 3: create a diagram, write it to file and open it
-	 * @exception PartInitException
 	 */
 	@Override
 	public boolean performFinish() {
@@ -95,26 +95,21 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 			project = diagramFolder.getProject();
 		}
 		if (project == null || !project.isAccessible()) {
-			String error = Messages.CreateDiagramWizard_NoProjectFoundError;
-			IStatus status = new Status(IStatus.ERROR, ExamplesCommonPlugin.getID(), error);
-			ErrorDialog.openError(getShell(), Messages.CreateDiagramWizard_NoProjectFoundErrorTitle, null, status);
+			MessageDialog.openError(getShell(), WIZARD_ERROR_NO_PROJECT_TITLE, WIZARD_ERROR_NO_PROJECT_TEXT);
 			return false;
 		}
 		//Step 3
 		Diagram diagram = Graphiti.getPeCreateService().createDiagram(DIAGRAM_TYPE, diagramName, true);
 		if (diagramFolder == null) {
-			diagramFolder = project.getFolder("src/diagrams/");
+			diagramFolder = project.getFolder("diagrams/");
 		}
-		IFile diagramFile = diagramFolder.getFile(diagramName + ".diagram");
+		IFile diagramFile = diagramFolder.getFile(diagramName + FILE_EXTENSION_FOR_DIAGRAMS);
 		URI uri = URI.createPlatformResourceURI(diagramFile.getFullPath().toString(), true);
 		FileService.createEmfFileForDiagram(uri, diagram);
 		IFileEditorInput iFileEditorInput = new FileEditorInput(diagramFile);
 		try {
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(iFileEditorInput, EDITOR_ID);
 		} catch (PartInitException e) {
-			String error = Messages.CreateDiagramWizard_OpeningEditorError;
-			IStatus status = new Status(IStatus.ERROR, ExamplesCommonPlugin.getID(), error, e);
-			ErrorDialog.openError(getShell(), Messages.CreateDiagramWizard_ErrorOccurredTitle, null, status);
 			return false;
 		}
 		return true;

@@ -112,8 +112,6 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 
 	/**
 	 * initialize method
-	 * @param site
-	 * @param editorInput the file opened with the editor
 	 * @throws PartInitException if editor input is not of type {@link IFileEditorInput}	
 	 */
 	@Override
@@ -145,11 +143,6 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 * Step 6: It fetches the empty textfile created by the {@link org.framed.iorm.ui.wizards.RoleModelProjectWizard} in the project in which 
 	 * 		   the diagram is created and add the the status page with this input.<br>
 	 * Step 7: Its set the names of the pages.
-	 * @exception PartInitException
-	 * @exception FileNotFoundException
-	 * @exception UnsupportedModelException
-	 * @exception URISyntaxException
-	 * @exception IOException
 	 */
 	@Override
 	protected void addPages() {
@@ -172,10 +165,7 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 		//Step 4
 		doSave(null);
 		//Step 5
-		try {
 			editorFeatures = new FRaMEDFeatureEditor(getEditorInput(), this);
-		} catch (FileNotFoundException e) { e.printStackTrace(); }
-		  catch (UnsupportedModelException e) { e.printStackTrace(); }	
 			textViewerIORM = new FRaMEDTextViewer();
 			textViewerCROM = new FRaMEDTextViewer();
 			statusPage = new FRaMEDTextViewer();

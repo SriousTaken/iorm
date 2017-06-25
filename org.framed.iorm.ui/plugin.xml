@@ -29,7 +29,7 @@
      	<editor
             class="org.framed.iorm.ui.multipage.MultipageEditor"
             contributorClass="org.framed.iorm.ui.multipage.MultipageEditorContributor"
-            extensions="diagram"
+            extensions="crom_diagram"
             default="true"
             id="IORM_MultipageEditor"
             name="Compartment Role Object Model">
@@ -70,7 +70,7 @@
        <wizard
              category="org.framed.iorm.ui.wizard_category"
              class="org.framed.iorm.ui.wizards.RoleModelProjectWizard"
-             icon="icons/wizard/icon_role_model_project_wizard.png"
+             icon="icons/wizard/icon_role_model_project_wizard.gif"
              id="org.framed.iorm.ui.project_wizard"
              name="CROM Project"
              project="true">

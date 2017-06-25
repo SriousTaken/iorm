@@ -51,6 +51,11 @@ public class MethodUtil {
 		return 0;
 	}
 	
+	/**
+	 * This operation gets the root {@link Model} for a given {@link Diagram}.
+	 * @param diagram The diagram to get the model from
+	 * @return the root model of the given diagram if there is exactly one model found and returns null else
+	 */
 	public static final Model getDiagramRootModel(Diagram diagram) {
 		List<Model> models=  new ArrayList<Model>();
 		for(EObject eObject : diagram.eResource().getContents()) {
@@ -61,11 +66,21 @@ public class MethodUtil {
 		return null;
 	}
 	
+	/**
+	 * This operation creates an {@link IFile} of an empty text file for a given {@link IEditorInput} using two steps:
+	 * <p>
+	 * Step 1: It gets the project the editor input is located in.<br>
+	 * Step 2: The method searches for the file "empty.txt" in the project the editor input is located in.
+	 * @param editorInput
+	 * @return
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
 	public static final IFile getEmptyTextFileForDiagram(IEditorInput editorInput) throws IOException, URISyntaxException {
 		//Step 1
 		IFileEditorInput fileInput = (IFileEditorInput) editorInput;
     	IFile file = fileInput.getFile();
-		String projectNameOfDiagram = file.getParent().getParent().getParent().getName();
+		String projectNameOfDiagram = file.getParent().getParent().getName();
 		//Step 2		
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot(); 
 		IPath pathToEmptyTectFile = new Path(projectNameOfDiagram + PATH_TO_EMPTY_TEXTFILE);

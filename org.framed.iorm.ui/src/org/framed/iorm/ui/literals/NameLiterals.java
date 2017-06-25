@@ -7,6 +7,11 @@ package org.framed.iorm.ui.literals;
 public class NameLiterals {
 	
 	/**
+	 * the file extension of the diagram type used in this editor 
+	 */
+	public static final String FILE_EXTENSION_FOR_DIAGRAMS = ".crom_diagram";
+	
+	/**
 	 * name literals used in the role model wizard or role model project wizard
 	 * <p>
 	 * can be:<br>

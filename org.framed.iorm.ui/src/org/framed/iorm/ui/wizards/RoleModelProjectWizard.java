@@ -23,7 +23,6 @@ public class RoleModelProjectWizard extends BasicNewProjectResourceWizard {
 	 * evaluates if the wizard can be finished and the project can be created
 	 * <p>
 	 * also creates the project and an empty text file in it
-	 * @exception CoreException
 	 */
 	@Override
 	public boolean performFinish() {
