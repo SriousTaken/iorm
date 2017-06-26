@@ -1,6 +1,5 @@
 package org.framed.iorm.ui.multipage;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -23,8 +22,6 @@ import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;
 import org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor;
 import org.framed.iorm.ui.subeditors.FRaMEDTextViewer;
 import org.framed.iorm.ui.util.MethodUtil;
-
-import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 
 /**
  * This class is creates the overall editor to edit the role model. 

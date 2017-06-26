@@ -85,9 +85,22 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	private MultipageEditor multipageEditor;
 	
 	/**
+	 * the feature model that used to create configuration and use its rules in the {@link ChangeConfigurationsFeature}
+	 */
+	private IFeatureModel featureModel;
+	
+	/**
 	 * the configuration that used to manage the features in the tree view of the editor 
 	 */
 	private Configuration configuration;
+	
+	/**
+	 * the features of the standard configuration
+	 * <p>
+	 * This is saved to use get the information if a feature is manually selected when adding a feature back in
+	 * the {@link ChangeConfigurationFeature}.
+	 */
+	EList<FRaMEDFeature> standardFeatures;
 	
 	/**
 	 * the tree view of the editor that is used by the user to edit the configuration of the diagram 
@@ -98,6 +111,22 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	 * the item of the tree view {@link #tree}
 	 */
 	private final Map<SelectableFeature, TreeItem> itemMap = new HashMap<SelectableFeature, TreeItem>();
+	
+	/**
+	 * get method for the feature model of the editor
+	 * @return the feature model of the editor
+	 */
+	public IFeatureModel getFeatureModel() {
+		return featureModel;
+	}
+	
+	/**
+	 * get method for the standard features list
+	 * @return the features of the standard configuration
+	 */
+	public EList<FRaMEDFeature> getStandardFeatures() {
+		return standardFeatures;
+	}
 	
 	//constructor and its called function
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -122,7 +151,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 		IFeatureModel featureModel = readFeatureModel();
 		loadConfiguration(rootModel, featureModel);
 		try {
-			createStandardFramedConfiguration(rootModel);
+			readStandardFramedConfiguration(rootModel);
 		} catch (URISyntaxException | IOException e) { e.printStackTrace(); }
 	}
 	
@@ -183,7 +212,8 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	  	if(featureModelManager.getLastProblems().containsError()) {
 	  		throw new FeatureModelNotReadableException();
 	  	}
-	  	return featureModelManager.getObject();
+	  	featureModel = featureModelManager.getObject();
+	  	return featureModel;
 	}
 	
 	/**
@@ -202,41 +232,25 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	}
 	
 	/**
-	 * sets the features of the previously loaded configuration depending of the standard configuration using the 
-	 * following steps:
+	 * set the class variable standartFeatures
 	 * <p>
-	 * Step 1: It gets the framed configuation of the root model and checks if its was already set. This is needed to make
-	 * sure this the configuration of the editor is only set on creation of a diagram, not on a load of an already created
-	 * diagram before.<br>
-	 * Step 2: It gets the root model of the standard configuration file to be used in step 3.<br>
-	 * Step 3: Apply each feature setting in the standard configuration to the feature editors configuration.
 	 * @param rootModel the root model to get framed configuration from
 	 * @throws URISyntaxException
 	 * @throws IOException
 	 */
-	private void createStandardFramedConfiguration(Model rootModel) throws URISyntaxException, IOException {
-	    //Step 1
-		FRaMEDConfiguration framedConfiguration = rootModel.getFramedConfiguration();
-	    if (framedConfiguration == null || 
-	    	framedConfiguration.getFeatures() == null || 
-	        framedConfiguration.getFeatures().size() < 1) {
-	    	//Step 2
-	    	ResourceSet resourceSet = new ResourceSetImpl();
-	    	Resource resourceStandartConfiguration =
-	          resourceSet.createResource(URI.createURI(FileLocator.resolve(URL_TO_STANDARD_CONFIGURATION).toURI().toString()));
-	    	try {
-	    		resourceStandartConfiguration.load(null);
-	    	} catch (IOException e) { e.printStackTrace();
-	        	resourceStandartConfiguration = null;
-	    	}
-	    	Model standardConfigurationModel = (Model) resourceStandartConfiguration.getContents().get(0);
-	    	//Step 3
-	    	for (FRaMEDFeature framedFeature : standardConfigurationModel.getFramedConfiguration().getFeatures()) {
-	    		if (framedFeature.isManuallySelected()) {
-	    			configuration.setManual(framedFeature.getName().getLiteral(), Selection.SELECTED);
-	    		} else {
-	    			configuration.setManual(framedFeature.getName().getLiteral(), Selection.UNDEFINED);
-}	}   }	}
+	private void readStandardFramedConfiguration(Model rootModel) throws URISyntaxException, IOException {
+		if(standardFeatures == null) {	
+			ResourceSet resourceSet = new ResourceSetImpl();
+			Resource resourceStandartConfiguration =
+			resourceSet.createResource(URI.createURI(FileLocator.resolve(URL_TO_STANDARD_CONFIGURATION).toURI().toString()));
+			try {
+				resourceStandartConfiguration.load(null);
+			} catch (IOException e) { e.printStackTrace();
+		       	resourceStandartConfiguration = null;
+			}
+			Model standardConfigurationModel = (Model) resourceStandartConfiguration.getContents().get(0);
+			standardFeatures = standardConfigurationModel.getFramedConfiguration().getFeatures();
+	} 	}
 	
 	//tree related operation
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -423,12 +437,12 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	 * @param select the new selection
 	 */
 	public void changeSelection(final TreeItem item, final boolean select) {
-		ConfigurationEditorChangeCommand cmd = new ConfigurationEditorChangeCommand();
-		cmd.setFeatureEditor(this);
-		cmd.setBehaviorDiagramEditor(multipageEditor.getDiagramEditor());
-		cmd.setItem(item);
-		cmd.setSelect(select);
-		multipageEditor.getDiagramEditor().getCommandStack().execute(cmd);
+		ConfigurationEditorChangeCommand command = new ConfigurationEditorChangeCommand();
+		command.setFeatureEditor(this);
+		command.setBehaviorDiagramEditor(multipageEditor.getDiagramEditor());
+		command.setItem(item);
+		command.setSelect(select);
+		multipageEditor.getDiagramEditor().getCommandStack().execute(command);
 	}
 	
 	/**
@@ -478,8 +492,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 				if(entry.getKey().getName().equals(framedFeature.getName().getLiteral())) {
 					if (entry.getKey().getAutomatic() == Selection.UNDEFINED) {
 						if(!(entry.getValue().getChecked())) {
-							entry.getValue().setChecked(true);
-							entry.getKey().setManual(Selection.SELECTED);
+							setSelection(entry.getValue(), true);
 						}
 						mapEntryFound = true;
 				}	}	
@@ -487,15 +500,13 @@ public class FRaMEDFeatureEditor extends EditorPart {
 			//Step 2
 			if(!mapEntryFound) {
 				if (entry.getKey().getAutomatic() == Selection.UNDEFINED) {
-					//wiederspruch gefunden
 					if((entry.getValue().getChecked())) {
-						entry.getValue().setChecked(false);
-						entry.getKey().setManual(Selection.UNSELECTED);
+						setSelection(entry.getValue(), false);
 			}	}	}
 			mapEntryFound = false;
 		}
 		//Step 3
-		updateTree();
+		updateTree();	
 	}
 	 
 	//unused methods

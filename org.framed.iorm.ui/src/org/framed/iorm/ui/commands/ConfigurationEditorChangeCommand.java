@@ -9,6 +9,8 @@ import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;
 import org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor;
 
+import de.ovgu.featureide.fm.core.base.IFeatureModel;
+
 /**
  * This command is used when configuration of a role model is changed.
  * <p>
@@ -79,6 +81,8 @@ public class ConfigurationEditorChangeCommand extends Command {
 			ChangeConfigurationContext changeConfigurationContext = new ChangeConfigurationContext();
 			changeConfigurationContext.setTreeItem(item);
 			changeConfigurationContext.setBehaviorEditor(behaviorDiagramEditor);
+			changeConfigurationContext.setFeatureModel(featureEditor.getFeatureModel());
+			changeConfigurationContext.setStandardFeatures(featureEditor.getStandardFeatures());
 			if(changeConfigurationFeature.canExecute(changeConfigurationContext)) {
 				//Step 4
 				try {
