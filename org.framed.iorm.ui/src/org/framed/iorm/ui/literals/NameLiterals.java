@@ -57,7 +57,9 @@ public class NameLiterals {
 	 * (5) the name of the natural type create feature or<br>
 	 * (6) the name of the data type create feature or<br>
 	 * (7) the name of the inheritance create feature or<br>
-	 * (8) the name of the change configuration custom feature
+	 * (8) the name of the change configuration custom feature or<br>
+	 * (9) the name of the group create feature or<br>
+	 * (10) the name of the step in custom feature
 	 */
 	public static final String ATTRIBUTE_FEATURE_NAME = "Attribute",
 							   OPERATION_FEATURE_NAME = "Operation",
@@ -67,7 +69,9 @@ public class NameLiterals {
 							   DATATYPE_FEATURE_NAME = "Data Type",
 							   INHERITANCE_FEATURE_NAME = "Inheritance",
 							   CHANGECONFIGURATION_FEATURE_NAME = "Change Feature Model",
-							   GROUP_FEATURE_NAME = "Group";
+							   GROUP_FEATURE_NAME = "Group",
+							   STEP_IN_FEATURE_NAME = "Step In",
+							   STEP_OUT_FEATURE_NAME = "Step out";
 	
 	/**
 	 * name literals for editor pages

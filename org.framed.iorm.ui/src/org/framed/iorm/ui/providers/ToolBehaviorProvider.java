@@ -4,12 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
+import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.palette.IPaletteCompartmentEntry;
 import org.eclipse.graphiti.tb.DefaultToolBehaviorProvider;
 import org.eclipse.graphiti.tb.IContextButtonPadData;
+import org.eclipse.graphiti.tb.IContextMenuEntry;
+import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
+import org.framed.iorm.ui.util.PropertyUtil;
 
 /**
  * This class enables context buttons and can manipulate the palette of the editor.
@@ -18,10 +24,29 @@ import org.framed.iorm.ui.literals.NameLiterals;
 public class ToolBehaviorProvider extends DefaultToolBehaviorProvider{
 	
 	/**
-	 * the name literals for features to remove from the editor palette of the diagram type
+	 * the name literals for features to remove from the editor palette for the diagram type
+	 * gathered from {@link NameLiterals}
 	 */
-	private static final String ATTRIBUTE_OPERATION_COMMON_FEATURE_NAME = NameLiterals.ATTRIBUTE_OPERATION_COMMON_FEATURE_NAME,
-								MODEL_FEATURE_NAME = NameLiterals.MODEL_FEATURE_NAME;
+	private final String ATTRIBUTE_OPERATION_COMMON_FEATURE_NAME = NameLiterals.ATTRIBUTE_OPERATION_COMMON_FEATURE_NAME,
+						 MODEL_FEATURE_NAME = NameLiterals.MODEL_FEATURE_NAME;
+	
+	/**
+	 * the name literals for features to probaly add to the context menu for the diagram type
+	 * gathered from {@link NameLiterals}
+	 */
+	private final String CHANGECONFIGURATION_FEATURE_NAME = NameLiterals.CHANGECONFIGURATION_FEATURE_NAME,
+						 STEP_IN_FEATURE_NAME = NameLiterals.STEP_IN_FEATURE_NAME,
+						 STEP_OUT_FEATURE_NAME = NameLiterals.STEP_OUT_FEATURE_NAME;
+	
+	/**
+	 * the shape identifiers of the shapes the step in feature can be used on gathered from {@link IdentifierLiterals}
+	 * <p>
+	 * can be:<br>
+	 * (1) the shape identifier of type body rectangle of a group or<br>
+	 * (2) the shape identifier of type body rectangle of a compartment type or<br>
+	 * (3) the shape identifier of type body rectangle of a role group 
+	 */
+	private final String SHAPE_ID_GROUP_TYPEBODY = IdentifierLiterals.SHAPE_ID_GROUP_TYPEBODY;
 	
 	/**
 	 * Class constructor
@@ -44,6 +69,48 @@ public class ToolBehaviorProvider extends DefaultToolBehaviorProvider{
 	    setGenericContextButtons(contextButtonPadData, pictogramElement, CONTEXT_BUTTON_DELETE | CONTEXT_BUTTON_UPDATE);
 	    return contextButtonPadData;
 	}    
+	
+	/**
+	 * set the context menu for a specific context, for example a right clicked pictogram element.
+	 * <p>
+	 * This operation controls which custom features are shown in the context menu depending on the
+	 * right clicked pictogram element. It does this using the following steps:<br>
+	 * Step 1: It iterates over all custom feature to probably add to the list of custom feature to show in
+	 * 		   the context menu.<br>
+	 * Step 2: If its the change configuration custom feature, never add it to this list.<br>
+	 * Step 3: If its the step in feature check if the right clicked pictogram element (exactly one!) has a
+	 * 		   graphics algorithm that is the type body of a group, compartment type or role group. If yes, add the
+	 * 		   corresponding context menu entry to the context menu.
+	 */
+	@Override
+	public IContextMenuEntry[] getContextMenu(ICustomContext customContext) {
+		IContextMenuEntry[] superContextEntries = super.getContextMenu(customContext);
+		List<IContextMenuEntry> contextMenuEntries = new ArrayList<IContextMenuEntry>();
+		//Step 1
+		for(int i = 0; i < superContextEntries.length; i++) {
+			switch(superContextEntries[i].getText()) {
+				//Step 2
+				case CHANGECONFIGURATION_FEATURE_NAME: 
+					break;
+				//Step 3	
+				case STEP_IN_FEATURE_NAME: 
+					if(customContext.getPictogramElements().length == 1) {
+						if(customContext.getPictogramElements()[0].getGraphicsAlgorithm() != null &&
+						   !(customContext.getPictogramElements()[0] instanceof Diagram)) {
+							GraphicsAlgorithm graphicAlgorithm =  customContext.getPictogramElements()[0].getGraphicsAlgorithm();
+							if(PropertyUtil.isShape_IdValue(graphicAlgorithm, SHAPE_ID_GROUP_TYPEBODY)) 
+								contextMenuEntries.add(superContextEntries[i]);
+					}	}
+					break;
+				case STEP_OUT_FEATURE_NAME:	
+					contextMenuEntries.add(superContextEntries[i]);
+					break;
+				default: 
+					break;	
+			}
+		}
+		return contextMenuEntries.toArray(new IContextMenuEntry[contextMenuEntries.size()]);
+	}
 	
 	/**
 	 * removes create features implemented by the pattern from the palette

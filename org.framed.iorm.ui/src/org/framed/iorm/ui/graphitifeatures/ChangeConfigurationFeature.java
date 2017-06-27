@@ -69,7 +69,7 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 	 * It return true if<br>
 	 * (1) all needed informations in the context are set and<br>
 	 * (2) the diagram to work has a root model
-	 * @return if feature can be executed
+	 * @return if the feature can be executed
 	 */
 	@Override
 	public boolean canExecute(ICustomContext context) {

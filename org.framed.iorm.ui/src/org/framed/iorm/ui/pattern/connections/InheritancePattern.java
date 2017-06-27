@@ -42,7 +42,8 @@ public class InheritancePattern extends AbstractConnectionPattern {
 	 * the identifier for the polyline of the inheritances gathered from {@link IdentifierLiterals} and
 	 * the identifier for the icon of the create feature
 	 */
-	private static final String SHAPE_ID_INHERITANCE_CONNECTION = IdentifierLiterals.SHAPE_ID_INHERITANCE_CONNECTION,
+	private static final String SHAPE_ID_INHERITANCE_LINE = IdentifierLiterals.SHAPE_ID_INHERITANCE_LINE,
+								SHAPE_ID_INHERITANCE_DECORATOR = IdentifierLiterals.SHAPE_ID_INHERITANCE_DECORATOR,
 								IMG_ID_FEATURE_INHERITANCE = IdentifierLiterals.IMG_ID_FEATURE_INHERITANCE;
 	
 	/**
@@ -117,7 +118,7 @@ public class InheritancePattern extends AbstractConnectionPattern {
 	 * <p>
 	 * Step 1: create a connection shape and polyline as its graphic algorithm
 	 * Step 2: create the a connection decorator and a arrowhead as its graphic algorithm 
-	 * Step 3: set property ID for polyline
+	 * Step 3: set property ID for polyline and the arrowhead
 	 * Step 4: link the pictogram elements and the business objects
 	 */
 	public PictogramElement add(IAddContext addContext) {
@@ -141,7 +142,8 @@ public class InheritancePattern extends AbstractConnectionPattern {
 	    arrowhead.setForeground(manageColor(COLOR_CONNECTIONS));
 	    arrowhead.setBackground(manageColor(COLOR_INHERITANCE_ARROWHEAD));
 	    //Step 3
-	    PropertyUtil.setShape_IdValue(polyline, SHAPE_ID_INHERITANCE_CONNECTION);
+	    PropertyUtil.setShape_IdValue(polyline, SHAPE_ID_INHERITANCE_LINE);
+	    PropertyUtil.setShape_IdValue(arrowhead, SHAPE_ID_INHERITANCE_DECORATOR);
 	    //Step 4
 	    link(connection, addedInheritance);
 	    return connection;

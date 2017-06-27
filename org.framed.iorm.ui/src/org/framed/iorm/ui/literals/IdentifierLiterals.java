@@ -117,9 +117,12 @@ public class IdentifierLiterals {
 	/**
 	 * identifers used for the inheritance connection
 	 * <p>
-	 * the identifier for the decorated inheritance polyline
+	 * can be:<br>
+	 * (1) the identifier for the inheritance polyline or<br>
+	 * (2) the identifier for the inheritance decorator polygon
 	 */
-	public static final String SHAPE_ID_INHERITANCE_CONNECTION = "shape_inheritance_con";
+	public static final String SHAPE_ID_INHERITANCE_LINE = "shape_inheritance_con",
+							   SHAPE_ID_INHERITANCE_DECORATOR = "shape_inheritance_dec";
 
 	/**
 	 * key values used to identify properties in {@link org.framed.iorm.ui.util.PropertyUtil}

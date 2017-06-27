@@ -9,6 +9,8 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.features.impl.DefaultRemoveFeature;
 import org.eclipse.graphiti.pattern.DefaultFeatureProviderWithPatterns;
 import org.framed.iorm.ui.graphitifeatures.ChangeConfigurationFeature;
+import org.framed.iorm.ui.graphitifeatures.StepInFeature;
+import org.framed.iorm.ui.graphitifeatures.StepOutFeature;
 import org.framed.iorm.ui.pattern.connections.InheritancePattern;
 import org.framed.iorm.ui.pattern.shapes.AttributeOperationCommonPattern;
 import org.framed.iorm.ui.pattern.shapes.AttributePattern;
@@ -62,10 +64,14 @@ public class FeatureProvider extends DefaultFeatureProviderWithPatterns {
 	/**
 	 * sets the graphiti custom features that are used by editor for the diagram type
 	 * <p>
-	 * It makes the feature to change the configuration of the diagram available. 
+	 * It makes the following features available:<br>
+	 * (1) the feature to change the configuration of the diagram and<br>
+	 * (2) the feature to step in a group, compartment type or role group
 	 */
 	@Override
 	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
-	    return new ICustomFeature[] { new ChangeConfigurationFeature(this) };
+	    return new ICustomFeature[] { new ChangeConfigurationFeature(this),
+	    						 	  new StepInFeature(this),
+	    						 	  new StepOutFeature(this)};
 	} 
 }

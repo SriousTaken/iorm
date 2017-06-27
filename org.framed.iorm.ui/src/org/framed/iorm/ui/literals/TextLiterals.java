@@ -27,10 +27,12 @@ public class TextLiterals {
 	 * <p>
 	 * can be:<br>
 	 * (1) the message for the {@link org.framed.iorm.ui.exceptions.ConfigurationInconsistentException} or<br>
-	 * (2) the message for the {@link org.framed.iorm.ui.exceptions.FeatureModelNotReadableException}
+	 * (2) the message for the {@link org.framed.iorm.ui.exceptions.FeatureModelNotReadableException} or<br>
+	 * (3) the message for the {@link org.framed.iorm.ui.exceptions.NoShapeOrConnectionForModelElementFoundException}
 	 */
 	public static final String CONFIGURATION_INCONSISTENT_MESSAGE = "The configurations used in edited file and the feature editor are inconsistent!",
-						       FEATUREMODEL_NOT_READABLE_MESSAGE = "The feature model could not be read!";
+						       FEATUREMODEL_NOT_READABLE_MESSAGE = "The feature model could not be read!",
+						       NO_SHAPE_OR_CONNECTION_FOR_MODELELEMENT_FOUND_MESSAGE = "There is no linked shape for a business object of the diagram.";
 	
 	/**
 	 * messages used in the Eclipse wizards
