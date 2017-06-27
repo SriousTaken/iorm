@@ -48,7 +48,8 @@ public class URLLiterals {
 	 * (2) the file path to the icon for the data type create feature or<br>
 	 * (3) the file path to the icon for the attribute create feature or<br>
 	 * (4) the file path to the icon for the operation create feature or<br>
-	 * (5) the file path to the icon for the inheritance create feature
+	 * (5) the file path to the icon for the inheritance create feature or<br>
+	 * (6) the file path to the icon for the group create feature
 	 */
 	public static final String IMG_FILEPATH_FEATURE_NATURALTYPE = IMG_FILE_PATH_PREFIX + "naturaltype.png",
 							   IMG_FILEPATH_FEATURE_DATATYPE = IMG_FILE_PATH_PREFIX + "datatype.png",

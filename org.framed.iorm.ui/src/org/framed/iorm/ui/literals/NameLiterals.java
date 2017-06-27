@@ -30,7 +30,8 @@ public class NameLiterals {
 	 * (1) the standard name for attributes or<br>
 	 * (2) the standard name for operations or<br>
 	 * (3) the standard name for naturals types or<br>
-	 * (4) the standard name for data types
+	 * (4) the standard name for data types or<b>
+	 * (5) the standard name for groups
 	 */
 	public static final String STANDARD_ATTRIBUTE_NAME = "attribute:type",
 							   STANDARD_OPERATION_NAME = "operation():type",

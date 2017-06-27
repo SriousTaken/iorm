@@ -68,8 +68,8 @@ public class IdentifierLiterals {
 	 * identifers used for the data type
 	 * <p>
 	 * can be:<br>
-	 * (1) typebody polyon or<br>
-	 * (2) shadow polyon or<br>
+	 * (1) typebody polygon or<br>
+	 * (2) shadow polygon or<br>
 	 * (3) name rectange or<br>
 	 * (4) first line or<br>
 	 * (5) second line or<br>
@@ -88,13 +88,11 @@ public class IdentifierLiterals {
 	 * identifers used for the group
 	 * <p>
 	 * can be:<br>
-	 * (1) typebody polyon or<br>
-	 * (2) shadow polyon or<br>
+	 * (1) typebody rectangle or<br>
+	 * (2) shadow rectangle or<br>
 	 * (3) name rectange or<br>
-	 * (4) first line or<br>
-	 * (5) second line or<br>
-	 * (6) attribute container rectangle or<br>
-	 * (7) operation container rectangle 
+	 * (4) line or<br>
+	 * (5) model container rectangle 
 	 */
 	public static final String SHAPE_ID_GROUP_TYPEBODY = "shape_group_typebody",
 						 	   SHAPE_ID_GROUP_SHADOW = "shape_group_shadow",

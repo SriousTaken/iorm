@@ -18,12 +18,22 @@ import org.framed.iorm.ui.pattern.shapes.ModelPattern;
 import org.framed.iorm.ui.pattern.shapes.NaturalTypePattern;
 import org.framed.iorm.ui.pattern.shapes.OperationPattern;
 
+/**
+ * This class manages the pattern and features for the editing of the diagram type
+ * @author Kevin Kassin
+ */
 public class FeatureProvider extends DefaultFeatureProviderWithPatterns {
 	
+	/**
+	 * Class constructor
+	 * <p>
+	 * It gets the pattern that are used to created, edit and delete shape (Step 1) and 
+	 * connections (Step 2) in the editor for the diagram type.
+	 * @param diagramTypeProvider the provider of the edited diagram type
+	 */
 	public FeatureProvider(IDiagramTypeProvider diagramTypeProvider) {
       super(diagramTypeProvider);
-      
-      //add patterns for shapes
+      //Step 1
       addPattern(new ModelPattern());
       addPattern(new NaturalTypePattern());
       addPattern(new DataTypePattern());
@@ -31,27 +41,31 @@ public class FeatureProvider extends DefaultFeatureProviderWithPatterns {
       addPattern(new AttributeOperationCommonPattern());
       addPattern(new AttributePattern());
       addPattern(new OperationPattern());
-      
-      
-      //add patterns for connections
+      //Step 2
       addConnectionPattern(new InheritancePattern());
 	}	
 	
-	//disable the remove feature
+	/**
+	 * disables the remove feature
+	 * <p>
+	 * This is done since the remove feature only removes the pictogram elements of a diagram content but not its
+	 * business object. This behavior is not wanted.
+	 */
 	@Override
 	public IRemoveFeature getRemoveFeature(IRemoveContext context) {
 		return new DefaultRemoveFeature(this) {
 			@Override
 			public boolean isAvailable(IContext context) {
 				return false;
-			}
-		};
-	}
+	}	};	}
 	
-	//add custom feature to change the feature model
+	/**
+	 * sets the graphiti custom features that are used by editor for the diagram type
+	 * <p>
+	 * It makes the feature to change the configuration of the diagram available. 
+	 */
 	@Override
 	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
 	    return new ICustomFeature[] { new ChangeConfigurationFeature(this) };
 	} 
 }
-

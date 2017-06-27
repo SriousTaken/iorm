@@ -9,8 +9,6 @@ import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;
 import org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor;
 
-import de.ovgu.featureide.fm.core.base.IFeatureModel;
-
 /**
  * This command is used when configuration of a role model is changed.
  * <p>

@@ -1,8 +1,5 @@
 package org.framed.iorm.ui.pattern.shapes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IDirectEditingInfo;
@@ -35,7 +32,6 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.framed.iorm.model.Model;
-import org.framed.iorm.model.NamedElement;
 import org.framed.iorm.model.OrmFactory;
 import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
@@ -118,7 +114,6 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 	//~~~~~~~~~~~~~
 	@Override
 	public boolean canAdd(IAddContext addContext) {
-		System.out.println("d");
 		//new Object is a group
 		if(addContext.getNewObject() instanceof org.framed.iorm.model.Shape) {
 			org.framed.iorm.model.Shape shape = (org.framed.iorm.model.Shape) addContext.getNewObject();
@@ -129,13 +124,11 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 					if(MethodUtil.getDiagramRootModel((Diagram) containerShape) != null)
 						return true;
 		}	}	}
-		System.out.println("a");
 		return false;
 	}
 
 	@Override
 	public PictogramElement add(IAddContext addContext) {
-		System.out.println("b");
 		//get container and new object
 		org.framed.iorm.model.Shape addedGroup = (org.framed.iorm.model.Shape) addContext.getNewObject();
 		ContainerShape targetDiagram = getDiagram();
@@ -177,7 +170,7 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 		//model container
 		ContainerShape modelContainer = pictogramElementCreateService.createContainerShape(typeBodyShape, false);
 		Rectangle modelRectangle = graphicAlgorithmService.createRectangle(modelContainer);
-		//modelRectangle.setLineVisible(false);
+		modelRectangle.setLineVisible(false);
 		modelRectangle.setBackground(manageColor(COLOR_BACKGROUND));
 		graphicAlgorithmService.setLocationAndSize(modelRectangle, PUFFER_BETWEEN_ELEMENTS, HEIGHT_NAME_SHAPE+PUFFER_BETWEEN_ELEMENTS, 
 												   width-2*PUFFER_BETWEEN_ELEMENTS, height-GROUP_CORNER_RADIUS-2*PUFFER_BETWEEN_ELEMENTS);
@@ -240,7 +233,6 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 		//enable direct editing
 		getFeatureProvider().getDirectEditingInfo().setActive(true);
 		//add to graphiti representation
-		System.out.println("c");
 		addGraphicalRepresentation(createContext, newGroup);
 		return new Object[] { newGroup };	
 	}

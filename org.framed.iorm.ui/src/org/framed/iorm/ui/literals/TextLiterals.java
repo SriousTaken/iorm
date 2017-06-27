@@ -10,10 +10,11 @@ public class TextLiterals {
 	 * messages used as direct editing tips
 	 * <p>
 	 * can be:<br>
-	 * (1) the direct editing message for attributes or<br>
-	 * (2) the direct editing message for operations or<br>
-	 * (3) the direct editing message for data types or<br>
-	 * (4) the direct editing message for natural types or<br>
+	 * (1) the direct editing message for attribute names or<br>
+	 * (2) the direct editing message for operation names or<br>
+	 * (3) the direct editing message for data type names or<br>
+	 * (4) the direct editing message for natural type names or<br>
+	 * (5) the direct editing message for group names
 	 */
 	public static final String DIRECTEDITING_ATTRIBUTES = "An attributes name has the form <name>:<type>",
 							   DIRECTEDITING_OPERATIONS = "An operations name has the form <name>(<parameters>):<type>",
