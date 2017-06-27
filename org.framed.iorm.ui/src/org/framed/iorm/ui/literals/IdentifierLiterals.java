@@ -34,7 +34,8 @@ public class IdentifierLiterals {
 							   IMG_ID_FEATURE_DATATYPE = IMG_ID_PREFIX + "img_datatype",
 							   IMG_ID_FEATURE_ATTRIBUTE = IMG_ID_PREFIX + "img_attribute",
 							   IMG_ID_FEATURE_OPERATION = IMG_ID_PREFIX + "img_operation",
-							   IMG_ID_FEATURE_INHERITANCE = IMG_ID_PREFIX + "img_inheritance";
+							   IMG_ID_FEATURE_INHERITANCE = IMG_ID_PREFIX + "img_inheritance",
+							   IMG_ID_FEATURE_GROUP = IMG_ID_PREFIX + "img_group";
 	
 	/**
 	 * feature model ID
@@ -82,6 +83,24 @@ public class IdentifierLiterals {
 						 	   SHAPE_ID_DATATYPE_SECONDLINE = "shape_dt_secondline", 
 						 	   SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER = "shape_dt_attcontainer",
 						 	   SHAPE_ID_DATATYPE_OPERATIONCONTAINER = "shape_dt_opcontainer";
+	
+	/**
+	 * identifers used for the group
+	 * <p>
+	 * can be:<br>
+	 * (1) typebody polyon or<br>
+	 * (2) shadow polyon or<br>
+	 * (3) name rectange or<br>
+	 * (4) first line or<br>
+	 * (5) second line or<br>
+	 * (6) attribute container rectangle or<br>
+	 * (7) operation container rectangle 
+	 */
+	public static final String SHAPE_ID_GROUP_TYPEBODY = "shape_group_typebody",
+						 	   SHAPE_ID_GROUP_SHADOW = "shape_group_shadow",
+						 	   SHAPE_ID_GROUP_NAME = "shape_group_name", 
+						 	   SHAPE_ID_GROUP_LINE = "shape_group_line",
+						 	   SHAPE_ID_GROUP_MODEL = "shape_group_model";
 	
 	/**
 	 * identifers used for attributes

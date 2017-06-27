@@ -75,6 +75,13 @@ public class LayoutLiterals {
 	public static final int DATATYPE_CORNER_SIZE = HEIGHT_NAME_SHAPE;
 	
 	/**
+	 * layout integer for groups
+	 * <p>
+	 * the radius of the rounded corners of groups 
+	 */
+	public static final int GROUP_CORNER_RADIUS = HEIGHT_NAME_SHAPE;
+	
+	/**
 	 * color value for connections
 	 * <p>
 	 * the color of the line of a connection

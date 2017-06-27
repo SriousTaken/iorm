@@ -35,7 +35,8 @@ public class NameLiterals {
 	public static final String STANDARD_ATTRIBUTE_NAME = "attribute:type",
 							   STANDARD_OPERATION_NAME = "operation():type",
 							   STANDARD_NATURALTYPE_NAME = "naturalType",
-							   STANDARD_DATATYPE_NAME = "dataType";
+							   STANDARD_DATATYPE_NAME = "dataType",
+							   STANDART_GROUP_NAME = "group";
 
 	/**
 	 * name literals for commands
@@ -64,7 +65,8 @@ public class NameLiterals {
 							   NATURALTYPE_FEATURE_NAME = "Natural Type",
 							   DATATYPE_FEATURE_NAME = "Data Type",
 							   INHERITANCE_FEATURE_NAME = "Inheritance",
-							   CHANGECONFIGURATION_FEATURE_NAME = "Change Feature Model";
+							   CHANGECONFIGURATION_FEATURE_NAME = "Change Feature Model",
+							   GROUP_FEATURE_NAME = "Group";
 	
 	/**
 	 * name literals for editor pages

@@ -54,6 +54,7 @@ public class URLLiterals {
 							   IMG_FILEPATH_FEATURE_DATATYPE = IMG_FILE_PATH_PREFIX + "datatype.png",
 							   IMG_FILEPATH_FEATURE_ATTRIBUTE = IMG_FILE_PATH_PREFIX + "attribute.gif",
 							   IMG_FILEPATH_FEATURE_OPERATION = IMG_FILE_PATH_PREFIX + "operation.gif",
-							   IMG_FILEPATH_FEATURE_INHERITANCE = IMG_FILE_PATH_PREFIX + "inheritance.png";
+							   IMG_FILEPATH_FEATURE_INHERITANCE = IMG_FILE_PATH_PREFIX + "inheritance.png",
+							   IMG_FILEPATH_FEATURE_GROUP = IMG_FILE_PATH_PREFIX + "group.png";
 	
 }

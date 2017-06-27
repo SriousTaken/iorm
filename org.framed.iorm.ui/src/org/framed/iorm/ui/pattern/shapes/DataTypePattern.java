@@ -461,11 +461,11 @@ public class DataTypePattern extends AbstractPattern{
 		if( pictogramElement.getGraphicsAlgorithm() != null &&
 			PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_DATATYPE_TYPEBODY)) {
 			//pictogram name of data type, attributes and operations
-			String pictogramTypeName = getPictogramTypeName(pictogramElement);
-			List<String> pictogramAttributeNames = getpictogramAttributeNames(pictogramElement);
-			List<String> pictogramOperationNames = getpictogramOperationNames(pictogramElement);
+			String pictogramTypeName = MethodUtil.getPictogramTypeName(pictogramElement, SHAPE_ID_DATATYPE_NAME);
+			List<String> pictogramAttributeNames = MethodUtil.getpictogramAttributeNames(pictogramElement, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER);
+			List<String> pictogramOperationNames = MethodUtil.getpictogramOperationNames(pictogramElement, SHAPE_ID_DATATYPE_OPERATIONCONTAINER);
 			//business name and attributes
-			String businessTypeName = getBusinessTypeName(pictogramElement);
+			String businessTypeName = MethodUtil.getBusinessTypeName(getBusinessObjectForPictogramElement(pictogramElement));
 			List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 			List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 								
@@ -481,61 +481,6 @@ public class DataTypePattern extends AbstractPattern{
 				if(!(pictogramOperationNames.get(i).equals(businessOperationNames.get(i)))) return Reason.createTrueReason("Different names of Operations.");
 		}	}
 		return Reason.createFalseReason();
-	}
-	
-	private String getPictogramTypeName(PictogramElement pictogramElement) {
-		if (pictogramElement instanceof ContainerShape) {
-			ContainerShape containerShape = (ContainerShape) pictogramElement;
-			for (Shape shape : containerShape.getChildren()) {
-				//Name
-				if (shape.getGraphicsAlgorithm() instanceof Text) {
-					Text text = (Text) shape.getGraphicsAlgorithm();
-					if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_DATATYPE_NAME)) return text.getValue();
-		} 	}	}
-		return null;
-	}
-	
-	private List<String> getpictogramAttributeNames(PictogramElement pictogramElement) {
-		List<String> pictogrammAttributeNames = new ArrayList<String>();
-		if (pictogramElement instanceof ContainerShape) {
-			ContainerShape containerShape = (ContainerShape) pictogramElement;
-			for (Shape shape : containerShape.getChildren()) {
-				if(shape instanceof ContainerShape) {
-					ContainerShape innerContainerShape = (ContainerShape) shape;
-					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
-						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER)) {
-									for(Shape attributeShape : innerContainerShape.getChildren()) {
-										Text text = (Text) attributeShape.getGraphicsAlgorithm();
-										pictogrammAttributeNames.add(text.getValue());
-		}	}	}	}	}	}
-		return pictogrammAttributeNames;
-	}
-	
-	private List<String> getpictogramOperationNames(PictogramElement pictogramElement) {
-		List<String> pictogramOperationNames = new ArrayList<String>();
-		if (pictogramElement instanceof ContainerShape) {
-			ContainerShape containerShape = (ContainerShape) pictogramElement;
-			for (Shape shape : containerShape.getChildren()) {
-				if(shape instanceof ContainerShape) {
-					ContainerShape innerContainerShape = (ContainerShape) shape;
-					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
-						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_OPERATIONCONTAINER)) {
-									for(Shape operationShape : innerContainerShape.getChildren()) {
-										Text text = (Text) operationShape.getGraphicsAlgorithm();
-										pictogramOperationNames.add(text.getValue());
-		}	}	}	}	}	}
-		return pictogramOperationNames;
-	}
-	
-	private String getBusinessTypeName(PictogramElement pictogramElement) {
-		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
-		if (businessObject instanceof org.framed.iorm.model.Shape) {
-			org.framed.iorm.model.Shape shape = (org.framed.iorm.model.Shape) businessObject;
-			return shape.getName();
-		}
-		return null;
 	}
 	
 	private List<String> getBusinessAttributeNames(PictogramElement pictogramElement) {
@@ -579,7 +524,7 @@ public class DataTypePattern extends AbstractPattern{
          
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
 		//business names of natural type, attributes and operations
-		String businessTypeName = getBusinessTypeName(pictogramElement);
+		String businessTypeName = MethodUtil.getBusinessTypeName(getBusinessObjectForPictogramElement(pictogramElement));
 		List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 		List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 		

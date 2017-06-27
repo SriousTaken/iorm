@@ -11,13 +11,23 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.mm.algorithms.Rectangle;
+import org.eclipse.graphiti.mm.algorithms.Text;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.pattern.AbstractPattern;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.framed.iorm.model.Model;
+import org.framed.iorm.model.NamedElement;
 import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.URLLiterals;
+import org.framed.iorm.ui.pattern.shapes.DataTypePattern;
+import org.framed.iorm.ui.pattern.shapes.ModelPattern;
+import org.framed.iorm.ui.pattern.shapes.NaturalTypePattern;
 
 public class MethodUtil {
 	
@@ -85,5 +95,61 @@ public class MethodUtil {
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot(); 
 		IPath pathToEmptyTectFile = new Path(projectNameOfDiagram + PATH_TO_EMPTY_TEXTFILE);
 		return root.getFile(pathToEmptyTectFile);		
+	}
+	
+	public static String getPictogramTypeName(PictogramElement pictogramElement, String SHAPE_ID_NAME) {
+		if (pictogramElement instanceof ContainerShape) {
+			ContainerShape containerShape = (ContainerShape) pictogramElement;
+			for (Shape shape : containerShape.getChildren()) {
+				//Name
+				if (shape.getGraphicsAlgorithm() instanceof Text) {
+					Text text = (Text) shape.getGraphicsAlgorithm();
+					if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_NAME)) {
+						return text.getValue();
+					}
+		} 	}	}
+		return null;
+	}
+	
+	public static List<String> getpictogramAttributeNames(PictogramElement pictogramElement, String SHAPE_ID_ATTRIBUTECONTAINER) {
+		List<String> pictogrammAttributeNames = new ArrayList<String>();
+		if (pictogramElement instanceof ContainerShape) {
+			ContainerShape containerShape = (ContainerShape) pictogramElement;
+			for (Shape shape : containerShape.getChildren()) {
+				if(shape instanceof ContainerShape) {
+					ContainerShape innerContainerShape = (ContainerShape) shape;
+					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
+						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
+						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_ATTRIBUTECONTAINER)) {
+									for(Shape attributeShape : innerContainerShape.getChildren()) {
+										Text text = (Text) attributeShape.getGraphicsAlgorithm();
+										pictogrammAttributeNames.add(text.getValue());
+		}	}	}	}	}	}
+		return pictogrammAttributeNames;
+	}
+	
+	public static List<String> getpictogramOperationNames(PictogramElement pictogramElement, String SHAPE_ID_OPERATIONCONTAINER) {
+		List<String> pictogramOperationNames = new ArrayList<String>();
+		if (pictogramElement instanceof ContainerShape) {
+			ContainerShape containerShape = (ContainerShape) pictogramElement;
+			for (Shape shape : containerShape.getChildren()) {
+				if(shape instanceof ContainerShape) {
+					ContainerShape innerContainerShape = (ContainerShape) shape;
+					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
+						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
+						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_OPERATIONCONTAINER)) {
+									for(Shape operationShape : innerContainerShape.getChildren()) {
+										Text text = (Text) operationShape.getGraphicsAlgorithm();
+										pictogramOperationNames.add(text.getValue());
+		}	}	}	}	}	}
+		return pictogramOperationNames;
+	}
+	
+	public static String getBusinessTypeName(Object businessObject) {
+		if (businessObject instanceof org.framed.iorm.model.Shape) {
+			org.framed.iorm.model.Shape shape = (org.framed.iorm.model.Shape) businessObject;
+			return shape.getName();
+		}
+		return null;
 	}
 }

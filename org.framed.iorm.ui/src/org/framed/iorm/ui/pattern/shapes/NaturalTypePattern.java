@@ -195,7 +195,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		operationRectangle.setLineVisible(false);
 		operationRectangle.setBackground(manageColor(COLOR_BACKGROUND));
 		graphicAlgorithmService.setLocationAndSize(operationRectangle, PUFFER_BETWEEN_ELEMENTS, horizontalCenter+PUFFER_BETWEEN_ELEMENTS, 
-									 			   addContext.getWidth()-2*PUFFER_BETWEEN_ELEMENTS, horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS);
+									 			   width-2*PUFFER_BETWEEN_ELEMENTS, horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS);
 		
 		//setProperties
 		PropertyUtil.setShape_IdValue(typeBodyRectangle, SHAPE_ID_NATURALTYPE_TYPEBODY);
@@ -451,11 +451,11 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		if(pictogramElement.getGraphicsAlgorithm() != null &&
 		   PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_TYPEBODY)) {
 			//pictogram name of natural type, attributes and operations
-			String pictogramTypeName = getPictogramTypeName(pictogramElement);
-			List<String> pictogramAttributeNames = getpictogramAttributeNames(pictogramElement);
-			List<String> pictogramOperationNames = getpictogramOperationNames(pictogramElement);
+			String pictogramTypeName = MethodUtil.getPictogramTypeName(pictogramElement, SHAPE_ID_NATURALTYPE_NAME);
+			List<String> pictogramAttributeNames = MethodUtil.getpictogramAttributeNames(pictogramElement, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER);
+			List<String> pictogramOperationNames = MethodUtil.getpictogramOperationNames(pictogramElement, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER);
 			//business name and attributes
-			String businessTypeName = getBusinessTypeName(pictogramElement);
+			String businessTypeName = MethodUtil.getBusinessTypeName(getBusinessObjectForPictogramElement(pictogramElement));
 			List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 			List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 								
@@ -471,61 +471,6 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 				if(!(pictogramOperationNames.get(i).equals(businessOperationNames.get(i)))) return Reason.createTrueReason("Different names of Operations.");
 		}	}
 		return Reason.createFalseReason();
-	}
-	
-	private String getPictogramTypeName(PictogramElement pictogramElement) {
-		if (pictogramElement instanceof ContainerShape) {
-			ContainerShape containerShape = (ContainerShape) pictogramElement;
-			for (Shape shape : containerShape.getChildren()) {
-				//Name
-				if (shape.getGraphicsAlgorithm() instanceof Text) {
-					Text text = (Text) shape.getGraphicsAlgorithm();
-					if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_NATURALTYPE_NAME)) return text.getValue();
-		} 	}	}
-		return null;
-	}
-	
-	private List<String> getpictogramAttributeNames(PictogramElement pictogramElement) {
-		List<String> pictogrammAttributeNames = new ArrayList<String>();
-		if (pictogramElement instanceof ContainerShape) {
-			ContainerShape containerShape = (ContainerShape) pictogramElement;
-			for (Shape shape : containerShape.getChildren()) {
-				if(shape instanceof ContainerShape) {
-					ContainerShape innerContainerShape = (ContainerShape) shape;
-					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
-						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER)) {
-									for(Shape attributeShape : innerContainerShape.getChildren()) {
-										Text text = (Text) attributeShape.getGraphicsAlgorithm();
-										pictogrammAttributeNames.add(text.getValue());
-		}	}	}	}	}	}
-		return pictogrammAttributeNames;
-	}
-	
-	private List<String> getpictogramOperationNames(PictogramElement pictogramElement) {
-		List<String> pictogramOperationNames = new ArrayList<String>();
-		if (pictogramElement instanceof ContainerShape) {
-			ContainerShape containerShape = (ContainerShape) pictogramElement;
-			for (Shape shape : containerShape.getChildren()) {
-				if(shape instanceof ContainerShape) {
-					ContainerShape innerContainerShape = (ContainerShape) shape;
-					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
-						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER)) {
-									for(Shape operationShape : innerContainerShape.getChildren()) {
-										Text text = (Text) operationShape.getGraphicsAlgorithm();
-										pictogramOperationNames.add(text.getValue());
-		}	}	}	}	}	}
-		return pictogramOperationNames;
-	}
-	
-	private String getBusinessTypeName(PictogramElement pictogramElement) {
-		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
-		if (businessObject instanceof org.framed.iorm.model.Shape) {
-			org.framed.iorm.model.Shape shape = (org.framed.iorm.model.Shape) businessObject;
-			return shape.getName();
-		}
-		return null;
 	}
 	
 	private List<String> getBusinessAttributeNames(PictogramElement pictogramElement) {
@@ -565,11 +510,12 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 	@Override
 	public boolean update(IUpdateContext updateContext) {
 		int counter, newY;
-		boolean returnValue = false;
+		boolean changed = false;
          
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
+		
 		//business names of natural type, attributes and operations
-		String businessTypeName = getBusinessTypeName(pictogramElement);
+		String businessTypeName = MethodUtil.getBusinessTypeName(getBusinessObjectForPictogramElement(pictogramElement));
 		List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 		List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 		
@@ -582,7 +528,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
                     Text text = (Text) shape.getGraphicsAlgorithm();
                     if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_NATURALTYPE_NAME)) {
                     	text.setValue(businessTypeName);
-                    	returnValue = true;
+                    	changed = true;
                     }           
                 }
                 //set attribute and operation names and thier places in pictogram model
@@ -598,7 +544,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 								Text text = (Text) attributeShape.getGraphicsAlgorithm();
 								text.setValue(businessAttributeNames.get(counter));
 								attributeShape.getGraphicsAlgorithm().setY(newY+counter*HEIGHT_ATTRITBUTE_SHAPE);
-								returnValue = true;
+								changed = true;
 								counter++;
 							}	
 						}
@@ -610,10 +556,10 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 								Text text = (Text) operationShape.getGraphicsAlgorithm();
 								text.setValue(businessOperationNames.get(counter));									
 								operationShape.getGraphicsAlgorithm().setY(newY+counter*HEIGHT_OPERATION_SHAPE);
-								returnValue = true;
+								changed = true;
 								counter++;
 		}	}	}	}	}	}
-        return returnValue;
+        return changed;
 	}	
 	
 	//move feature

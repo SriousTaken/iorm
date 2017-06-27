@@ -13,6 +13,7 @@ import org.framed.iorm.ui.pattern.connections.InheritancePattern;
 import org.framed.iorm.ui.pattern.shapes.AttributeOperationCommonPattern;
 import org.framed.iorm.ui.pattern.shapes.AttributePattern;
 import org.framed.iorm.ui.pattern.shapes.DataTypePattern;
+import org.framed.iorm.ui.pattern.shapes.GroupPattern;
 import org.framed.iorm.ui.pattern.shapes.ModelPattern;
 import org.framed.iorm.ui.pattern.shapes.NaturalTypePattern;
 import org.framed.iorm.ui.pattern.shapes.OperationPattern;
@@ -26,9 +27,11 @@ public class FeatureProvider extends DefaultFeatureProviderWithPatterns {
       addPattern(new ModelPattern());
       addPattern(new NaturalTypePattern());
       addPattern(new DataTypePattern());
+      addPattern(new GroupPattern());
       addPattern(new AttributeOperationCommonPattern());
       addPattern(new AttributePattern());
       addPattern(new OperationPattern());
+      
       
       //add patterns for connections
       addConnectionPattern(new InheritancePattern());

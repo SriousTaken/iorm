@@ -4,6 +4,7 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.pattern.AbstractPattern;
 import org.eclipse.graphiti.pattern.IPattern;
+import org.framed.iorm.model.ModelElement;
 import org.framed.iorm.model.NamedElement;
 import org.framed.iorm.model.OrmFactory;
 import org.framed.iorm.model.Type;
@@ -34,7 +35,8 @@ public class OperationPattern extends AbstractPattern implements IPattern {
 	
 	@Override
 	public boolean isMainBusinessObjectApplicable(Object businessObject) {
-		return (businessObject instanceof NamedElement);
+		return (businessObject instanceof NamedElement &&
+				!(businessObject instanceof ModelElement));
 	}
 
 	@Override
