@@ -57,9 +57,10 @@ public class ConfigurationEditorChangeCommand extends Command {
 	}
 
 	/**
-	 * This method executes the graphiti custom feature {@link ChangeConfigurationFeature} using the following steps:<br>
-	 * Step 1: It changes the confuiguration in the feature editor
-	 * Step 2: It uses the diagram editor to get the get the custom feature<br>
+	 * This method executes the graphiti custom feature {@link ChangeConfigurationFeature} using the following steps:
+	 * <p>
+	 * Step 1: It changes the configuration in the feature editor.<br>
+	 * Step 2: It uses the diagram editor to get the custom feature {@link ChangeConfigurationFeature}.<br>
 	 * Step 3: It creates a {@link ChangeConfigurationContext} and sets the needed informations in it.<br>
 	 * Step 4: It executes the {@link ChangeConfigurationFeature} and catches a {@link ConfigurationInconsistentException}
 	 */
@@ -77,10 +78,8 @@ public class ConfigurationEditorChangeCommand extends Command {
 		if(changeConfigurationFeature != null) {
 			//Step 3
 			ChangeConfigurationContext changeConfigurationContext = new ChangeConfigurationContext();
-			changeConfigurationContext.setTreeItem(item);
 			changeConfigurationContext.setBehaviorEditor(behaviorDiagramEditor);
-			changeConfigurationContext.setFeatureModel(featureEditor.getFeatureModel());
-			changeConfigurationContext.setStandardFeatures(featureEditor.getStandardFeatures());
+			changeConfigurationContext.setConfiguration(featureEditor.getConfiguration());
 			if(changeConfigurationFeature.canExecute(changeConfigurationContext)) {
 				//Step 4
 				try {

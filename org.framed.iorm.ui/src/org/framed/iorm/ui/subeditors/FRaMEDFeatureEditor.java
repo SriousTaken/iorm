@@ -62,8 +62,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	/**
 	 * URLs to the feature model and its standard configuration gathered from {@link URLLiterals}
 	 */
-	private final URL URL_TO_FEATUREMODEL = URLLiterals.URL_TO_FEATUREMODEL,
-					  URL_TO_STANDARD_CONFIGURATION = URLLiterals.URL_TO_STANDARD_CONFIGURATION;
+	private final URL URL_TO_FEATUREMODEL = URLLiterals.URL_TO_FEATUREMODEL;
 	
 	/**
 	 * the color values used for the {@link #infoLabel} showing if the chosen configuration is valid or not 
@@ -95,14 +94,6 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	private Configuration configuration;
 	
 	/**
-	 * the features of the standard configuration
-	 * <p>
-	 * This is saved to use get the information if a feature is manually selected when adding a feature back in
-	 * the {@link ChangeConfigurationFeature}.
-	 */
-	EList<FRaMEDFeature> standardFeatures;
-	
-	/**
 	 * the tree view of the editor that is used by the user to edit the configuration of the diagram 
 	 */
 	private Tree tree;
@@ -113,19 +104,11 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	private final Map<SelectableFeature, TreeItem> itemMap = new HashMap<SelectableFeature, TreeItem>();
 	
 	/**
-	 * get method for the feature model of the editor
-	 * @return the feature model of the editor
+	 * the get method the configuration of the feature editor
+	 * @return the class variable {@link #configuration}
 	 */
-	public IFeatureModel getFeatureModel() {
-		return featureModel;
-	}
-	
-	/**
-	 * get method for the standard features list
-	 * @return the features of the standard configuration
-	 */
-	public EList<FRaMEDFeature> getStandardFeatures() {
-		return standardFeatures;
+	public Configuration getConfiguration() {
+		return configuration;
 	}
 	
 	//constructor and its called function
@@ -138,8 +121,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	 * (2) {@link #readRootModel}<br>
 	 * (3) {@link #readFeatureModel}<br>
 	 * (4) {@link #getResourceFromEditorInput}<br>
-	 * (5) {@link #loadConfiguration}<br>
-	 * (6) {@link #createStandardFramedConfiguration}
+	 * (5) {@link #loadConfiguration}
 	 * @param editorInput the opened diagram
 	 * @param multipageEditor the multipage editor that uses this editor
 	 */
@@ -150,9 +132,6 @@ public class FRaMEDFeatureEditor extends EditorPart {
 		Model rootModel = readRootModel(resource);
 		IFeatureModel featureModel = readFeatureModel();
 		loadConfiguration(rootModel, featureModel);
-		try {
-			readStandardFramedConfiguration(rootModel);
-		} catch (URISyntaxException | IOException e) { e.printStackTrace(); }
 	}
 	
 	/**
@@ -230,27 +209,6 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	    		configuration.setManual(f.getName().getLiteral(), Selection.SELECTED);
 	    }
 	}
-	
-	/**
-	 * set the class variable standartFeatures
-	 * <p>
-	 * @param rootModel the root model to get framed configuration from
-	 * @throws URISyntaxException
-	 * @throws IOException
-	 */
-	private void readStandardFramedConfiguration(Model rootModel) throws URISyntaxException, IOException {
-		if(standardFeatures == null) {	
-			ResourceSet resourceSet = new ResourceSetImpl();
-			Resource resourceStandartConfiguration =
-			resourceSet.createResource(URI.createURI(FileLocator.resolve(URL_TO_STANDARD_CONFIGURATION).toURI().toString()));
-			try {
-				resourceStandartConfiguration.load(null);
-			} catch (IOException e) { e.printStackTrace();
-		       	resourceStandartConfiguration = null;
-			}
-			Model standardConfigurationModel = (Model) resourceStandartConfiguration.getContents().get(0);
-			standardFeatures = standardConfigurationModel.getFramedConfiguration().getFeatures();
-	} 	}
 	
 	//tree related operation
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -495,8 +453,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 							setSelection(entry.getValue(), true);
 						}
 						mapEntryFound = true;
-				}	}	
-			}
+			}	}	}
 			//Step 2
 			if(!mapEntryFound) {
 				if (entry.getKey().getAutomatic() == Selection.UNDEFINED) {

@@ -87,13 +87,17 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 		final String diagramName = roleModelWizardPage.getText();
 		//Step 2
 		IProject project = null;
+		
 		Object element = getSelection().getFirstElement();
 		if (element instanceof IProject) {
 			project = (IProject) element;
 		} else if (element instanceof AbstractInstancesOfTypeContainerNode) {
 			AbstractInstancesOfTypeContainerNode aiocn = (AbstractInstancesOfTypeContainerNode) element;
 			project = aiocn.getProject();
-		} 
+		} else if (element instanceof IFolder) {
+			IFolder diagramFolder = (IFolder) element;
+			project = diagramFolder.getProject();
+		}
 		if (project == null || !project.isAccessible()) {
 			MessageDialog.openError(getShell(), WIZARD_ERROR_NO_PROJECT_TITLE, WIZARD_ERROR_NO_PROJECT_TEXT);
 			return false;
@@ -106,7 +110,9 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 		IFileEditorInput iFileEditorInput = new FileEditorInput(diagramFile);
 		try {
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(iFileEditorInput, EDITOR_ID);
-		} catch (PartInitException e) { e.printStackTrace(); return false; }
+		} catch (PartInitException e) {
+			return false;
+		}
 		return true;
 	}
 }	

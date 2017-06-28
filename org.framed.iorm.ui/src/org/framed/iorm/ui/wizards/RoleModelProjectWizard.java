@@ -14,9 +14,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 public class RoleModelProjectWizard extends BasicNewProjectResourceWizard {
 
 	/**
-	 * evaluates if the wizard can be finished and the project can be created
-	 * <p>
-	 * also creates the project and an empty text file in it
+	 * evaluates if the wizard can be finished and creates the project if yes
 	 */
 	@Override
 	public boolean performFinish() {

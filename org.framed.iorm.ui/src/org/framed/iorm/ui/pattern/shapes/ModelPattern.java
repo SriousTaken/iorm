@@ -9,6 +9,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.graphiti.features.context.IAddConnectionContext;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -16,50 +17,89 @@ import org.eclipse.graphiti.pattern.AbstractPattern;
 import org.eclipse.graphiti.pattern.IPattern;
 import org.framed.iorm.model.Model;
 import org.framed.iorm.model.OrmFactory;
-import org.framed.iorm.ui.contexts.CreateModelContext;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.URLLiterals;
 
+/**
+ * This graphiti pattern class is used to work with {@link org.framed.iorm.model.Model} in the editor. 
+ * <p>
+ * This pattern especially creates the root model of a diagram in the editor. The root model is special 
+ * since it has to keep a framed configuration. It deals with the following aspects of the root model:<br>
+ * (1) creating the root model, especially its business object<br>
+ * (2) setting the standard configuration of the root model at creation<br>
+ * (3) adding the root model to the diagram, if is not already has a root model attached
+ * @author Kevin Kassin
+ */
 public class ModelPattern extends AbstractPattern implements IPattern {
-	//name literals
+	
+	/**
+	 * the features name gathered from {@link NameLiterals}
+	 */
 	private final String MODEL_FEATURE_NAME = NameLiterals.MODEL_FEATURE_NAME;
 	
-	//url literals
+	/**
+	 * the URL leading to the standard configuration gathered from {@link URLLiterals}
+	 */
 	private final URL fileURLToStandartConfiguration = URLLiterals.URL_TO_STANDARD_CONFIGURATION;
 		
+	/**
+	 * Class constructor
+	 */
 	public ModelPattern() {
 		super(null);
 	}
 	
+	/**
+	 * get method for the features name
+	 * @return the name of the feature
+	 */
 	@Override
 	public String getCreateName() {
 		return MODEL_FEATURE_NAME;
 	}
 	
+	/**
+	 * checks if pattern is applicable for a given business object
+	 * @return true, if business object is of type {@link org.framed.iorm.model.Model}
+	 */
 	@Override
 	public boolean isMainBusinessObjectApplicable(Object businessObject) {
 		return (businessObject instanceof Model);
 	}
 
+	/**
+	 * checks if pattern is applicable for a given pictogram element
+	 * @return true, if business object of the pictogram element is of type {@link org.framed.iorm.model.Model}
+	 */
 	@Override
 	protected boolean isPatternControlled(PictogramElement pictogramElement) {
 		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
 		return isMainBusinessObjectApplicable(businessObject);
 	}
 
+	/**
+	 * checks if the pictogram element to edit with the pattern is its root
+	 * @return true, if business object of the pictogram element is of type {@link org.framed.iorm.model.Model}
+	 */
 	@Override
 	protected boolean isPatternRoot(PictogramElement pictogramElement) {
 		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
 		return isMainBusinessObjectApplicable(businessObject);
 	}
 	
-	// add features
+	// add feature
 	//~~~~~~~~~~~~~
+	/**
+	 * calculates if a root model can be added to the diagram
+	 * <p>
+	 * returns true if<br>
+	 * (1) the added business object is a {@link org.framed.iorm.model.Model} and<br>
+	 * (2) the diagram does not already have an root model
+	 * @return if the root model can be added
+	 */
 	@Override
 	public boolean canAdd(IAddContext addContext) {
-		//new Object is Model
 		if(addContext.getNewObject() instanceof Model) {
-			//check if root model already exists
 			for(EObject eObject : getDiagram().eResource().getContents()) {
 				if(eObject instanceof Model) return false;
 			}
@@ -68,6 +108,10 @@ public class ModelPattern extends AbstractPattern implements IPattern {
 		return false;
 	}
 
+	/**
+	 * adds the root model to the diagram
+	 * @return null, since the model has no pictogram element 
+	 */
 	@Override
 	public PictogramElement add(IAddContext addContext) {
 		//get container and new object
@@ -78,19 +122,28 @@ public class ModelPattern extends AbstractPattern implements IPattern {
 	
 	//create feature
 	//~~~~~~~~~~~~~~
+	/**
+	 * creates the business object of the root model, set its standard configuration and
+	 * calls the add function for the root model
+	 * @return the created busines object of the root model
+	 */
 	@Override
 	public Object[] create(ICreateContext createContext) {
 		Model newModel = OrmFactory.eINSTANCE.createModel();
 		try {
-			setStandartConfiguration(newModel, createContext);
+			setStandartConfiguration(newModel);
 		} catch (URISyntaxException | IOException e) { e.printStackTrace(); }
 		addGraphicalRepresentation(createContext, newModel);
 		return new Object[] { newModel };
 	}
 	
-	private void setStandartConfiguration(Model model, ICreateContext createContext) throws URISyntaxException, IOException {
-		CreateModelContext createModelContext = (CreateModelContext) createContext;
-		
+	/**
+	 * sets the standard configuration for a given {@link org.framed.iorm.model.Model}
+	 * @param model the model to set the standard configuration for
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
+	private void setStandartConfiguration(Model model) throws URISyntaxException, IOException {
 		ResourceSet resourceSet = new ResourceSetImpl();
 		Resource resourceStandartConfiguration =
 			resourceSet.createResource(URI.createURI(FileLocator.resolve(fileURLToStandartConfiguration).toURI().toString()));
@@ -102,7 +155,5 @@ public class ModelPattern extends AbstractPattern implements IPattern {
 		}
 		Model standardConfigurationModel = (Model) resourceStandartConfiguration.getContents().get(0);
 		model.setFramedConfiguration(standardConfigurationModel.getFramedConfiguration());
-		createModelContext.getDiagramEditor().setSelectedFeatures(model.getFramedConfiguration().getFeatures());
 	}
-	
 }

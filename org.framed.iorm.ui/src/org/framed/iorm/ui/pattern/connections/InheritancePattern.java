@@ -24,9 +24,10 @@ import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.util.PropertyUtil;
 
 /**
- * This is used to work with Inheritances in the editor.
+ * This graphiti pattern class is used to work with {@link org.framed.iorm.model.Shape}s
+ * of the type Inheritance in the editor.
  * <p>
- * It deals with the following aspects of of Inheritances:<br>
+ * It deals with the following aspects of Inheritances:<br>
  * (1) creating inheritances, especially their business object<br>
  * (2) adding inheritances to the diagram, especially their pictogram elements<br>
  * @author Kevin Kassin

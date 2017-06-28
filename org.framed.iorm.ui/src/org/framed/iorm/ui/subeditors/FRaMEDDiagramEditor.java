@@ -4,6 +4,8 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.framed.iorm.featuremodel.FRaMEDFeature;
+import org.framed.iorm.model.Model;
+import org.framed.iorm.ui.util.MethodUtil;
 
 /**
  * the diagram editor used by {@link org.framed.iorm.ui.multipage.MultipageEditor}
@@ -31,11 +33,11 @@ public class FRaMEDDiagramEditor extends DiagramEditor  {
 	}
 	
 	/**
-	 * the set method for the variable {@link #selectedFeatures}
-	 * @param selectedFeatures the new value of selectedFeatures to set
+	 * updates the value of the class variable {@link #selectedFeatures}
 	 */
-	public void setSelectedFeatures(EList<FRaMEDFeature> selectedFeatures) {
-		this.selectedFeatures = selectedFeatures;
+	public void updateSelectedFeatures() {
+		Model rootModel = MethodUtil.getDiagramRootModel(this.getDiagramTypeProvider().getDiagram());
+		selectedFeatures = rootModel.getFramedConfiguration().getFeatures();
 	}
 	
 	/**

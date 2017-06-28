@@ -3,6 +3,7 @@ package org.framed.iorm.ui.multipage;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.graphiti.features.ICreateFeature;
+import org.eclipse.graphiti.features.context.impl.CreateContext;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
@@ -12,7 +13,6 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.framed.iorm.ui.contexts.CreateModelContext;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
 import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;
@@ -137,9 +137,8 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 			if(createFeatures[i].getCreateName().equals(MODEL_FEATURE_NAME)) 
 				createModelFeature = createFeatures[i];
 		}
-		CreateModelContext createModelFeatureContext = new CreateModelContext();
-		createModelFeatureContext.setDiagramEditor(editorDiagram);
-		createModelFeature.create(createModelFeatureContext);
+		CreateContext createContext = new CreateContext();
+		createModelFeature.create(createContext);
 		//Step 4
 		doSave(null);
 		//Step 5
@@ -177,15 +176,20 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 * <p>
 	 * This operation calls the save methods of the subeditors and synchronizes the feature configuration
 	 * in the feature editor with the one in the role model. This is needed because there can be inconsistencies
-	 * after undoing and redoing an feature configuration change. 
+	 * after undoing and redoing an feature configuration change.<br>
+	 * The check in this operation is needed because the first save of an multipage editor at its creation is done 
+	 * before the feature editor even exists.
 	 * @param monitor the monitor used for the save activity
 	 */
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		if(editorDiagram.isDirty()) editorDiagram.doSave(monitor);
-		//at the first save of a new diagram there is no editor feature
-		if(editorFeatures != null)
-			editorFeatures.synchronizeConfigurationEditorAndModelConfiguration();
+		if(isDirty()) {
+			editorDiagram.doSave(monitor);
+			editorDiagram.updateSelectedFeatures();
+			//check
+			if(editorFeatures != null)
+				editorFeatures.synchronizeConfigurationEditorAndModelConfiguration();
+		}
 	}
 		
 	/**
