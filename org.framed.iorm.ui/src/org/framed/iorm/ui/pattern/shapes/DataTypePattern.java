@@ -465,7 +465,7 @@ public class DataTypePattern extends AbstractPattern{
 			List<String> pictogramAttributeNames = MethodUtil.getpictogramAttributeNames(pictogramElement, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER);
 			List<String> pictogramOperationNames = MethodUtil.getpictogramOperationNames(pictogramElement, SHAPE_ID_DATATYPE_OPERATIONCONTAINER);
 			//business name and attributes
-			String businessTypeName = MethodUtil.getBusinessTypeName(getBusinessObjectForPictogramElement(pictogramElement));
+			String businessTypeName = MethodUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
 			List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 			List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 								
@@ -524,7 +524,7 @@ public class DataTypePattern extends AbstractPattern{
          
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
 		//business names of natural type, attributes and operations
-		String businessTypeName = MethodUtil.getBusinessTypeName(getBusinessObjectForPictogramElement(pictogramElement));
+		String businessTypeName = MethodUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
 		List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 		List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 		

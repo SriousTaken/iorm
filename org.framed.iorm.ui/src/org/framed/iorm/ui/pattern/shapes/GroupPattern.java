@@ -375,7 +375,7 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 			//pictogram name of natural type, attributes and operations
 			String pictogramTypeName = MethodUtil.getPictogramTypeName(pictogramElement, SHAPE_ID_GROUP_NAME);
 			//business name and attributes
-			String businessTypeName = MethodUtil.getBusinessTypeName(getBusinessObjectForPictogramElement(pictogramElement));
+			String businessTypeName = MethodUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
 				
 			//check for update: different names, different amount of attibutes/ operations
 			if(pictogramTypeName==null || businessTypeName==null) return Reason.createTrueReason("Name is null.");
@@ -390,7 +390,7 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 	         
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
 		//business names of natural type, attributes and operations
-		String businessTypeName = MethodUtil.getBusinessTypeName(getBusinessObjectForPictogramElement(pictogramElement));
+		String businessTypeName = MethodUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
 			
 		//set type name in pictogram model
 	    if (pictogramElement instanceof ContainerShape) {     

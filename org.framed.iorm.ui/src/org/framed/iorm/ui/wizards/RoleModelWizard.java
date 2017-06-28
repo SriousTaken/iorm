@@ -5,7 +5,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.graphiti.examples.common.FileService;
-import org.eclipse.graphiti.examples.common.navigator.nodes.base.AbstractInstancesOfTypeContainerNode;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -19,6 +18,8 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
+
+import miscellaneous.AbstractInstancesOfTypeContainerNode;
 
 /**
  * This class creates an Eclipse wizard to create a role model.
@@ -41,6 +42,9 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 						 WIZARD_PAGE_NAME = NameLiterals.WIZARD_PAGE_NAME,
 						 WIZARD_WINDOW_NAME = NameLiterals.WIZARD_WINDOW_NAME;
 	
+	/**
+	 * the text literals for the wizard error if there is no project selected
+	 */
 	private final String WIZARD_ERROR_NO_PROJECT_TITLE = TextLiterals.WIZARD_ERROR_NO_PROJECT_TITLE,
 						 WIZARD_ERROR_NO_PROJECT_TEXT = TextLiterals.WIZARD_ERROR_NO_PROJECT_TEXT;
 	
@@ -83,35 +87,26 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 		final String diagramName = roleModelWizardPage.getText();
 		//Step 2
 		IProject project = null;
-		IFolder diagramFolder = null;
 		Object element = getSelection().getFirstElement();
 		if (element instanceof IProject) {
 			project = (IProject) element;
 		} else if (element instanceof AbstractInstancesOfTypeContainerNode) {
 			AbstractInstancesOfTypeContainerNode aiocn = (AbstractInstancesOfTypeContainerNode) element;
 			project = aiocn.getProject();
-		} else if (element instanceof IFolder) {
-			diagramFolder = (IFolder) element;
-			project = diagramFolder.getProject();
-		}
+		} 
 		if (project == null || !project.isAccessible()) {
 			MessageDialog.openError(getShell(), WIZARD_ERROR_NO_PROJECT_TITLE, WIZARD_ERROR_NO_PROJECT_TEXT);
 			return false;
 		}
 		//Step 3
 		Diagram diagram = Graphiti.getPeCreateService().createDiagram(DIAGRAM_TYPE, diagramName, true);
-		if (diagramFolder == null) {
-			diagramFolder = project.getFolder("diagrams/");
-		}
-		IFile diagramFile = diagramFolder.getFile(diagramName + FILE_EXTENSION_FOR_DIAGRAMS);
+		IFile diagramFile = project.getFile(diagramName + FILE_EXTENSION_FOR_DIAGRAMS);
 		URI uri = URI.createPlatformResourceURI(diagramFile.getFullPath().toString(), true);
 		FileService.createEmfFileForDiagram(uri, diagram);
 		IFileEditorInput iFileEditorInput = new FileEditorInput(diagramFile);
 		try {
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(iFileEditorInput, EDITOR_ID);
-		} catch (PartInitException e) {
-			return false;
-		}
+		} catch (PartInitException e) { e.printStackTrace(); return false; }
 		return true;
 	}
 }	

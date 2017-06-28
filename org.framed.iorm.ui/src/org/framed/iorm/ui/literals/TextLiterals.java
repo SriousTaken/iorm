@@ -47,4 +47,11 @@ public class TextLiterals {
 							   WIZARD_MESSAGE_INVALID_INPUT = "A diagrams name cant be empty and cant contains spaces. Numbers are allowed but as first symbol.",
 							   WIZARD_ERROR_NO_PROJECT_TITLE = "No Project Selected",
 							   WIZARD_ERROR_NO_PROJECT_TEXT = "Please choose a CROM project to create the role model in!";   
+	
+	/**
+	 * messages used for the workbench status line
+	 * <p>
+	 * the message of the workbench status line if there are unsaved changes
+	 */
+	public static final String STATUS_MESSAGE_UNSAVED_CHANGES = "Unsaved changes - the pages are out of sync!";
 }

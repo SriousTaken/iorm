@@ -34,13 +34,6 @@ public class MethodUtil {
 			 		  	 	 DATATYPE_CORNER_SIZE = LayoutLiterals.DATATYPE_CORNER_SIZE;
 	
 	/**
-	 * the path to the empty text file that is created in the role model projects
-	 * by the {@link org.framed.iorm.ui.wizards.RoleModelProjectWizard} and is used
-	 * to perform the operation {@link #getEmptyTextFileForDiagram}
-	 */
-	private static final IPath PATH_TO_EMPTY_TEXTFILE = URLLiterals.PATH_TO_EMPTY_TEXTFILE;
-	
-	/**
 	 * This operation calculates where the horizontal center of a class or role is.
 	 * <p>
 	 * Depending on the the type of the class or role and its height the horizontal center position is returned.
@@ -69,27 +62,6 @@ public class MethodUtil {
 		}	}
 		if(models.size()==1) return models.get(0);
 		return null;
-	}
-	
-	/**
-	 * This operation creates an {@link IFile} of an empty text file for a given {@link IEditorInput} using two steps:
-	 * <p>
-	 * Step 1: It gets the project the editor input is located in.<br>
-	 * Step 2: The method searches for the file "empty.txt" in the project the editor input is located in.
-	 * @param editorInput
-	 * @return
-	 * @throws IOException
-	 * @throws URISyntaxException
-	 */
-	public static final IFile getEmptyTextFileForDiagram(IEditorInput editorInput) throws IOException, URISyntaxException {
-		//Step 1
-		IFileEditorInput fileInput = (IFileEditorInput) editorInput;
-    	IFile file = fileInput.getFile();
-		String projectNameOfDiagram = file.getParent().getParent().getName();
-		//Step 2		
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot(); 
-		IPath pathToEmptyTectFile = new Path(projectNameOfDiagram + PATH_TO_EMPTY_TEXTFILE);
-		return root.getFile(pathToEmptyTectFile);		
 	}
 	
 	/**
@@ -160,9 +132,9 @@ public class MethodUtil {
 	/**
 	 * This operation gets the name of a business object that is an {@link org.framed.iorm.model.Shape}
 	 * @param businessObject the business object to get the name of
-	 * @return the name of the business object if it is an {@link org.framed.iorm.model.Shape}
+	 * @return the name of the business object if it is an {@link org.framed.iorm.model.Shape} and return null else
 	 */
-	public static String getBusinessTypeName(Object businessObject) {
+	public static String getBusinessObjectName(Object businessObject) {
 		if (businessObject instanceof org.framed.iorm.model.Shape) {
 			org.framed.iorm.model.Shape shape = (org.framed.iorm.model.Shape) businessObject;
 			return shape.getName();

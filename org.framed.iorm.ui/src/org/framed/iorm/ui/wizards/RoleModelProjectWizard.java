@@ -1,14 +1,8 @@
 package org.framed.iorm.ui.wizards;
 
-import java.io.IOException;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 /**
@@ -33,22 +27,6 @@ public class RoleModelProjectWizard extends BasicNewProjectResourceWizard {
 			description = newProject.getDescription();
 			newProject.setDescription(description, null);
 		} catch (CoreException e) { e.printStackTrace();}
-		createEmptyTextFile(newProject);
 		return true;
-	}
-	
-	/**
-	 * creates an empty text file in the created project
- 	 * <p>
- 	 * The empty text file is used for the status page that shows the status of the multipage editor.
-	 * @param newProject the created project
-	 */
-	private void createEmptyTextFile(IProject newProject) {
-		ResourceSet set = new ResourceSetImpl();
-		URI uri = URI.createPlatformResourceURI(newProject.getFolder("text").getFile("empty.txt").getFullPath().toString(), true);
-		Resource resource = set.createResource(uri);
-		try {
-			resource.save(null);
-		} catch (IOException e) { e.printStackTrace(); }
 	}
 }
