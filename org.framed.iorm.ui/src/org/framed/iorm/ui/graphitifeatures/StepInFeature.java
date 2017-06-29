@@ -2,14 +2,16 @@ package org.framed.iorm.ui.graphitifeatures;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
+import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
+import org.framed.iorm.ui.providers.DiagramProvider;
 import org.framed.iorm.ui.util.PropertyUtil;
 
-public class StepInFeature extends AbstractStepFeature {
+public class StepInFeature extends AbstractCustomFeature {
 	
-
 	/**
 	 * the name of the feature gathered from {@link NameLiterals}
 	 */
@@ -61,4 +63,14 @@ public class StepInFeature extends AbstractStepFeature {
 		}	}
 		return false;
 	}
+	
+	@Override
+	public void execute(ICustomContext context) {
+		ContainerShape typeBodyShape = (ContainerShape) context.getPictogramElements()[0];
+		//MethodUtil
+		
+		//((DiagramProvider) getFeatureProvider().getDiagramTypeProvider()).setDiagram(diagram);
+	}
+	
+	
 }	

@@ -11,6 +11,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -21,10 +22,15 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.framed.iorm.model.Model;
 import org.framed.iorm.model.Type;
+import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.LayoutLiterals;
 
 public class MethodUtil {
 	
+	//TODO
+	private static final String SHAPE_ID_GROUP_TYPEBODY = IdentifierLiterals.SHAPE_ID_GROUP_TYPEBODY,
+								SHAPE_ID_GROUP_NAME = IdentifierLiterals.SHAPE_ID_GROUP_NAME;
+								
 	/**
 	 * the layout integers this class need to perform the operation {@link #calculateHorizontalCenter}
 	 * gathered from {@link LayoutLiterals}
@@ -101,6 +107,43 @@ public class MethodUtil {
 						return text.getValue();
 					}
 		} 	}	}
+		return null;
+	}
+	
+	/**
+	 * This operation fetches the groups diagram for a shape that is a part of a groups pictogram 
+	 * representation using the following steps:
+	 * <p>
+	 * Step 1: If the given shape has no graphics Algorithm it returns null.<br>
+	 * Step 2: It calculates the group container shape depending on the given shape.<br>
+	 * Step 3: It searches for the diagram container in the list of children of the group container shape
+	 * 		   and returns the found groups diagram.
+	 * <p>
+	 * If its not clear what the different shapes are look for the pictogram structure of a group here: 
+	 * {@link org.framed.iorm.ui.pattern.shapes.GroupPattern#add}.
+	 * @param shapeToStartFrom the shape to start the search for the groups diagram 
+	 * @return the groups diagram, if the given shape was a name shape or the type body shape of a group
+	 */
+	public static Diagram getDiagramFromGroupNameShape(Shape shapeToStartFrom) {
+		//Step 1
+		if(shapeToStartFrom.getGraphicsAlgorithm() == null) return null;
+		else {
+			//Step 2
+			ContainerShape groupContainerShape = null;
+			if(PropertyUtil.isShape_IdValue(shapeToStartFrom.getGraphicsAlgorithm(), SHAPE_ID_GROUP_TYPEBODY))
+				groupContainerShape = shapeToStartFrom.getContainer();
+			if(PropertyUtil.isShape_IdValue(shapeToStartFrom.getGraphicsAlgorithm(), SHAPE_ID_GROUP_NAME))
+				groupContainerShape = shapeToStartFrom.getContainer().getContainer();
+			if(groupContainerShape != null) {
+			//Step 3
+				for(Shape shape : groupContainerShape.getChildren()) {
+					if(shape instanceof ContainerShape) { 
+						ContainerShape containerShape = (ContainerShape) shape; 
+						if(containerShape.getChildren().size() == 1 &&
+						   containerShape.getChildren().get(0) instanceof Diagram) {
+							Diagram diagram = (Diagram) containerShape.getChildren().get(0);
+							return diagram;
+		}	}	}	}	}
 		return null;
 	}
 	

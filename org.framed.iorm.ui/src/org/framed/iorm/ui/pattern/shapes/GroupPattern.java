@@ -42,11 +42,20 @@ import org.framed.iorm.ui.util.DirectEditingUtil;
 import org.framed.iorm.ui.util.MethodUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
 
+/**
+ * This graphiti pattern class is used to work with {@link org.framed.iorm.model.Shape}s
+ * of the type Group in the editor.
+ * <p>
+ * It deals with the following aspects of Inheritances:<br>
+ * TODO
+ * @author Kevin Kassin
+ */
 public class GroupPattern extends AbstractPattern implements IPattern {
 	
 	//names
 	private String GROUP_FEATURE_NAME = NameLiterals.GROUP_FEATURE_NAME,
-				   STANDART_GROUP_NAME = NameLiterals.STANDART_GROUP_NAME;
+				   STANDART_GROUP_NAME = NameLiterals.STANDART_GROUP_NAME,
+				   NAME_EXTENSION_OF_GROUPS_DIAGRAM = NameLiterals.NAME_EXTENSION_OF_GROUPS_DIAGRAM;
 	
 	//identifier
 	private String SHAPE_ID_GROUP_TYPEBODY = IdentifierLiterals.SHAPE_ID_GROUP_TYPEBODY,
@@ -54,7 +63,8 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 				   SHAPE_ID_GROUP_NAME = IdentifierLiterals.SHAPE_ID_GROUP_NAME, 
 				   SHAPE_ID_GROUP_LINE = IdentifierLiterals.SHAPE_ID_GROUP_LINE,
 				   SHAPE_ID_GROUP_MODEL = IdentifierLiterals.SHAPE_ID_GROUP_MODEL,
-				   IMG_ID_FEATURE_GROUP = IdentifierLiterals.IMG_ID_FEATURE_GROUP;
+				   IMG_ID_FEATURE_GROUP = IdentifierLiterals.IMG_ID_FEATURE_GROUP,
+				   DIAGRAM_TYPE = IdentifierLiterals.DIAGRAM_TYPE;
 	
 	//text
 	private String DIRECTEDITING_GROUP = TextLiterals.DIRECTEDITING_GROUP;
@@ -127,47 +137,78 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 		return false;
 	}
 
+	/**
+	 * Adds the graphical representation of a group to the pictogram model.
+	 * <p>
+	 * It creates the following structure:<br>
+	 * <ul>
+	 *   <li>container shape</li>
+	 * 	   <ul>
+	 * 	     <li>drop shadow shape</li>
+	 *         <ul><li>drop shadow rectangle</li></ul>
+	 * 		 <li>type body shape</li>
+	 * 		   <ul><li>type body rectangle</li></ul>
+	 * 		   <ul>
+	 * 		     <li>name container</li>
+	 * 			  <ul><li>name text</li></ul>
+	 * 			<li>line container</li>
+	 * 			  <ul><li>polyline</li></ul>
+	 * 			<li>model content container</li>
+	 * 			  <ul><li>model content rectangle</li></ul>
+	 * 		   </ul>
+	 *       <li>diagram container shape</li>
+	 *         <ul><li>groups diagram</li></ul>
+	 * 	   </ul>
+	 * </ul> 
+	 * It follows this steps:<br>
+	 * Step 1: It gets the new object, the diagram to create the group in and calculates the height 
+	 * 		   and width of the groups representation.<br>
+	 * Step 2: It creates the structure shown above.<br>
+	 * Step 3: It sets the shape identifiers for the created graphics algorithms of the group.<br>
+	 * Step 4: It links the created shapes of the group to its business objects.<br> 
+	 * Step 5: It enables direct editing and layouting of the group.
+	 */
 	@Override
 	public PictogramElement add(IAddContext addContext) {
-		//get container and new object
+		//Step 1
 		org.framed.iorm.model.Shape addedGroup = (org.framed.iorm.model.Shape) addContext.getNewObject();
 		ContainerShape targetDiagram = getDiagram();
-				
-		//get width and height
 		int width = addContext.getWidth(), height = addContext.getHeight();
 		if(addContext.getWidth() < MIN_WIDTH) width = MIN_WIDTH;
 		if(addContext.getHeight() < MIN_HEIGHT) height = MIN_HEIGHT;
-				
-		//container for body shape and shadow
+		
+		//Step 2		
+		//container shape
 		ContainerShape containerShape = pictogramElementCreateService.createContainerShape(targetDiagram, false);
-							  
-		//drop shadow
+		
+		//drop shadow shape and drop shadow rectangle
 		ContainerShape dropShadowShape = pictogramElementCreateService.createContainerShape(containerShape, true);
 		RoundedRectangle dropShadowRectangle = graphicAlgorithmService.createRoundedRectangle(dropShadowShape, GROUP_CORNER_RADIUS, GROUP_CORNER_RADIUS);
 		dropShadowRectangle.setForeground(manageColor(COLOR_SHADOW));
 		dropShadowRectangle.setBackground(manageColor(COLOR_SHADOW));
 		graphicAlgorithmService.setLocationAndSize(dropShadowRectangle, addContext.getX()+SHADOW_SIZE, addContext.getY()+SHADOW_SIZE, width, height);
-				
-		//body shape of type
-		ContainerShape typeBodyShape = pictogramElementCreateService.createContainerShape(containerShape, true);		
+		
+		//type body shape and type body shape rectangle
+		ContainerShape typeBodyShape = pictogramElementCreateService.createContainerShape(containerShape, true);	
+		pictogramElementCreateService.createChopboxAnchor(typeBodyShape);
 		RoundedRectangle typeBodyRectangle = graphicAlgorithmService.createRoundedRectangle(typeBodyShape, GROUP_CORNER_RADIUS, GROUP_CORNER_RADIUS);
 		typeBodyRectangle.setForeground(manageColor(COLOR_LINES));
 		typeBodyRectangle.setBackground(manageColor(COLOR_BACKGROUND));
 		graphicAlgorithmService.setLocationAndSize(typeBodyRectangle, addContext.getX(), addContext.getY(), width, height);
-				
-		//name
+		
+		//name container and name text
 		Shape nameShape = pictogramElementCreateService.createShape(typeBodyShape, false);
 		Text text = graphicAlgorithmService.createText(nameShape, addedGroup.getName());	
 		text.setForeground(manageColor(COLOR_TEXT));	
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);	
 		graphicAlgorithmService.setLocationAndSize(text, 0, 0, width, HEIGHT_NAME_SHAPE);	
-				
-		//line
+		
+		//line container and polyline
 		Shape firstLineShape = pictogramElementCreateService.createShape(typeBodyShape, false);
 		Polyline firstPolyline = graphicAlgorithmService.createPolyline(firstLineShape, new int[] {0, HEIGHT_NAME_SHAPE, width, HEIGHT_NAME_SHAPE});
-		firstPolyline.setForeground(manageColor(COLOR_LINES));
-				
-		//model container
+		firstPolyline.setForeground(manageColor(COLOR_LINES));		
+	
+		//model content container and model content rectangle
 		ContainerShape modelContainer = pictogramElementCreateService.createContainerShape(typeBodyShape, false);
 		Rectangle modelRectangle = graphicAlgorithmService.createRectangle(modelContainer);
 		modelRectangle.setLineVisible(false);
@@ -175,14 +216,19 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 		graphicAlgorithmService.setLocationAndSize(modelRectangle, PUFFER_BETWEEN_ELEMENTS, HEIGHT_NAME_SHAPE+PUFFER_BETWEEN_ELEMENTS, 
 												   width-2*PUFFER_BETWEEN_ELEMENTS, height-GROUP_CORNER_RADIUS-2*PUFFER_BETWEEN_ELEMENTS);
 		
-		//setProperties
+		//diagram container shape and groups diagram
+		ContainerShape contentDiagramShape = pictogramElementCreateService.createContainerShape(containerShape, false);
+		Diagram contentDiagram = pictogramElementCreateService.createDiagram(DIAGRAM_TYPE, STANDART_GROUP_NAME + NAME_EXTENSION_OF_GROUPS_DIAGRAM, 10, false);
+		contentDiagramShape.getChildren().add(contentDiagram);
+		
+		//Step 3
 		PropertyUtil.setShape_IdValue(typeBodyRectangle, SHAPE_ID_GROUP_TYPEBODY);
 		PropertyUtil.setShape_IdValue(dropShadowRectangle, SHAPE_ID_GROUP_SHADOW);
 		PropertyUtil.setShape_IdValue(text, SHAPE_ID_GROUP_NAME);
 		PropertyUtil.setShape_IdValue(firstPolyline, SHAPE_ID_GROUP_LINE);
 		PropertyUtil.setShape_IdValue(modelRectangle, SHAPE_ID_GROUP_MODEL);
 		
-		//set links
+		//Step 4
 		link(containerShape, addedGroup);
 		link(typeBodyShape, addedGroup);
 		link(dropShadowShape, addedGroup);
@@ -190,14 +236,11 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 		link(firstLineShape, addedGroup);
 		link(modelContainer, addedGroup);
 				
-		//directEditing right at creation
+		//Step 5
 		IDirectEditingInfo directEditingInfo = getFeatureProvider().getDirectEditingInfo();
 		directEditingInfo.setMainPictogramElement(typeBodyShape);
 		directEditingInfo.setPictogramElement(nameShape);
 		directEditingInfo.setGraphicsAlgorithm(text);
-		//add anchors to the container
-		pictogramElementCreateService.createChopboxAnchor(typeBodyShape);
-		//set container as layout target
 		layoutPictogramElement(containerShape);
 		return containerShape;
 	}
@@ -389,20 +432,23 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 		boolean changed = false;
 	         
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
-		//business names of natural type, attributes and operations
 		String businessTypeName = MethodUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
 			
 		//set type name in pictogram model
 	    if (pictogramElement instanceof ContainerShape) {     
-	    	ContainerShape containerShape = (ContainerShape) pictogramElement;
-	        for (Shape shape : containerShape.getChildren()) {
+	    	ContainerShape typeBodyShape = (ContainerShape) pictogramElement;
+	        for (Shape shape : typeBodyShape.getChildren()) {
 	        	if (shape.getGraphicsAlgorithm() instanceof Text) {
 	        		Text text = (Text) shape.getGraphicsAlgorithm();
 	                if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_GROUP_NAME)) {
-	                    	text.setValue(businessTypeName);
-	                    	changed = true;
-	    }	}	}	} 
-	    return changed;
+	                	//change group name
+	                	text.setValue(businessTypeName);
+	                    //change diagram name
+	                	Diagram diagram = MethodUtil.getDiagramFromGroupNameShape(shape);
+	                	diagram.setName(businessTypeName + NAME_EXTENSION_OF_GROUPS_DIAGRAM);
+	                	changed = true;
+	    }	}	}	}	
+	return changed;	
 	}
 	
 	//move feature

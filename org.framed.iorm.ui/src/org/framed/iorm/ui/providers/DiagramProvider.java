@@ -1,6 +1,7 @@
 package org.framed.iorm.ui.providers;
 
 import org.eclipse.graphiti.dt.AbstractDiagramTypeProvider;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 
 /**
@@ -8,6 +9,8 @@ import org.eclipse.graphiti.tb.IToolBehaviorProvider;
  * @author Kevin Kassin
  */
 public class DiagramProvider extends AbstractDiagramTypeProvider {
+	
+	private Diagram diagram;
 
 	/**
 	 * the list of {@link ToolBehaviorProvider}s of the diagram type
@@ -30,5 +33,9 @@ public class DiagramProvider extends AbstractDiagramTypeProvider {
 		if (toolBehaviorProviders == null)
 			toolBehaviorProviders = new IToolBehaviorProvider[] { new ToolBehaviorProvider(this) };
 		return toolBehaviorProviders;
+	}
+	
+	public void setDiagram(Diagram diagram) {
+		this.diagram = diagram;
 	}
 }
