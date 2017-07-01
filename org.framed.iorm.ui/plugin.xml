@@ -3,21 +3,21 @@
 <plugin>
  	<extension point="org.eclipse.graphiti.ui.diagramTypes">
     	<diagramType
-      		description="This is a Role Model Diagram"
-     		id="IORM_Diagram"
-      		name="Role Model Diagram"
-      		type="Role Model">
+      		description="This is a Compartment Role Object Model Diagram."
+     		id="CROM_Diagram"
+      		name="Compartment Role Object Model Diagram"
+      		type="CROM_Diagram">
     	</diagramType>
   	</extension>
   
   	<extension point="org.eclipse.graphiti.ui.diagramTypeProviders">
     	<diagramTypeProvider
       		class="org.framed.iorm.ui.providers.DiagramTypeProvider"
-      		description="This is the editor for Role Model Diagrams"
-      		id="IORM_Diagram_Provider"
-      		name="Role Model Diagram Provider">
+      		description="This is the Compartment Role Object Model Diagram Provider."
+      		id="CROM_Diagram_Provider"
+      		name="Compartment Role Object Model Diagram Provider">
       		<diagramType
-        		id="IORM_Diagram">
+        		id="CROM_Diagram">
       		</diagramType>
         	<imageProvider
               	id="org.framed.iorm.ui.imageProvider">
@@ -29,10 +29,11 @@
      	<editor
             class="org.framed.iorm.ui.multipage.MultipageEditor"
             contributorClass="org.framed.iorm.ui.multipage.MultipageEditorContributor"
-            extensions="crom_diagram"
             default="true"
-            id="IORM_MultipageEditor"
-            name="Compartment Role Object Model">
+            extensions="crom_diagram"
+            icon="icons/editors/icon_multipage_editor.gif"
+            id="CROM_MultipageEditor"
+            name="Compartment Role Object Model Editor">
       	</editor>
    	</extension>
 

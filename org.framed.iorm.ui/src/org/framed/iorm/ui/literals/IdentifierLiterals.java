@@ -9,23 +9,26 @@ public class IdentifierLiterals {
 	/**
 	 * the identifier for the {@link org.framed.iorm.ui.providers.DiagramTypeProvider} as defined in the extensions of this package
 	 * <p>
-	 * This value should always be the same as the value of the field <em>id</em> of the extension point <em>org.eclipse.graphiti.ui.diagramTypeProviders</em>.
+	 * This value should always be the same as the value of the field <em>id</em> of the extension point 
+	 * <em>org.eclipse.graphiti.ui.diagramTypeProviders</em>.
 	 */
-	public static final String DIAGRAM_PROVIDER_ID = "IORM_Diagram_Provider";
+	public static final String DIAGRAM_PROVIDER_ID = "CROM_Diagram_Provider";
 	
 	/**
 	 * the diagram identifier of the diagram type for compartment role object models as defined in the extensions of this package
 	 * <p>
-	 * This value should always be the same as the value of the field <em>id</em> of the extension point <em>org.eclipse.graphiti.ui.diagramTypes</em>.
+	 * This value should always be the same as the value of the field <em>id</em> of the extension point 
+	 * <em>org.eclipse.graphiti.ui.diagramTypes</em>.
 	 */
-	public static final String DIAGRAM_TYPE_ID = "Role Model";
+	public static final String DIAGRAM_TYPE_ID = "CROM_Diagram";
 	
 	/**
-	 * editor ID
-	 * <p>
 	 * the editor id of the {@link org.framed.iorm.ui.multipage.MultipageEditor}
+	 * <p>
+	 * This value should always be the same as the value of the field <em>id</em> of the extension point #
+	 * <em>org.eclipse.ui.editors</em>.
 	 */
-	public static final String EDITOR_ID = "IORM_MultipageEditor";
+	public static final String EDITOR_ID = "CROM_MultipageEditor";
 
 	/**
 	 * string used as prefix for image identifiers for icon of create features
