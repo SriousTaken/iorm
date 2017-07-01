@@ -74,7 +74,7 @@ public class NameLiterals {
 							   STEP_OUT_FEATURE_NAME = "Step out";
 	
 	/**
-	 * name literals for editor pages
+	 * name literals for editors/ pages
 	 * <p>
 	 * can be:<br>
 	 * (1) the name for the diagram page or<br>
@@ -86,13 +86,10 @@ public class NameLiterals {
 							   TEXT_IORM_PAGE_NAME = "IORM",
 							   TEXT_CROM_PAGE_NAME = "CROM",
 							   FEATURE_PAGE_NAME = "Configuration";
-	
+
 	/**
-	 * the name extension to use for name of a groups diagram
+	 * the prefix for the multipage editor names if a groups diagram is opened in it
 	 */
-	public static final String NAME_EXTENSION_OF_GROUPS_DIAGRAM = "_diagram";
-	
-	//TODO
 	public static final String MULTIPAGE_EDITOR_NAME_GROUP_DIAGRAM = "Group";
 }
 

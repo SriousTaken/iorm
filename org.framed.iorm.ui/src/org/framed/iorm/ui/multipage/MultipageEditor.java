@@ -43,6 +43,9 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 						 FEATURE_PAGE_NAME = NameLiterals.FEATURE_PAGE_NAME,
 						 MODEL_FEATURE_NAME = NameLiterals.MODEL_FEATURE_NAME;
 	
+	/**
+	 * the message used for the workbench status line if there are unsaved changes 
+	 */
 	private final String STATUS_MESSAGE_UNSAVED_CHANGES = TextLiterals.STATUS_MESSAGE_UNSAVED_CHANGES;
 			
 	/**
@@ -60,13 +63,6 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 */
 	private FRaMEDTextViewer textViewerIORM,
 							 textViewerCROM;
-							 
-	/**
-	 * the subeditors of the multipage editor of type {@link FRaMEDFeatureEditor}
-	 * <p>
-	 * the editor that is usd to change the configuration of the role model
-	 */
-	private FRaMEDFeatureEditor editorFeatures;
 	
 	/**
 	 * the indices if the subeditor of the multipage editor
@@ -75,6 +71,13 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 				textViewerIORMIndex,
 				textViewerCROMIndex,
 				editorFeaturesIndex;
+							 
+	/**
+	 * the subeditors of the multipage editor of type {@link FRaMEDFeatureEditor}
+	 * <p>
+	 * the editor that is usd to change the configuration of the role model
+	 */
+	private FRaMEDFeatureEditor editorFeatures;
 	
 	/**
 	 * Class constructor

@@ -12,7 +12,7 @@
   
   	<extension point="org.eclipse.graphiti.ui.diagramTypeProviders">
     	<diagramTypeProvider
-      		class="org.framed.iorm.ui.providers.DiagramProvider"
+      		class="org.framed.iorm.ui.providers.DiagramTypeProvider"
       		description="This is the editor for Role Model Diagrams"
       		id="IORM_Diagram_Provider"
       		name="Role Model Diagram Provider">

@@ -6,15 +6,19 @@ package org.framed.iorm.ui.literals;
  */
 public class IdentifierLiterals {
 
-	//TODO
+	/**
+	 * the identifier for the {@link org.framed.iorm.ui.providers.DiagramTypeProvider} as defined in the extensions of this package
+	 * <p>
+	 * This value should always be the same as the value of the field <em>id</em> of the extension point <em>org.eclipse.graphiti.ui.diagramTypeProviders</em>.
+	 */
 	public static final String DIAGRAM_PROVIDER_ID = "IORM_Diagram_Provider";
 	
 	/**
-	 * diagram ID
+	 * the diagram identifier of the diagram type for compartment role object models as defined in the extensions of this package
 	 * <p>
-	 * the diagram identifier of the diagram type for role models
+	 * This value should always be the same as the value of the field <em>id</em> of the extension point <em>org.eclipse.graphiti.ui.diagramTypes</em>.
 	 */
-	public static final String DIAGRAM_TYPE = "Role Model";
+	public static final String DIAGRAM_TYPE_ID = "Role Model";
 	
 	/**
 	 * editor ID

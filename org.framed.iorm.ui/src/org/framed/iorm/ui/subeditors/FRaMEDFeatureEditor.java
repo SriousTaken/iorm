@@ -7,14 +7,10 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -29,7 +25,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.framed.iorm.featuremodel.FRaMEDConfiguration;
@@ -120,7 +115,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	 * (1) {@link #getResourceFromEditorInput}<br>
 	 * (2) {@link #readRootModel}<br>
 	 * (3) {@link #readFeatureModel}<br>
-	 * (4) {@link #getResourceFromEditorInput}<br> TODO
+	 * (4) {@link GeneralUtil#getResourceFromEditorInput}<br> 
 	 * (5) {@link #loadConfiguration}
 	 * @param editorInput the opened diagram
 	 * @param multipageEditor the multipage editor that uses this editor

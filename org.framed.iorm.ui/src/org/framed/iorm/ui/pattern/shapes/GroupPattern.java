@@ -55,8 +55,7 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 	
 	//names
 	private String GROUP_FEATURE_NAME = NameLiterals.GROUP_FEATURE_NAME,
-				   STANDART_GROUP_NAME = NameLiterals.STANDART_GROUP_NAME,
-				   NAME_EXTENSION_OF_GROUPS_DIAGRAM = NameLiterals.NAME_EXTENSION_OF_GROUPS_DIAGRAM;
+				   STANDART_GROUP_NAME = NameLiterals.STANDART_GROUP_NAME;
 	
 	//identifier
 	private String SHAPE_ID_GROUP_TYPEBODY = IdentifierLiterals.SHAPE_ID_GROUP_TYPEBODY,
@@ -65,7 +64,7 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 				   SHAPE_ID_GROUP_LINE = IdentifierLiterals.SHAPE_ID_GROUP_LINE,
 				   SHAPE_ID_GROUP_MODEL = IdentifierLiterals.SHAPE_ID_GROUP_MODEL,
 				   IMG_ID_FEATURE_GROUP = IdentifierLiterals.IMG_ID_FEATURE_GROUP,
-				   DIAGRAM_TYPE = IdentifierLiterals.DIAGRAM_TYPE;
+				   DIAGRAM_TYPE = IdentifierLiterals.DIAGRAM_TYPE_ID;
 	
 	//text
 	private String DIRECTEDITING_GROUP = TextLiterals.DIRECTEDITING_GROUP;
@@ -219,7 +218,9 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 		
 		//diagram container shape and groups diagram
 		ContainerShape contentDiagramShape = pictogramElementCreateService.createContainerShape(containerShape, false);
-		Diagram contentDiagram = pictogramElementCreateService.createDiagram(DIAGRAM_TYPE, STANDART_GROUP_NAME + NAME_EXTENSION_OF_GROUPS_DIAGRAM, 10, false);
+		Diagram contentDiagram = pictogramElementCreateService.createDiagram(DIAGRAM_TYPE, STANDART_GROUP_NAME, 10, false);
+		AddGroupOrCompartmentTypeContext agctc = (AddGroupOrCompartmentTypeContext) addContext;
+		link(contentDiagram, agctc.getModelToLink());
 		contentDiagramShape.getChildren().add(contentDiagram);
 		
 		//Step 3
@@ -450,7 +451,7 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 	                	text.setValue(businessTypeName);
 	                    //change diagram name
 	                	Diagram diagram = GeneralUtil.getGroupDiagramFromGroupShape(shape);
-	                	diagram.setName(businessTypeName + NAME_EXTENSION_OF_GROUPS_DIAGRAM);
+	                	diagram.setName(businessTypeName);
 	                	changed = true;
 	    }	}	}	}	
 	return changed;	

@@ -18,7 +18,6 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
-import org.framed.iorm.ui.miscellaneous.AbstractInstancesOfTypeContainerNode;
 
 /**
  * This class creates an Eclipse wizard to create a role model.
@@ -31,7 +30,7 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 	/**
 	 * identifier literals for the diagram type and the multipage editor id gathered from {@link IdentifierLiterals}
 	 */
-	private final String DIAGRAM_TYPE = IdentifierLiterals.DIAGRAM_TYPE,
+	private final String DIAGRAM_TYPE = IdentifierLiterals.DIAGRAM_TYPE_ID,
 						 EDITOR_ID = IdentifierLiterals.EDITOR_ID;
 	
 	/**
@@ -90,9 +89,6 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 		Object element = getSelection().getFirstElement();
 		if (element instanceof IProject) {
 			project = (IProject) element;
-		} else if (element instanceof AbstractInstancesOfTypeContainerNode) {
-			AbstractInstancesOfTypeContainerNode aiocn = (AbstractInstancesOfTypeContainerNode) element;
-			project = aiocn.getProject();
 		} else if (element instanceof IFolder) {
 			IFolder diagramFolder = (IFolder) element;
 			project = diagramFolder.getProject();
