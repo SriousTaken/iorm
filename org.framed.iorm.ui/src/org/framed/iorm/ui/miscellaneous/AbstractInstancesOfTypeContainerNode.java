@@ -1,4 +1,4 @@
-package miscellaneous;
+package org.framed.iorm.ui.miscellaneous;
 
 import org.eclipse.core.resources.IProject;
 

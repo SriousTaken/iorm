@@ -10,7 +10,13 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
@@ -18,6 +24,7 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.ui.editor.IDiagramEditorInput;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.framed.iorm.model.Model;
@@ -25,7 +32,7 @@ import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.LayoutLiterals;
 
-public class MethodUtil {
+public class GeneralUtil {
 	
 	//TODO
 	private static final String SHAPE_ID_GROUP_TYPEBODY = IdentifierLiterals.SHAPE_ID_GROUP_TYPEBODY,
@@ -92,6 +99,52 @@ public class MethodUtil {
 	}
 	
 	/**
+	 * fetches the {@link Resource} for a given {@link IEditorInput}
+	 * @param editorInput the editor input to get the resource for
+	 * @return the resource if edtior input is of type {@link IFileEditorInput} and the resource and be loaded 
+	 * and returns null else
+	 */
+	public static Resource getResourceFromEditorInput(IEditorInput editorInput) {
+		ResourceSet resourceSet = new ResourceSetImpl();
+		Resource resource = null;
+	 	if (editorInput instanceof IFileEditorInput) {
+	    	IFileEditorInput fileInput = (IFileEditorInput) editorInput;
+	    	IFile file = fileInput.getFile();
+	    	resource = resourceSet.createResource(URI.createURI(file.getLocationURI().toString()));
+	 	} 
+	 	if(editorInput instanceof IDiagramEditorInput) {
+	 		IDiagramEditorInput diagramInput = (IDiagramEditorInput) editorInput;
+	 		resource = resourceSet.createResource(diagramInput.getUri());
+	 	}	
+	 	if(resource != null) {
+	    	try {
+	    		resource.load(null);
+	    		return resource;
+	    	} catch (IOException e) { e.printStackTrace(); }
+	    }
+	 	return null;
+	}
+	
+	/**
+	 * sets the values of a given {@link AddContext} using a given {@link CreateContext}
+	 * <p>
+	 * This operation only deals with add and create contexts for graphiti shapes since graphiti connections use
+	 * a special type of create contexts.
+	 * @param addContext the {@link AddContext} to set the values in
+	 * @param createContext the {@link CreateContext} to get the values of
+	 * @return the given {@link AddContext} with set values
+	 */
+	public static AddContext getAddContextForCreateShapeContext(AddContext addContext, ICreateContext createContext) {
+		addContext.setHeight(createContext.getHeight());
+		addContext.setWidth(createContext.getWidth());
+		addContext.setX(createContext.getX());
+		addContext.setY(createContext.getY());
+		addContext.setLocation(createContext.getX(), createContext.getY());
+		addContext.setSize(createContext.getWidth(), createContext.getHeight());
+		return addContext;
+	}
+	
+	/**
 	 * This operation gets the name of a pictogram element with text shape as children.
 	 * @param pictogramElement the pictogram element to get the name of
 	 * @param SHAPE_ID_NAME the identifier of the textshape
@@ -124,7 +177,7 @@ public class MethodUtil {
 	 * @param shapeToStartFrom the shape to start the search for the groups diagram 
 	 * @return the groups diagram, if the given shape was a name shape or the type body shape of a group
 	 */
-	public static Diagram getDiagramFromGroupNameShape(Shape shapeToStartFrom) {
+	public static Diagram getGroupDiagramFromGroupShape(Shape shapeToStartFrom) {
 		//Step 1
 		if(shapeToStartFrom.getGraphicsAlgorithm() == null) return null;
 		else {

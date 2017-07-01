@@ -4,7 +4,7 @@ import org.framed.iorm.ui.literals.TextLiterals;
 
 /**
  * This exception is thrown if there is no linked shape or connection can be found for a business object
- * of the type {@link org.framed.iorm.model.ModelElement} when using the {@link StepInFeature} or
+ * of the type {@link org.framed.iorm.model.ModelElement} when using the {@link StepInNewTabFeature} or
  * the {@link StepOutFeature}.
  * @author Kevin Kassin
  */

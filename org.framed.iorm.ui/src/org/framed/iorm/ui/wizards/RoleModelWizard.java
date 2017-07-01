@@ -18,8 +18,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
-
-import miscellaneous.AbstractInstancesOfTypeContainerNode;
+import org.framed.iorm.ui.miscellaneous.AbstractInstancesOfTypeContainerNode;
 
 /**
  * This class creates an Eclipse wizard to create a role model.

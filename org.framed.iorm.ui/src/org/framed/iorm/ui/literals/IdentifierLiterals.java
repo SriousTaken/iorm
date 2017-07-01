@@ -6,6 +6,9 @@ package org.framed.iorm.ui.literals;
  */
 public class IdentifierLiterals {
 
+	//TODO
+	public static final String DIAGRAM_PROVIDER_ID = "IORM_Diagram_Provider";
+	
 	/**
 	 * diagram ID
 	 * <p>

@@ -43,7 +43,7 @@ import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
 import org.framed.iorm.ui.util.DirectEditingUtil;
-import org.framed.iorm.ui.util.MethodUtil;
+import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
 
 public class NaturalTypePattern extends AbstractPattern implements IPattern {
@@ -128,7 +128,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 				//target container is diagram with root model
 				ContainerShape containerShape = getDiagram();
 				if(containerShape instanceof Diagram) {
-					if(MethodUtil.getDiagramRootModel((Diagram) containerShape) != null)
+					if(GeneralUtil.getDiagramRootModel((Diagram) containerShape) != null)
 						return true;
 		}	}	}
 		return false;
@@ -181,7 +181,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		Rectangle attributeRectangle = graphicAlgorithmService.createRectangle(attributeContainer);
 		attributeRectangle.setLineVisible(false);
 		attributeRectangle.setBackground(manageColor(COLOR_BACKGROUND));
-		int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.NATURAL_TYPE, height);
+		int horizontalCenter = GeneralUtil.calculateHorizontalCenter(Type.NATURAL_TYPE, height);
 		graphicAlgorithmService.setLocationAndSize(attributeRectangle, PUFFER_BETWEEN_ELEMENTS, HEIGHT_NAME_SHAPE+PUFFER_BETWEEN_ELEMENTS, 
 									 			   addContext.getWidth()-2*PUFFER_BETWEEN_ELEMENTS, horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS);
 		//second line
@@ -233,7 +233,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		//target container is either diagram with model or a group
 		ContainerShape containerShape = getDiagram();
 		if(containerShape instanceof Diagram) {
-			if(MethodUtil.getDiagramRootModel((Diagram) containerShape) != null)
+			if(GeneralUtil.getDiagramRootModel((Diagram) containerShape) != null)
 				return true;
 		}
 		return false;
@@ -246,7 +246,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		newNaturalType.setType(Type.NATURAL_TYPE);
 		newNaturalType.setName(STANDARD_NATURALTYPE_NAME);
 		//add new natural type to the elements of the model
-		Model model = MethodUtil.getDiagramRootModel((Diagram) getDiagram());
+		Model model = GeneralUtil.getDiagramRootModel((Diagram) getDiagram());
 		if(newNaturalType.eResource() != null) getDiagram().eResource().getContents().add(newNaturalType);
 		model.getElements().add(newNaturalType);
 		newNaturalType.setContainer(model);
@@ -399,7 +399,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 	            	layoutChanged=true;
 	            }
 	            if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER)) {
-	            	int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.NATURAL_TYPE, containerHeight);
+	            	int horizontalCenter = GeneralUtil.calculateHorizontalCenter(Type.NATURAL_TYPE, containerHeight);
 	            	int newHeight = horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS;
 	            	int newWidth = typeBodyRectangle.getWidth()-2*PUFFER_BETWEEN_ELEMENTS;		
 	            	int newY = horizontalCenter+PUFFER_BETWEEN_ELEMENTS;	            	
@@ -451,11 +451,11 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		if(pictogramElement.getGraphicsAlgorithm() != null &&
 		   PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_TYPEBODY)) {
 			//pictogram name of natural type, attributes and operations
-			String pictogramTypeName = MethodUtil.getPictogramTypeName(pictogramElement, SHAPE_ID_NATURALTYPE_NAME);
-			List<String> pictogramAttributeNames = MethodUtil.getpictogramAttributeNames(pictogramElement, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER);
-			List<String> pictogramOperationNames = MethodUtil.getpictogramOperationNames(pictogramElement, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER);
+			String pictogramTypeName = GeneralUtil.getPictogramTypeName(pictogramElement, SHAPE_ID_NATURALTYPE_NAME);
+			List<String> pictogramAttributeNames = GeneralUtil.getpictogramAttributeNames(pictogramElement, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER);
+			List<String> pictogramOperationNames = GeneralUtil.getpictogramOperationNames(pictogramElement, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER);
 			//business name and attributes
-			String businessTypeName = MethodUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
+			String businessTypeName = GeneralUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
 			List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 			List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 								
@@ -515,14 +515,14 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
 		
 		//business names of natural type, attributes and operations
-		String businessTypeName = MethodUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
+		String businessTypeName = GeneralUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
 		List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 		List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 		
 		//set type name in pictogram model
         if (pictogramElement instanceof ContainerShape) {     
             ContainerShape containerShape = (ContainerShape) pictogramElement;
-            int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.NATURAL_TYPE, containerShape.getGraphicsAlgorithm().getHeight());
+            int horizontalCenter = GeneralUtil.calculateHorizontalCenter(Type.NATURAL_TYPE, containerShape.getGraphicsAlgorithm().getHeight());
             for (Shape shape : containerShape.getChildren()) {
                 if (shape.getGraphicsAlgorithm() instanceof Text) {
                     Text text = (Text) shape.getGraphicsAlgorithm();

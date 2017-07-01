@@ -91,5 +91,8 @@ public class NameLiterals {
 	 * the name extension to use for name of a groups diagram
 	 */
 	public static final String NAME_EXTENSION_OF_GROUPS_DIAGRAM = "_diagram";
+	
+	//TODO
+	public static final String MULTIPAGE_EDITOR_NAME_GROUP_DIAGRAM = "Group";
 }
 

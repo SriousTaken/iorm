@@ -97,8 +97,6 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 */
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
-		if (!(editorInput instanceof IFileEditorInput))
-			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
 		super.init(site, editorInput);
 		getSite().getWorkbenchWindow().getSelectionService().addSelectionListener(this);
 	}
@@ -121,6 +119,9 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 * Step 5: It creates the feature editor and adds the page. To do that the created root model is needed.
 	 * 		   It also creates the editores and add the pages for the iorm and crom text viewers.<br>  
 	 * Step 6: Its set the names of the pages.
+	 * Step 7: If the editor input is a {@link IFileEditorInput} set the file name as multipage editor name. If a groups or compartment
+	 * 		   types diagram is opened a {@link org.eclipse.graphiti.ui.editor.DiagramEditorInput} is used and the name of the 
+	 * 		   multipage editor is set in the {@link org.framed.iorm.ui.graphitifeatures.StepInNewTabFeature}.
 	 */
 	@Override
 	protected void addPages() {
@@ -155,6 +156,10 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 		setPageText(textViewerIORMIndex, TEXT_IORM_PAGE_NAME);
 		setPageText(textViewerCROMIndex, TEXT_CROM_PAGE_NAME);	
 		setPageText(editorFeaturesIndex, FEATURE_PAGE_NAME);
+		//Step 7
+		if(getEditorInput() instanceof IFileEditorInput) {
+			setPartName(getEditorInput().getName());
+		}
 	}
 	
 	/**
@@ -203,6 +208,15 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	@Override
 	protected void pageChange(int newPageIndex) {
 		super.pageChange(newPageIndex);
+	}
+	
+
+	/**
+	 * publishes the operation {@link org.eclipse.ui.part.EditorPart#setPartName} of {@link org.eclipse.ui.part.EditorPart}
+	 */
+	@Override
+	public void setPartName(String newName) {
+		super.setPartName(newName);
 	}
 	
 	/**

@@ -9,7 +9,7 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.features.impl.DefaultRemoveFeature;
 import org.eclipse.graphiti.pattern.DefaultFeatureProviderWithPatterns;
 import org.framed.iorm.ui.graphitifeatures.ChangeConfigurationFeature;
-import org.framed.iorm.ui.graphitifeatures.StepInFeature;
+import org.framed.iorm.ui.graphitifeatures.StepInNewTabFeature;
 import org.framed.iorm.ui.graphitifeatures.StepOutFeature;
 import org.framed.iorm.ui.pattern.connections.InheritancePattern;
 import org.framed.iorm.ui.pattern.shapes.AttributeOperationCommonPattern;
@@ -71,7 +71,7 @@ public class FeatureProvider extends DefaultFeatureProviderWithPatterns {
 	@Override
 	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
 	    return new ICustomFeature[] { new ChangeConfigurationFeature(this),
-	    						 	  new StepInFeature(this),
+	    						 	  new StepInNewTabFeature(this),
 	    						 	  new StepOutFeature(this)};
 	} 
 }

@@ -34,12 +34,13 @@ import org.eclipse.graphiti.util.IColorConstant;
 import org.framed.iorm.model.Model;
 import org.framed.iorm.model.OrmFactory;
 import org.framed.iorm.model.Type;
+import org.framed.iorm.ui.contexts.AddGroupOrCompartmentTypeContext;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
 import org.framed.iorm.ui.util.DirectEditingUtil;
-import org.framed.iorm.ui.util.MethodUtil;
+import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
 
 /**
@@ -131,7 +132,7 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 				//target container is diagram with root model
 				ContainerShape containerShape = getDiagram();
 				if(containerShape instanceof Diagram) {
-					if(MethodUtil.getDiagramRootModel((Diagram) containerShape) != null)
+					if(GeneralUtil.getDiagramRootModel((Diagram) containerShape) != null)
 						return true;
 		}	}	}
 		return false;
@@ -252,7 +253,7 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 		//target container is either diagram with model
 		ContainerShape containerShape = getDiagram();
 		if(containerShape instanceof Diagram) {
-			if(MethodUtil.getDiagramRootModel((Diagram) containerShape) != null)
+			if(GeneralUtil.getDiagramRootModel((Diagram) containerShape) != null)
 				return true;
 		}
 		return false;
@@ -265,7 +266,7 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 		newGroup.setType(Type.GROUP);
 		newGroup.setName(STANDART_GROUP_NAME);
 		//add new group to the elements of the model
-		Model model = MethodUtil.getDiagramRootModel((Diagram) getDiagram());
+		Model model = GeneralUtil.getDiagramRootModel((Diagram) getDiagram());
 		if(newGroup.eResource() != null) getDiagram().eResource().getContents().add(newGroup);
 		model.getElements().add(newGroup);
 		newGroup.setContainer(model);
@@ -276,7 +277,11 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 		//enable direct editing
 		getFeatureProvider().getDirectEditingInfo().setActive(true);
 		//add to graphiti representation
-		addGraphicalRepresentation(createContext, newGroup);
+		AddGroupOrCompartmentTypeContext agctc = new AddGroupOrCompartmentTypeContext();
+		GeneralUtil.getAddContextForCreateShapeContext(agctc, createContext);
+		agctc.setNewObject(newGroup);
+		agctc.setModelToLink(groupModel);
+		if(canAdd(agctc)) add(agctc);
 		return new Object[] { newGroup };	
 	}
 	
@@ -416,9 +421,9 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 		if(pictogramElement.getGraphicsAlgorithm() != null &&
 		   PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_GROUP_TYPEBODY)) {
 			//pictogram name of natural type, attributes and operations
-			String pictogramTypeName = MethodUtil.getPictogramTypeName(pictogramElement, SHAPE_ID_GROUP_NAME);
+			String pictogramTypeName = GeneralUtil.getPictogramTypeName(pictogramElement, SHAPE_ID_GROUP_NAME);
 			//business name and attributes
-			String businessTypeName = MethodUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
+			String businessTypeName = GeneralUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
 				
 			//check for update: different names, different amount of attibutes/ operations
 			if(pictogramTypeName==null || businessTypeName==null) return Reason.createTrueReason("Name is null.");
@@ -432,7 +437,7 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 		boolean changed = false;
 	         
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
-		String businessTypeName = MethodUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
+		String businessTypeName = GeneralUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
 			
 		//set type name in pictogram model
 	    if (pictogramElement instanceof ContainerShape) {     
@@ -444,7 +449,7 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 	                	//change group name
 	                	text.setValue(businessTypeName);
 	                    //change diagram name
-	                	Diagram diagram = MethodUtil.getDiagramFromGroupNameShape(shape);
+	                	Diagram diagram = GeneralUtil.getGroupDiagramFromGroupShape(shape);
 	                	diagram.setName(businessTypeName + NAME_EXTENSION_OF_GROUPS_DIAGRAM);
 	                	changed = true;
 	    }	}	}	}	
