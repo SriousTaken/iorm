@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.ui.editor.IDiagramEditorInput;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -40,7 +41,7 @@ import org.framed.iorm.ui.exceptions.FeatureModelNotReadableException;
 import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.URLLiterals;
 import org.framed.iorm.ui.multipage.MultipageEditor;
-import org.framed.iorm.ui.util.MethodUtil;
+import org.framed.iorm.ui.util.GeneralUtil;
 
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.configuration.Configuration;
@@ -128,7 +129,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	public FRaMEDFeatureEditor(IEditorInput editorInput, MultipageEditor multipageEditor) {
 		super();
 		this.multipageEditor = multipageEditor;
-		Resource resource = getResourceFromEditorInput(editorInput);
+		Resource resource = GeneralUtil.getResourceFromEditorInput(editorInput);
 		Model rootModel = readRootModel(resource);
 		IFeatureModel featureModel = readFeatureModel();
 		loadConfiguration(rootModel, featureModel);
@@ -144,28 +145,6 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	}
 	
 	/**
-	 * fetches the {@link Resource} for a given {@link IEditorInput}
-	 * @param editorInput the editor input to get the resource for
-	 * @return the resource if edtior input is of type {@link IFileEditorInput} and the resource and be loaded 
-	 * and returns null else
-	 */
-	public Resource getResourceFromEditorInput(IEditorInput editorInput) {
-		ResourceSet resourceSet = new ResourceSetImpl();
-	 	if (editorInput instanceof IFileEditorInput) {
-	    	IFileEditorInput fileInput = (IFileEditorInput) editorInput;
-	    	IFile file = fileInput.getFile();
-	    	Resource resource = resourceSet.createResource(URI.createURI(file.getLocationURI().toString()));
-	    	try {
-	    		resource.load(null);
-	    		return resource;
-	    	} catch (IOException e) { 
-	    		e.printStackTrace();
-	    	}
-	    }
-	 	return null;
-	}
-	
-	/**
 	 * fetches the root model for a resource
 	 * @param resource the resource to get the root model from
 	 * @return the root model of the resource is not null and the diagram has a root model and return null else
@@ -173,9 +152,10 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	private Model readRootModel(Resource resource) {
 		if (resource != null) {
 			Diagram diagram = (Diagram) resource.getContents().get(0);
-			return MethodUtil.getDiagramRootModel(diagram);
-		} else
-			throw new NullPointerException("The resource could not be loaded.");
+			if(GeneralUtil.getDiagramRootModel(diagram) != null)
+				return GeneralUtil.getDiagramRootModel(diagram);
+		} 
+		throw new NullPointerException("The root model could not be loaded.");
 	}
 		
 	/**

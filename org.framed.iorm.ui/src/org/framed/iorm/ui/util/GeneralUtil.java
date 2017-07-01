@@ -10,14 +10,19 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.ui.editor.IDiagramEditorInput;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.framed.iorm.model.Model;
@@ -25,18 +30,25 @@ import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.LayoutLiterals;
 
-public class MethodUtil {
-	
-	//TODO
-	private static final String SHAPE_ID_GROUP_TYPEBODY = IdentifierLiterals.SHAPE_ID_GROUP_TYPEBODY,
-								SHAPE_ID_GROUP_NAME = IdentifierLiterals.SHAPE_ID_GROUP_NAME;
+/**
+ * This class offers several operations used in different editors, patterns and features.
+ * @author Kevin Kassin
+ */
+public class GeneralUtil {
 								
 	/**
-	 * the layout integers this class need to perform the operation {@link #calculateHorizontalCenter}
+	 * the layout integers this class needs to perform the operation {@link #calculateHorizontalCenter}
 	 * gathered from {@link LayoutLiterals}
 	 */
 	private static final int HEIGHT_NAME_SHAPE = LayoutLiterals.HEIGHT_NAME_SHAPE,
 			 		  	 	 DATATYPE_CORNER_SIZE = LayoutLiterals.DATATYPE_CORNER_SIZE;
+	
+	/**
+	 * the identifiers for graphics algorithms of group pictograms needed for the operation 
+	 * {@link #getGroupDiagramFromGroupShape} gathered from {@link IdentifierLiterals}
+	 */
+	private static final String SHAPE_ID_GROUP_TYPEBODY = IdentifierLiterals.SHAPE_ID_GROUP_TYPEBODY,
+								SHAPE_ID_GROUP_NAME = IdentifierLiterals.SHAPE_ID_GROUP_NAME;
 		
 	/**
 	 * This operation calculates where the horizontal center of a class or role is.
@@ -57,15 +69,15 @@ public class MethodUtil {
 	/**
 	 * This operation gets the root {@link Model} for a given {@link Diagram}.
 	 * @param diagram The diagram to get the model from
-	 * @return the root model of the given diagram if there is exactly one model found and returns null else
+	 * @return the root model of the given diagram if there is exactly one model linked and returns null else
 	 */
 	public static final Model getDiagramRootModel(Diagram diagram) {
-		List<Model> models=  new ArrayList<Model>();
-		for(EObject eObject : diagram.eResource().getContents()) {
-			if(eObject instanceof Model) {
-				models.add((Model) eObject);
-		}	}
-		if(models.size()==1) return models.get(0);
+		if(diagram.getLink() != null) {
+			if(diagram.getLink().getBusinessObjects().size() == 1 &&
+			   diagram.getLink().getBusinessObjects().get(0) instanceof Model) {
+				return (Model) diagram.getLink().getBusinessObjects().get(0);
+			}
+		}
 		return null;
 	}
 	
@@ -92,6 +104,89 @@ public class MethodUtil {
 	}
 	
 	/**
+	 * fetches the {@link Resource} for a given {@link IEditorInput}
+	 * @param editorInput the editor input to get the resource for
+	 * @return the resource if edtior input is of type {@link IFileEditorInput} and the resource and be loaded 
+	 * and returns null else
+	 */
+	public static Resource getResourceFromEditorInput(IEditorInput editorInput) {
+		ResourceSet resourceSet = new ResourceSetImpl();
+		Resource resource = null;
+	 	if (editorInput instanceof IFileEditorInput) {
+	    	IFileEditorInput fileInput = (IFileEditorInput) editorInput;
+	    	IFile file = fileInput.getFile();
+	    	resource = resourceSet.createResource(URI.createURI(file.getLocationURI().toString()));
+	 	} 
+	 	if(editorInput instanceof IDiagramEditorInput) {
+	 		IDiagramEditorInput diagramInput = (IDiagramEditorInput) editorInput;
+	 		resource = resourceSet.createResource(diagramInput.getUri());
+	 	}	
+	 	if(resource != null) {
+	    	try {
+	    		resource.load(null);
+	    		return resource;
+	    	} catch (IOException e) { e.printStackTrace(); }
+	    }
+	 	return null;
+	}
+	
+	/**
+	 * sets the values of a given {@link AddContext} using a given {@link CreateContext}
+	 * <p>
+	 * This operation only deals with add and create contexts for graphiti shapes since graphiti connections use
+	 * a special type of create contexts.
+	 * @param addContext the {@link AddContext} to set the values in
+	 * @param createContext the {@link CreateContext} to get the values of
+	 * @return the given {@link AddContext} with set values
+	 */
+	public static AddContext getAddContextForCreateShapeContext(AddContext addContext, ICreateContext createContext) {
+		addContext.setHeight(createContext.getHeight());
+		addContext.setWidth(createContext.getWidth());
+		addContext.setX(createContext.getX());
+		addContext.setY(createContext.getY());
+		addContext.setLocation(createContext.getX(), createContext.getY());
+		addContext.setSize(createContext.getWidth(), createContext.getHeight());
+		return addContext;
+	}
+	
+	/**
+	 * This operation fetches the groups diagram for a shape that is a part of a groups pictogram 
+	 * representation using the following steps:
+	 * <p>
+	 * Step 1: If the given shape has no graphics Algorithm it returns null.<br>
+	 * Step 2: It calculates the group container shape depending on the given shape.<br>
+	 * Step 3: It searches for the diagram container in the list of children of the group container shape
+	 * 		   and returns the found groups diagram.
+	 * <p>
+	 * If its not clear what the different shapes are, look for the pictogram structure of a group here: 
+	 * {@link org.framed.iorm.ui.pattern.shapes.GroupPattern#add}.
+	 * @param shapeToStartFrom the shape to start the search for the groups diagram 
+	 * @return the groups diagram, if the given shape was a name shape or the type body shape of a group
+	 */
+	public static Diagram getGroupDiagramFromGroupShape(Shape shapeToStartFrom) {
+		//Step 1
+		if(shapeToStartFrom.getGraphicsAlgorithm() == null) return null;
+		else {
+			//Step 2
+			ContainerShape groupContainerShape = null;
+			if(PropertyUtil.isShape_IdValue(shapeToStartFrom.getGraphicsAlgorithm(), SHAPE_ID_GROUP_TYPEBODY))
+				groupContainerShape = shapeToStartFrom.getContainer();
+			if(PropertyUtil.isShape_IdValue(shapeToStartFrom.getGraphicsAlgorithm(), SHAPE_ID_GROUP_NAME))
+				groupContainerShape = shapeToStartFrom.getContainer().getContainer();
+			if(groupContainerShape != null) {
+				//Step 3
+				for(Shape shape : groupContainerShape.getChildren()) {
+					if(shape instanceof ContainerShape) { 
+						ContainerShape containerShape = (ContainerShape) shape; 
+						if(containerShape.getChildren().size() == 1 &&
+						   containerShape.getChildren().get(0) instanceof Diagram) {
+							Diagram diagram = (Diagram) containerShape.getChildren().get(0);
+							return diagram;
+		}	}	}	}	}
+		return null;
+	}
+	
+	/**
 	 * This operation gets the name of a pictogram element with text shape as children.
 	 * @param pictogramElement the pictogram element to get the name of
 	 * @param SHAPE_ID_NAME the identifier of the textshape
@@ -107,43 +202,6 @@ public class MethodUtil {
 						return text.getValue();
 					}
 		} 	}	}
-		return null;
-	}
-	
-	/**
-	 * This operation fetches the groups diagram for a shape that is a part of a groups pictogram 
-	 * representation using the following steps:
-	 * <p>
-	 * Step 1: If the given shape has no graphics Algorithm it returns null.<br>
-	 * Step 2: It calculates the group container shape depending on the given shape.<br>
-	 * Step 3: It searches for the diagram container in the list of children of the group container shape
-	 * 		   and returns the found groups diagram.
-	 * <p>
-	 * If its not clear what the different shapes are look for the pictogram structure of a group here: 
-	 * {@link org.framed.iorm.ui.pattern.shapes.GroupPattern#add}.
-	 * @param shapeToStartFrom the shape to start the search for the groups diagram 
-	 * @return the groups diagram, if the given shape was a name shape or the type body shape of a group
-	 */
-	public static Diagram getDiagramFromGroupNameShape(Shape shapeToStartFrom) {
-		//Step 1
-		if(shapeToStartFrom.getGraphicsAlgorithm() == null) return null;
-		else {
-			//Step 2
-			ContainerShape groupContainerShape = null;
-			if(PropertyUtil.isShape_IdValue(shapeToStartFrom.getGraphicsAlgorithm(), SHAPE_ID_GROUP_TYPEBODY))
-				groupContainerShape = shapeToStartFrom.getContainer();
-			if(PropertyUtil.isShape_IdValue(shapeToStartFrom.getGraphicsAlgorithm(), SHAPE_ID_GROUP_NAME))
-				groupContainerShape = shapeToStartFrom.getContainer().getContainer();
-			if(groupContainerShape != null) {
-			//Step 3
-				for(Shape shape : groupContainerShape.getChildren()) {
-					if(shape instanceof ContainerShape) { 
-						ContainerShape containerShape = (ContainerShape) shape; 
-						if(containerShape.getChildren().size() == 1 &&
-						   containerShape.getChildren().get(0) instanceof Diagram) {
-							Diagram diagram = (Diagram) containerShape.getChildren().get(0);
-							return diagram;
-		}	}	}	}	}
 		return null;
 	}
 	

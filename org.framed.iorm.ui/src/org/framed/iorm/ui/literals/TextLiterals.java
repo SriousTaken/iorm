@@ -54,4 +54,14 @@ public class TextLiterals {
 	 * the message of the workbench status line if there are unsaved changes
 	 */
 	public static final String STATUS_MESSAGE_UNSAVED_CHANGES = "Unsaved changes - the pages are out of sync!";
+	
+	/**
+	 * the prefix used for multipage editor names
+	 * <p>
+	 * can be:<br>
+	 * (1) the prefix for multipage editor name of a multipage editor that shows a groups diagram or<br>
+	 * (2) the prefix for multipage editor name of a multipage editor that shows a compartment types diagram
+	 */
+	public static final String MULTIPAGE_EDITOR_NAME_GROUP_DIAGRAM = "Group",
+			 				   MULTIPAGE_EDITOR_NAME_COMPARTMENTTYPE_DIAGRAM = "Compartment Type";
 }

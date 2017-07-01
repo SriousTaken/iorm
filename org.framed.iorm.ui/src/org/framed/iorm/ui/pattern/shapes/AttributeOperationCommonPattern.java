@@ -24,7 +24,7 @@ import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
 import org.framed.iorm.ui.util.DirectEditingUtil;
-import org.framed.iorm.ui.util.MethodUtil;
+import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
 
 public class AttributeOperationCommonPattern extends AbstractPattern {
@@ -113,7 +113,7 @@ public class AttributeOperationCommonPattern extends AbstractPattern {
 		int attributeContainerSize = attributeContainer.getChildren().size(),
 		    operationContainerSize = operationContainer.getChildren().size(); 	
 		int horizontalCenter;
-			horizontalCenter = MethodUtil.calculateHorizontalCenter(businessObjectOfClassOrRole.getType(), 
+			horizontalCenter = GeneralUtil.calculateHorizontalCenter(businessObjectOfClassOrRole.getType(), 
 																		 classOrRoleContainer.getGraphicsAlgorithm().getHeight());
 		//create shape and text for attribute/operation, set location and property
 		 if(addedAttributeOrOperation.getName().equals(ATTRIBUTE_STANDART_NAME)) {

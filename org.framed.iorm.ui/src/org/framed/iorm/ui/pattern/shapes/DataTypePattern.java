@@ -43,7 +43,7 @@ import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
 import org.framed.iorm.ui.util.DirectEditingUtil;
-import org.framed.iorm.ui.util.MethodUtil;
+import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
 
 public class DataTypePattern extends AbstractPattern{
@@ -129,7 +129,7 @@ public class DataTypePattern extends AbstractPattern{
 				//target container is diagram with root model
 				ContainerShape containerShape = getDiagram();
 				if(containerShape instanceof Diagram) {
-					if(MethodUtil.getDiagramRootModel((Diagram) containerShape) != null)
+					if(GeneralUtil.getDiagramRootModel((Diagram) containerShape) != null)
 						return true;
 		}	}	}
 		return false;
@@ -190,7 +190,7 @@ public class DataTypePattern extends AbstractPattern{
 		Rectangle attributeRectangle = graphicAlgorithmService.createRectangle(attributeContainer);
 		attributeRectangle.setLineVisible(false);
 		attributeRectangle.setBackground(manageColor(COLOR_BACKGROUND));
-		int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.DATA_TYPE, height);
+		int horizontalCenter = GeneralUtil.calculateHorizontalCenter(Type.DATA_TYPE, height);
 		graphicAlgorithmService.setLocationAndSize(attributeRectangle, PUFFER_BETWEEN_ELEMENTS, HEIGHT_NAME_SHAPE+PUFFER_BETWEEN_ELEMENTS, 
 												   width-2*PUFFER_BETWEEN_ELEMENTS, horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS);
 		
@@ -243,7 +243,7 @@ public class DataTypePattern extends AbstractPattern{
 		//target container is either diagram with model or a group
 		ContainerShape containerShape = getDiagram();
 		if(containerShape instanceof Diagram) {
-			if(MethodUtil.getDiagramRootModel((Diagram) containerShape) != null)
+			if(GeneralUtil.getDiagramRootModel((Diagram) containerShape) != null)
 				return true;
 		}
 		return false;
@@ -256,7 +256,7 @@ public class DataTypePattern extends AbstractPattern{
 		newDataType.setType(Type.DATA_TYPE);
 		newDataType.setName(STANDARD_DATATYPE_NAME);
 		//add new natural type to the elements of the model
-		Model model = MethodUtil.getDiagramRootModel(getDiagram());
+		Model model = GeneralUtil.getDiagramRootModel(getDiagram());
 		if(newDataType.eResource() != null) getDiagram().eResource().getContents().add(newDataType);
 		model.getElements().add(newDataType);
 		newDataType.setContainer(model);
@@ -408,7 +408,7 @@ public class DataTypePattern extends AbstractPattern{
 		            layoutChanged=true;
 		       }
 		       if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_OPERATIONCONTAINER)) {
-		    	   int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.DATA_TYPE, containerHeight);
+		    	   int horizontalCenter = GeneralUtil.calculateHorizontalCenter(Type.DATA_TYPE, containerHeight);
 		           int newHeight = horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS;
 		           int newWidth = typeBodyPolygon.getWidth()-2*PUFFER_BETWEEN_ELEMENTS;		
 		           int newY = horizontalCenter+PUFFER_BETWEEN_ELEMENTS;	            	
@@ -461,11 +461,11 @@ public class DataTypePattern extends AbstractPattern{
 		if( pictogramElement.getGraphicsAlgorithm() != null &&
 			PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_DATATYPE_TYPEBODY)) {
 			//pictogram name of data type, attributes and operations
-			String pictogramTypeName = MethodUtil.getPictogramTypeName(pictogramElement, SHAPE_ID_DATATYPE_NAME);
-			List<String> pictogramAttributeNames = MethodUtil.getpictogramAttributeNames(pictogramElement, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER);
-			List<String> pictogramOperationNames = MethodUtil.getpictogramOperationNames(pictogramElement, SHAPE_ID_DATATYPE_OPERATIONCONTAINER);
+			String pictogramTypeName = GeneralUtil.getPictogramTypeName(pictogramElement, SHAPE_ID_DATATYPE_NAME);
+			List<String> pictogramAttributeNames = GeneralUtil.getpictogramAttributeNames(pictogramElement, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER);
+			List<String> pictogramOperationNames = GeneralUtil.getpictogramOperationNames(pictogramElement, SHAPE_ID_DATATYPE_OPERATIONCONTAINER);
 			//business name and attributes
-			String businessTypeName = MethodUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
+			String businessTypeName = GeneralUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
 			List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 			List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 								
@@ -524,14 +524,14 @@ public class DataTypePattern extends AbstractPattern{
          
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
 		//business names of natural type, attributes and operations
-		String businessTypeName = MethodUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
+		String businessTypeName = GeneralUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
 		List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 		List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 		
 		//set type name in pictogram model
         if (pictogramElement instanceof ContainerShape) {     
             ContainerShape containerShape = (ContainerShape) pictogramElement;
-            int horizontalCenter = MethodUtil.calculateHorizontalCenter(Type.DATA_TYPE, containerShape.getGraphicsAlgorithm().getHeight());
+            int horizontalCenter = GeneralUtil.calculateHorizontalCenter(Type.DATA_TYPE, containerShape.getGraphicsAlgorithm().getHeight());
             for (Shape shape : containerShape.getChildren()) {
                 if (shape.getGraphicsAlgorithm() instanceof Text) {
                     Text text = (Text) shape.getGraphicsAlgorithm();

@@ -86,10 +86,5 @@ public class NameLiterals {
 							   TEXT_IORM_PAGE_NAME = "IORM",
 							   TEXT_CROM_PAGE_NAME = "CROM",
 							   FEATURE_PAGE_NAME = "Configuration";
-	
-	/**
-	 * the name extension to use for name of a groups diagram
-	 */
-	public static final String NAME_EXTENSION_OF_GROUPS_DIAGRAM = "_diagram";
 }
 

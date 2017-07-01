@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -18,6 +17,7 @@ import org.framed.iorm.model.Model;
 import org.framed.iorm.model.OrmFactory;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.URLLiterals;
+import org.framed.iorm.ui.util.GeneralUtil;
 
 /**
  * This graphiti pattern class is used to work with {@link org.framed.iorm.model.Model} in the editor. 
@@ -93,34 +93,42 @@ public class ModelPattern extends AbstractPattern implements IPattern {
 	 * <p>
 	 * returns true if<br>
 	 * (1) the added business object is a {@link org.framed.iorm.model.Model} and<br>
-	 * (2) the diagram does not already have an root model
+	 * (2) the diagram does not already have a root model linked
 	 * @return if the root model can be added
 	 */
 	@Override
 	public boolean canAdd(IAddContext addContext) {
 		if(addContext.getNewObject() instanceof Model) {
-			for(EObject eObject : getDiagram().eResource().getContents()) {
-				if(eObject instanceof Model) return false;
-			}
-			return true;
+			return (GeneralUtil.getDiagramRootModel(getDiagram()) == null);
 		}  
 		return false;
 	}
 
 	/**
-	 * adds the root model to the diagram
+	 * adds and links the root model to the diagram
 	 * @return null, since the model has no pictogram element 
 	 */
 	@Override
 	public PictogramElement add(IAddContext addContext) {
-		//get container and new object
 		Model addedModel = (Model) addContext.getNewObject();
 		getDiagram().eResource().getContents().add(addedModel);
+		link(getDiagram(), addedModel);
 		return null;
 	}
 	
 	//create feature
 	//~~~~~~~~~~~~~~
+	/**
+	 * calculates if a root model can be created
+	 * <p>
+	 * returns true if the diagram does not already have a root model linked
+	 * @return if the root model can be added
+	 */
+	@Override
+	public boolean canCreate(ICreateContext createContext) {
+		return (GeneralUtil.getDiagramRootModel(getDiagram()) == null);
+	}
+	
 	/**
 	 * creates the business object of the root model, set its standard configuration and
 	 * calls the add function for the root model

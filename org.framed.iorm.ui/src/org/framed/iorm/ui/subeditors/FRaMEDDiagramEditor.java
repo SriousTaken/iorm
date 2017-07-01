@@ -5,7 +5,7 @@ import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.framed.iorm.featuremodel.FRaMEDFeature;
 import org.framed.iorm.model.Model;
-import org.framed.iorm.ui.util.MethodUtil;
+import org.framed.iorm.ui.util.GeneralUtil;
 
 /**
  * the diagram editor used by {@link org.framed.iorm.ui.multipage.MultipageEditor}
@@ -36,7 +36,7 @@ public class FRaMEDDiagramEditor extends DiagramEditor  {
 	 * updates the value of the class variable {@link #selectedFeatures}
 	 */
 	public void updateSelectedFeatures() {
-		Model rootModel = MethodUtil.getDiagramRootModel(this.getDiagramTypeProvider().getDiagram());
+		Model rootModel = GeneralUtil.getDiagramRootModel(this.getDiagramTypeProvider().getDiagram());
 		selectedFeatures = rootModel.getFramedConfiguration().getFeatures();
 	}
 	

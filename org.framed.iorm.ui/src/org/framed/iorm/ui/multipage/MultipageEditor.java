@@ -2,6 +2,7 @@ package org.framed.iorm.ui.multipage;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
 import org.eclipse.jface.viewers.ISelection;
@@ -32,19 +33,19 @@ import org.framed.iorm.ui.subeditors.FRaMEDTextViewer;
 public class MultipageEditor extends FormEditor implements ISelectionListener {
 	
 	/**
-	 * name literals for the pages of the multipage editor and the model feature
-	 * <p>
-	 * for reference check the Strings in {@link NameLiterals}
-	 * @see NameLiterals
+	 * name literals for the pages of the multipage editor and the model feature gathered from {@link NameLiterals}
 	 */
 	private final String DIAGRAM_PAGE_NAME = NameLiterals.DIAGRAM_PAGE_NAME,
-						 TEXT_IORM_PAGE_NAME = NameLiterals.TEXT_IORM_PAGE_NAME,
-						 TEXT_CROM_PAGE_NAME = NameLiterals.TEXT_CROM_PAGE_NAME,
-						 FEATURE_PAGE_NAME = NameLiterals.FEATURE_PAGE_NAME,
-						 MODEL_FEATURE_NAME = NameLiterals.MODEL_FEATURE_NAME;
+				   		 TEXT_IORM_PAGE_NAME = NameLiterals.TEXT_IORM_PAGE_NAME,
+				   		 TEXT_CROM_PAGE_NAME = NameLiterals.TEXT_CROM_PAGE_NAME,
+				   		 FEATURE_PAGE_NAME = NameLiterals.FEATURE_PAGE_NAME,
+				   		 MODEL_FEATURE_NAME = NameLiterals.MODEL_FEATURE_NAME;
 	
+	/**
+	 * the message used for the workbench status line if there are unsaved changes 
+	 */
 	private final String STATUS_MESSAGE_UNSAVED_CHANGES = TextLiterals.STATUS_MESSAGE_UNSAVED_CHANGES;
-			
+	
 	/**
 	 * the subeditors of the multipage editor of type {@link FRaMEDDiagramEditor}
 	 * <p>
@@ -75,7 +76,7 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 				textViewerIORMIndex,
 				textViewerCROMIndex,
 				editorFeaturesIndex;
-	
+
 	/**
 	 * Class constructor
 	 */
@@ -97,8 +98,6 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 */
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
-		if (!(editorInput instanceof IFileEditorInput))
-			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
 		super.init(site, editorInput);
 		getSite().getWorkbenchWindow().getSelectionService().addSelectionListener(this);
 	}
@@ -120,7 +119,10 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 * Step 4: It save after the creation of the root model.<br>
 	 * Step 5: It creates the feature editor and adds the page. To do that the created root model is needed.
 	 * 		   It also creates the editores and add the pages for the iorm and crom text viewers.<br>  
-	 * Step 6: Its set the names of the pages.
+	 * Step 6: Its set the names of the pages.<br>
+	 * Step 7: If the editor input is a {@link IFileEditorInput} set the file name as multipage editor name. If a groups or compartment
+	 * 		   types diagram is opened a {@link org.eclipse.graphiti.ui.editor.DiagramEditorInput} is used and the name of the 
+	 * 		   multipage editor is set in the {@link org.framed.iorm.ui.graphitifeatures.StepInNewTabFeature}.
 	 */
 	@Override
 	protected void addPages() {
@@ -140,7 +142,7 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 		CreateContext createContext = new CreateContext();
 		createModelFeature.create(createContext);
 		//Step 4
-		doSave(null);
+		doSave(new NullProgressMonitor());
 		//Step 5
 		editorFeatures = new FRaMEDFeatureEditor(getEditorInput(), this);
 		textViewerIORM = new FRaMEDTextViewer();
@@ -155,6 +157,10 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 		setPageText(textViewerIORMIndex, TEXT_IORM_PAGE_NAME);
 		setPageText(textViewerCROMIndex, TEXT_CROM_PAGE_NAME);	
 		setPageText(editorFeaturesIndex, FEATURE_PAGE_NAME);
+		//Step 7
+		if(getEditorInput() instanceof IFileEditorInput) {
+			setPartName(getEditorInput().getName());
+		}
 	}
 	
 	/**
@@ -203,6 +209,13 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	@Override
 	protected void pageChange(int newPageIndex) {
 		super.pageChange(newPageIndex);
+	}
+	
+	/**
+	 * publishes the operation {@link org.eclipse.ui.part.EditorPart#setPartName} of {@link org.eclipse.ui.part.EditorPart}
+	 */
+	public void setPartName(String newName) {
+		super.setPartName(newName);
 	}
 	
 	/**

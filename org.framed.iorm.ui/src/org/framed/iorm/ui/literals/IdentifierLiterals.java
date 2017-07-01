@@ -7,11 +7,18 @@ package org.framed.iorm.ui.literals;
 public class IdentifierLiterals {
 
 	/**
+	 * the identifier for the {@link org.framed.iorm.ui.providers.DiagramTypeProvider} as defined in the extensions if this package.
+	 * <p>
+	 * This value should always be the same as the value of the field <em>id</em> of the extension point <em>org.eclipse.graphiti.ui.diagramTypeProviders</em>.
+	 */
+	public static final String DIAGRAM_PROVIDER_ID = "IORM_Diagram_Provider";
+	
+	/**
 	 * diagram ID
 	 * <p>
 	 * the diagram identifier of the diagram type for role models
 	 */
-	public static final String DIAGRAM_TYPE = "Role Model";
+	public static final String DIAGRAM_TYPE = "Compartment Role Object Model";
 	
 	/**
 	 * editor ID
@@ -19,7 +26,7 @@ public class IdentifierLiterals {
 	 * the editor id of the {@link org.framed.iorm.ui.multipage.MultipageEditor}
 	 */
 	public static final String EDITOR_ID = "IORM_MultipageEditor";
-
+	
 	/**
 	 * string used as prefix for image identifiers for icon of create features
 	 */
