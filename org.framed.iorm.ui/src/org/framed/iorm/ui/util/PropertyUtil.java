@@ -7,7 +7,7 @@ import org.framed.iorm.ui.literals.IdentifierLiterals;
 /**
  * This class delivers operations to change and access specific properties graphiti model elements.
  * <p>
- * It can change and access the property "shape-id" for {@link org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm}s. 
+ * It can change and access the property "shape-id" for {@link GraphicsAlgorithm}s. 
  * @author Kevin Kassin
  */
 public class PropertyUtil {

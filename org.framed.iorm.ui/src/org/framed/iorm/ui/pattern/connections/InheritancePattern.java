@@ -22,9 +22,10 @@ import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.util.PropertyUtil;
+import org.framed.iorm.model.Shape; //*import for javadoc link
 
 /**
- * This graphiti pattern class is used to work with {@link org.framed.iorm.model.Shape}s
+ * This graphiti pattern class is used to work with {@link Shape}s
  * of the type Inheritance in the editor.
  * <p>
  * It deals with the following aspects of Inheritances:<br>
@@ -228,7 +229,7 @@ public class InheritancePattern extends AbstractConnectionPattern {
 	}
 	
 	/**
-	 * Helper method to get the iorm model shape for a given anchor
+	 * helper method to get the iorm model shape for a given anchor
 	 * @param anchor the anchor that belongs to the shape to get
 	 * @return the shape that has the give anchor
 	 */

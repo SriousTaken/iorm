@@ -4,21 +4,21 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.swt.widgets.TreeItem;
 import org.framed.iorm.ui.contexts.ChangeConfigurationContext;
-import org.framed.iorm.ui.exceptions.ConfigurationInconsistentException;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;
 import org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor;
+import org.framed.iorm.ui.graphitifeatures.ChangeConfigurationFeature; //*import for javadoc link
 
 /**
  * This command is used when configuration of a role model is changed.
  * <p>
  * It is called by {@link FRaMEDFeatureEditor} when an item is clicked to change the configuration. Its 
  * executions uses {@link ChangeConfigurationContext} as context and the graphiti custom feature {@link 
- * org.framed.iorm.ui.graphitifeatures.ChangeConfigurationFeature} to change the role model. Its undo functions is not used, since this is 
+ * ChangeConfigurationFeature} to change the role model. Its undo functions is not used, since this is 
  * handled by the standart undo function of the diagram editors.
  * @see FRaMEDFeatureEditor 
  * @see ChangeConfigurationContext
- * @see org.framed.iorm.ui.graphitifeatures.ChangeConfigurationFeature
+ * @see ChangeConfigurationFeature
  * @author Kevin Kassin
  */
 public class ConfigurationEditorChangeCommand extends Command {
@@ -82,9 +82,7 @@ public class ConfigurationEditorChangeCommand extends Command {
 			changeConfigurationContext.setConfiguration(featureEditor.getConfiguration());
 			if(changeConfigurationFeature.canExecute(changeConfigurationContext)) {
 				//Step 4
-				try {
-					changeConfigurationFeature.execute(changeConfigurationContext);
-				} catch(ConfigurationInconsistentException e) { e.printStackTrace(); }
+				changeConfigurationFeature.execute(changeConfigurationContext);
 	}	}	}
 			
 	/**

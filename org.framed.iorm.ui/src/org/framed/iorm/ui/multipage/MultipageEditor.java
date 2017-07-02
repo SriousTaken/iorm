@@ -1,9 +1,14 @@
 package org.framed.iorm.ui.multipage;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
@@ -13,11 +18,15 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.part.FileEditorInput;
+import org.framed.iorm.ui.exceptions.InvalidTypeOfEditorInputException;
+import org.framed.iorm.ui.exceptions.NoDiagramFoundInEditorInputException;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
 import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;
 import org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor;
 import org.framed.iorm.ui.subeditors.FRaMEDTextViewer;
+import org.framed.iorm.ui.util.GeneralUtil;
 
 /**
  * This class is creates the overall editor to edit the role model. 
@@ -44,7 +53,13 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 						 MODEL_FEATURE_NAME = NameLiterals.MODEL_FEATURE_NAME;
 	
 	/**
-	 * the message used for the workbench status line if there are unsaved changes 
+	 * the prefix of the multipage editor name if an groups diagram is opened in the multipage editor gathered
+	 * from {@link NameLiterals} 
+	 */
+	private final String MULTIPAGE_EDITOR_NAME_GROUP_DIAGRAM = NameLiterals.MULTIPAGE_EDITOR_NAME_GROUP_DIAGRAM;
+	
+	/**
+	 * the message used for the workbench status line if there are unsaved changes gathered from {@link TextLiterals} 
 	 */
 	private final String STATUS_MESSAGE_UNSAVED_CHANGES = TextLiterals.STATUS_MESSAGE_UNSAVED_CHANGES;
 			
@@ -113,7 +128,28 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	}
 		
 	/**
-	 * This method add pages to the multipage editor using the following steps:
+	 * delegates the task to add pages to the multipage editor depending on the type of
+	 * editor input
+	 * <p>
+	 * (1) If the editor input is of type {@link IFileEditorInput} it calls {@link #addPageWithIFileEditorInput}.<br>
+	 * (2) If the editor input is of type {@link DiagramEditorInput} it calls {@link #addPagesWithDiagramEditorInput}.<br>
+	 * (3) else throw {@link InvalidTypeOfEditorInputException}
+	 * @throws InvalidTypeOfEditorInputException
+	 */
+	@Override
+	protected void addPages() {	
+		if(getEditorInput() instanceof IFileEditorInput) {
+			addPageWithIFileEditorInput();
+		} else if(getEditorInput() instanceof DiagramEditorInput) {
+			addPagesWithDiagramEditorInput();
+		} else {
+			throw new InvalidTypeOfEditorInputException();
+		}
+	}
+	
+	/**
+	 * This method add pages to the multipage editor if the editor input is of type {@link IFileEditorInput} 
+	 * using the following steps:
 	 * <p>
 	 * Step 1: It creates the diagram subeditor.<br>
 	 * Step 2: It add the diagram page, the pages use the subeditors and the editor input.<br>
@@ -122,12 +158,9 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 * Step 5: It creates the feature editor and adds the page. To do that the created root model is needed.
 	 * 		   It also creates the editores and add the pages for the iorm and crom text viewers.<br>  
 	 * Step 6: Its set the names of the pages.
-	 * Step 7: If the editor input is a {@link IFileEditorInput} set the file name as multipage editor name. If a groups or compartment
-	 * 		   types diagram is opened a {@link org.eclipse.graphiti.ui.editor.DiagramEditorInput} is used and the name of the 
-	 * 		   multipage editor is set in the {@link org.framed.iorm.ui.graphitifeatures.StepInNewTabFeature}.
+	 * Step 7: It sets the file name as multipage editor name.
 	 */
-	@Override
-	protected void addPages() {
+	private void addPageWithIFileEditorInput() {
 		//Step 1
 		editorDiagram = new FRaMEDDiagramEditor();
 		//Step 2
@@ -160,9 +193,81 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 		setPageText(textViewerCROMIndex, TEXT_CROM_PAGE_NAME);	
 		setPageText(editorFeaturesIndex, FEATURE_PAGE_NAME);
 		//Step 7
-		if(getEditorInput() instanceof IFileEditorInput) {
-			setPartName(getEditorInput().getName());
+		setPartName(getEditorInput().getName());
+	}
+	
+	/**
+	 * This method add pages to the multipage editor if the editor input is of type {@link DiagramEditor} 
+	 * using the following steps:
+	 * <p>
+	 * Step 1: It gets the resource of the editor input and uses this resource to get the groups or compartment
+	 * 		   types diagram. It uses the operation {@link getDiagramForResourceOfDiagramEditorInput} for the second
+	 * 		   part of this step.<br>
+	 * Step 2: It creates an IFileEditorInput for the text viewers of the multipage editor using the resource and
+	 * 		   the operation {@link #getIFileEditorInputForResource}.<br>
+	 * Step 3: It creates the diagram subeditor and adds the diagram page. The pages use the subeditors and the editor 
+	 * 		   input.<br>
+	 * Step 4: It creates the feature editor and adds the page. To do that the created root model is needed.
+	 * 		   It also creates the editores and add the pages for the iorm and crom text viewers.<br>  
+	 * Step 5: Its set the names of the pages.
+	 * Step 6: It sets the diagrams name as multipage editor name.
+	 */
+	private void addPagesWithDiagramEditorInput() {
+		//Step 1
+		Resource resource = GeneralUtil.getResourceFromEditorInput(getEditorInput());	
+		Diagram diagram = getDiagramForResourceOfDiagramEditorInput(resource);
+		//Step 2
+		IFileEditorInput iFileEditorInput = getIFileEditorInputForResource(resource);
+		//Step 3
+		editorDiagram = new FRaMEDDiagramEditor();
+		try { 
+			editorDiagramIndex = addPage(editorDiagram, getEditorInput());		
+		} catch (PartInitException e) { e.printStackTrace(); }
+		//Step 4
+		editorFeatures = new FRaMEDFeatureEditor(getEditorInput(), this);
+		textViewerIORM = new FRaMEDTextViewer();
+		textViewerCROM = new FRaMEDTextViewer();
+		try {
+			editorFeaturesIndex = addPage(editorFeatures, getEditorInput());
+			textViewerIORMIndex = addPage(textViewerIORM, iFileEditorInput);
+			textViewerCROMIndex = addPage(textViewerCROM, iFileEditorInput);
+		} catch (PartInitException e) { e.printStackTrace(); }
+		//Step 5
+		setPageText(editorDiagramIndex, DIAGRAM_PAGE_NAME);
+		setPageText(textViewerIORMIndex, TEXT_IORM_PAGE_NAME);
+		setPageText(textViewerCROMIndex, TEXT_CROM_PAGE_NAME);	
+		setPageText(editorFeaturesIndex, FEATURE_PAGE_NAME);
+		//Step 6
+		setPartName(MULTIPAGE_EDITOR_NAME_GROUP_DIAGRAM + " " + diagram.getName());
+	}
+	
+	/**
+	 * returns the diagram for a resource fetched from a {@link DiagramEditorInput}
+	 * @param resource the resource to get the diagram from
+	 * @return the fetched diagram
+	 */
+	private Diagram getDiagramForResourceOfDiagramEditorInput(Resource resource) {
+		Diagram diagram = null;
+		if(resource.getEObject(resource.getURI().fragment()) instanceof Diagram) {
+			diagram = (Diagram) resource.getEObject(resource.getURI().fragment());
+		} else {
+			throw new NoDiagramFoundInEditorInputException();
+		}	
+		return diagram;
+	}
+	
+	/**
+	 * generates an {@link IFileEditorInput} for a given resource
+	 * @param resource the resource to create the editor input for
+	 * @return the generated editor input
+	 */
+	private IFileEditorInput getIFileEditorInputForResource(Resource resource) {
+		if (resource.getURI().isPlatformResource()) {
+			String platformString = resource.getURI().toPlatformString(true);
+			IFile iFile = (IFile) ResourcesPlugin.getWorkspace().getRoot().findMember(platformString);
+			return new FileEditorInput(iFile);
 		}
+		return null;
 	}
 	
 	/**
@@ -211,15 +316,6 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	@Override
 	protected void pageChange(int newPageIndex) {
 		super.pageChange(newPageIndex);
-	}
-	
-
-	/**
-	 * publishes the operation {@link org.eclipse.ui.part.EditorPart#setPartName} of {@link org.eclipse.ui.part.EditorPart}
-	 */
-	@Override
-	public void setPartName(String newName) {
-		super.setPartName(newName);
 	}
 	
 	/**

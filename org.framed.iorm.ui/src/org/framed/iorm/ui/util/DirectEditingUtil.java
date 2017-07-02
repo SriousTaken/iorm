@@ -1,12 +1,14 @@
 package org.framed.iorm.ui.util;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.Pattern; 
+import org.framed.iorm.ui.wizards.RoleModelWizard; //*import for javadoc link
+import org.framed.iorm.ui.wizards.RoleModelProjectWizard; //*import for javadoc link
 
 /**
  * This class is used to check names when direct editing shapes and connection for their validity. 
- * {@link org.framed.iorm.ui.wizards.RoleModelWizard} and {@link org.framed.iorm.ui.wizards.RoleModelProjectWizard}
- * also use this class to check the names of project and file names.
+ * {@link RoleModelWizard} and {@link RoleModelProjectWizard} also use this class to check the names 
+ * of project and file names.
  * @author Kevin Kassin
  */
 public class DirectEditingUtil {

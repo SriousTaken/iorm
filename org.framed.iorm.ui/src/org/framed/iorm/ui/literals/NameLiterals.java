@@ -1,5 +1,7 @@
 package org.framed.iorm.ui.literals;
 
+import org.framed.iorm.ui.commands.ConfigurationEditorChangeCommand; //*import for javadoc link
+
 /**
  * This class saves severals static Strings used as names.
  * @author Kevin Kassin

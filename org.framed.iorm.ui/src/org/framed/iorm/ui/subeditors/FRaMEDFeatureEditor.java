@@ -36,7 +36,6 @@ import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.URLLiterals;
 import org.framed.iorm.ui.multipage.MultipageEditor;
 import org.framed.iorm.ui.util.GeneralUtil;
-
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.configuration.Configuration;
 import de.ovgu.featureide.fm.core.configuration.SelectableFeature;
@@ -170,7 +169,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	
 	/**
 	 * gets the configuration of the editor using the previously fetched root model and feature model
-	 * @param rootModel the root model to get the {@link org.framed.iorm.featuremodel.FRaMEDConfiguration} from
+	 * @param rootModel the root model to get the {@link FRaMEDConfiguration} from
 	 * @param featureModel the feature model to instantiate the configuration with
 	 */
 	private void loadConfiguration(Model rootModel, IFeatureModel featureModel) {

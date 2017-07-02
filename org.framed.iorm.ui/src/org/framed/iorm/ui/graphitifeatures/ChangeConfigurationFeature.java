@@ -8,18 +8,18 @@ import org.framed.iorm.featuremodel.FRaMEDFeature;
 import org.framed.iorm.featuremodel.FeatureName;
 import org.framed.iorm.featuremodel.FeaturemodelFactory;
 import org.framed.iorm.ui.contexts.ChangeConfigurationContext;
-import org.framed.iorm.ui.exceptions.ConfigurationInconsistentException;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.util.GeneralUtil;
-
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.configuration.Configuration;
+import org.framed.iorm.ui.commands.ConfigurationEditorChangeCommand; //*import for javadoc link 
+
 
 /**
  * This graphiti custom feature is used change the role models configuration.
  * <p>
- * It is called by {@link org.framed.iorm.ui.commands.ConfigurationEditorChangeCommand} and uses the {@link ChangeConfigurationContext}.
- * @see org.framed.iorm.ui.commands.ConfigurationEditorChangeCommand
+ * It is called by {@link ConfigurationEditorChangeCommand} and uses the {@link ChangeConfigurationContext}.
+ * @see ConfigurationEditorChangeCommand
  * @see ChangeConfigurationContext
  * @author Kevin Kassin
  */
@@ -64,22 +64,29 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 	}
 	 
 	/**
-	 * This method changes the role models configuration using the following steps:<br>
-	 * TODO
+	 * This method changes the role models configuration using the following steps:
+	 * <p>
+	 * Step 1: It creates a new empty {@link FRaMEDConfiguration}.<br>
+	 * Step 2: For every selected feature in the feature editors configuration add an equivalent
+	 *    	   {@link FRaMEDFeature} to the created FRaMEDConfiguration.<br>
+	 * Step 3: Set the created FRaMEDConfiguration as configuration of the edited diagram.
 	 * @throws ConfigurationInconsistentException
 	 */
 	@Override
-	public void execute(ICustomContext context) throws ConfigurationInconsistentException {
+	public void execute(ICustomContext context) {
 		ChangeConfigurationContext cfmc = (ChangeConfigurationContext) context;
+		//Step 1
 		FRaMEDConfiguration framedFeatureConfiguration = FeaturemodelFactory.eINSTANCE.createFRaMEDConfiguration();
 		Configuration editorFeatureConfiguration = cfmc.getConfiguration();
 		for(IFeature editorFeature : editorFeatureConfiguration.getSelectedFeatures()) {
+			//Step 2
 			FRaMEDFeature framedFeature = FeaturemodelFactory.eINSTANCE.createFRaMEDFeature();
 			framedFeature.setName(FeatureName.getByName(editorFeature.getName()));
 			if(editorFeatureConfiguration.getManualFeatures().contains(editorFeature))
 				framedFeature.setManuallySelected(true);
 			framedFeatureConfiguration.getFeatures().add(framedFeature);	
 		}
+		//Step 3
 		GeneralUtil.getDiagramRootModel(getDiagram()).setFramedConfiguration(framedFeatureConfiguration);
 	}
 }

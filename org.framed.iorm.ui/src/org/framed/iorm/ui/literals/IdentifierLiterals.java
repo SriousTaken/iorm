@@ -1,5 +1,11 @@
 package org.framed.iorm.ui.literals;
 
+import org.framed.iorm.ui.providers.DiagramTypeProvider; //*import for javadoc link 
+import org.framed.iorm.ui.multipage.MultipageEditor; //*import for javadoc link
+import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor; //*import for javadoc link
+import org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor; //*import for javadoc link
+import org.framed.iorm.ui.util.PropertyUtil; //*import for javadoc link
+
 /**
  * This class saves severals static Strings used as identifiers.
  * @author Kevin Kassin
@@ -7,7 +13,7 @@ package org.framed.iorm.ui.literals;
 public class IdentifierLiterals {
 
 	/**
-	 * the identifier for the {@link org.framed.iorm.ui.providers.DiagramTypeProvider} as defined in the extensions of this package
+	 * the identifier for the {@link DiagramTypeProvider} as defined in the extensions of this package
 	 * <p>
 	 * This value should always be the same as the value of the field <em>id</em> of the extension point 
 	 * <em>org.eclipse.graphiti.ui.diagramTypeProviders</em>.
@@ -23,7 +29,7 @@ public class IdentifierLiterals {
 	public static final String DIAGRAM_TYPE_ID = "CROM_Diagram";
 	
 	/**
-	 * the editor id of the {@link org.framed.iorm.ui.multipage.MultipageEditor}
+	 * the editor id of the {@link MultipageEditor}
 	 * <p>
 	 * This value should always be the same as the value of the field <em>id</em> of the extension point #
 	 * <em>org.eclipse.ui.editors</em>.
@@ -38,7 +44,7 @@ public class IdentifierLiterals {
 	/**
 	 * image IDs
 	 * <p>
-	 * the identifier of images used in the {@link org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor} for features
+	 * the identifier of images used in the {@link FRaMEDDiagramEditor} for features
 	 */
 	public static final String IMG_ID_FEATURE_NATURALTYPE = IMG_ID_PREFIX + "img_naturaltype",
 							   IMG_ID_FEATURE_DATATYPE = IMG_ID_PREFIX + "img_datatype",
@@ -50,7 +56,7 @@ public class IdentifierLiterals {
 	/**
 	 * feature model ID
 	 * <p>
-	 * the idenfier of the feature model the {@link org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor} uses
+	 * the idenfier of the feature model the {@link FRaMEDFeatureEditor} uses
 	 */
 	public static final String FEATUREMODEL_ID = "org.framed.iorm.featuremodel";
 	
@@ -135,7 +141,7 @@ public class IdentifierLiterals {
 							   SHAPE_ID_INHERITANCE_DECORATOR = "shape_inheritance_dec";
 
 	/**
-	 * key values used to identify properties in {@link org.framed.iorm.ui.util.PropertyUtil}
+	 * key values used to identify properties in {@link PropertyUtil}
 	 * <p>
 	 * the key value for the property shape id
 	 */

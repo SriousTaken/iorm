@@ -3,15 +3,15 @@ package org.framed.iorm.ui.contexts;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;
-
 import de.ovgu.featureide.fm.core.configuration.Configuration;
+import org.framed.iorm.ui.graphitifeatures.ChangeConfigurationFeature; //*import for javadoc link
 
 /**
  * This context is used to save needed information for the Graphiti custom feature {@link
- * org.framed.iorm.ui.graphitifeatures.ChangeConfigurationFeature}.
+ * ChangeConfigurationFeature}.
  * <p>
  * It extends the {@link CustomContext} by some variables and their get and set methods.
- * @see org.framed.iorm.ui.graphitifeatures.ChangeConfigurationFeature
+ * @see ChangeConfigurationFeature
  * @see CustomContext
  * @author Kevin Kassin
  */

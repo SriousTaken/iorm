@@ -1,10 +1,11 @@
 package org.framed.iorm.ui.exceptions;
 
 import org.framed.iorm.ui.literals.TextLiterals;
+import org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor; //*import for javadoc link
 
 /**
  * This exception is thrown if the feature model cant be read when the 
- * {@link org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor} is created.
+ * {@link FRaMEDFeatureEditor} is created.
  * @author Kevin Kassin
  */
 public class FeatureModelNotReadableException extends RuntimeException {

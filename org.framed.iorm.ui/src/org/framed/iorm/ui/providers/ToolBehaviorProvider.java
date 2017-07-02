@@ -16,6 +16,9 @@ import org.eclipse.graphiti.tb.IContextMenuEntry;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.util.PropertyUtil;
+import org.framed.iorm.ui.providers.FeatureProvider; //*import for javadoc link
+import org.framed.iorm.ui.pattern.shapes.AttributeOperationCommonPattern; //*import for javadoc link
+import org.framed.iorm.ui.pattern.shapes.ModelPattern; //*import for javadoc link
 
 /**
  * This class enables context buttons and can manipulate the palette of the editor.
@@ -60,7 +63,7 @@ public class ToolBehaviorProvider extends DefaultToolBehaviorProvider{
 	 * sets the context buttons for the editor of the diagram type
 	 * <p>
 	 * This operation explicitly don't sets the context button for the remove function, since this function is disabled.
-	 * @see {@link org.framed.iorm.ui.providers.FeatureProvider#getRemoveFeature}
+	 * @see {@link FeatureProvider#getRemoveFeature}
 	 */
 	@Override
 	public IContextButtonPadData getContextButtonPad(IPictogramElementContext pictogramElementContext) {
@@ -117,8 +120,8 @@ public class ToolBehaviorProvider extends DefaultToolBehaviorProvider{
 	 * <p>
 	 * This is done for patterns which dont have a create features or whichs create features should not be used by the user
 	 * manually. Explicitly this patterns are:<br>
-	 * (1) {@link org.framed.iorm.ui.pattern.shapes.AttributeOperationCommonPattern} and<br>
-	 * (2) {@link org.framed.iorm.ui.pattern.shapes.ModelPattern}.
+	 * (1) {@link AttributeOperationCommonPattern} and<br>
+	 * (2) {@link ModelPattern}.
 	 */
 	@Override
 	public IPaletteCompartmentEntry[] getPalette() {

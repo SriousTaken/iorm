@@ -31,30 +31,13 @@
             contributorClass="org.framed.iorm.ui.multipage.MultipageEditorContributor"
             default="true"
             extensions="crom_diagram"
-            icon="icons/editors/icon_multipage_editor.gif"
+            icon="icons/editors/icon_multipage_editor.png"
             id="CROM_MultipageEditor"
             name="Compartment Role Object Model Editor">
       	</editor>
    	</extension>
 
-	<extension point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
-     	<propertyContributor
-         	typeMapper="org.eclipse.graphiti.examples.common.property.TypeMapper"
-            contributorId="IORM_PropertyContributor"
-            labelProvider="org.eclipse.graphiti.examples.common.property.PropertiesLabelProvider">
-        	<propertyCategory category="graphiti-legacy" />
-      	</propertyContributor>
-   	</extension>
    	
-   	<extension point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
-      	<propertyTabs
-            contributorId="IORM_PropertyContributor">
-          	<propertyTab
-            	label="Advanced" category="graphiti-legacy"
-               	id="org.eclipse.graphiti.properties.legacytab">
-         	</propertyTab>
-      	</propertyTabs>
-   	</extension>
     
     <extension point="org.eclipse.ui.newWizards">
        <category

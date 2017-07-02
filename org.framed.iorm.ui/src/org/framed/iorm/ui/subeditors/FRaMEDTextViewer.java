@@ -1,9 +1,10 @@
 package org.framed.iorm.ui.subeditors;
 
 import org.eclipse.ui.editors.text.TextEditor;
+import org.framed.iorm.ui.multipage.MultipageEditor; //*import for javadoc link
 
 /**
- * the text viewer used by the {@link org.framed.iorm.ui.multipage.MultipageEdtior}
+ * the text viewer used by the {@link MultipageEditor}
  * <p>
  * It extends an {@link Texteditor} and makes this editor not editable.
  * @author Kevin Kassin

@@ -12,7 +12,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
-import org.framed.iorm.ui.literals.TextLiterals;
 import org.framed.iorm.ui.multipage.MultipageEditor;
 import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
@@ -48,12 +47,6 @@ public class StepInNewTabFeature extends AbstractCustomFeature {
 	 */
 	private final String DIAGRAM_PROVIDER_ID = IdentifierLiterals.DIAGRAM_PROVIDER_ID,
 						 EDITOR_ID = IdentifierLiterals.EDITOR_ID;
-	
-	/**
-	 * the prefix of the multipage editor name if an groups diagram is opened in the multipage editor gathered
-	 * from {@link TextLiterals} 
-	 */
-	private final String MULTIPAGE_EDITOR_NAME_GROUP_DIAGRAM = NameLiterals.MULTIPAGE_EDITOR_NAME_GROUP_DIAGRAM;
 	
 	/**
 	 * Class constructor
@@ -107,8 +100,7 @@ public class StepInNewTabFeature extends AbstractCustomFeature {
 		Diagram groupDiagram = GeneralUtil.getGroupDiagramFromGroupShape(typeBodyShape);
 		IEditorInput diagramEditorInput = DiagramEditorInput.createEditorInput(groupDiagram, DIAGRAM_PROVIDER_ID);
 		try {
-			MultipageEditor multipageEditor = (MultipageEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(diagramEditorInput, EDITOR_ID);
-			multipageEditor.setPartName(MULTIPAGE_EDITOR_NAME_GROUP_DIAGRAM + " " + groupDiagram.getName());
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(diagramEditorInput, EDITOR_ID);
 		} catch (PartInitException e) { e.printStackTrace(); }
 	}	
 }

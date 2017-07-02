@@ -1,5 +1,9 @@
 package org.framed.iorm.ui.literals;
 
+import org.framed.iorm.ui.exceptions.FeatureModelNotReadableException; //*import for javadoc link
+import org.framed.iorm.ui.wizards.RoleModelWizardPage; //*import for javadoc link
+import org.framed.iorm.ui.multipage.MultipageEditor; //*import for javadoc link
+
 /**
  * This class saves severals static Strings used as messages for the user.
  * @author Kevin Kassin
@@ -23,22 +27,17 @@ public class TextLiterals {
 							   DIRECTEDITING_GROUP = "A groups name cant be empty and cant contains spaces. Numbers are allowed but as first symbol.";
 	
 	/**
-	 * messages used in exceptions
+	 * messages used in the feature sub editor
 	 * <p>
-	 * can be:<br>
-	 * (1) the message for the {@link org.framed.iorm.ui.exceptions.ConfigurationInconsistentException} or<br>
-	 * (2) the message for the {@link org.framed.iorm.ui.exceptions.FeatureModelNotReadableException} or<br>
-	 * (3) the message for the {@link org.framed.iorm.ui.exceptions.NoShapeOrConnectionForModelElementFoundException}
+	 * the message for the {@link FeatureModelNotReadableException}
 	 */
-	public static final String CONFIGURATION_INCONSISTENT_MESSAGE = "The configurations used in edited file and the feature editor are inconsistent!",
-						       FEATUREMODEL_NOT_READABLE_MESSAGE = "The feature model could not be read!",
-						       NO_SHAPE_OR_CONNECTION_FOR_MODELELEMENT_FOUND_MESSAGE = "There is no linked shape for a business object of the diagram.";
+	public static final String FEATUREMODEL_NOT_READABLE_MESSAGE = "The feature model could not be read!";
 	
 	/**
 	 * messages used in the Eclipse wizards
 	 * <p>
 	 * can be:<br>
-	 * (1) the message for the {@link org.framed.iorm.ui.wizards.RoleModelWizardPage} or<br>
+	 * (1) the message for the {@link RoleModelWizardPage} or<br>
 	 * (2) the message for the user if his input for the diagrams name is invalid or<br>
 	 * (3) the title of the error message if no project is selected at role model creation or<br>
 	 * (4) the error message if no project is selected at role model creation
@@ -49,9 +48,14 @@ public class TextLiterals {
 							   WIZARD_ERROR_NO_PROJECT_TEXT = "Please choose a CROM project to create the role model in!";   
 	
 	/**
-	 * messages used for the workbench status line
+	 * messages used in the multipage editor
 	 * <p>
-	 * the message of the workbench status line if there are unsaved changes
+	 * can be:<br>
+	 * (1) the error message if the editor input can not be used for the {@link MultipageEditor} or<br>
+	 * (2) the error message if the {@link MultipageEditor} can not find the diagram for a DiagramEditorInput or<br>
+	 * (3) the message of the workbench status line if there are unsaved changes
 	 */
-	public static final String STATUS_MESSAGE_UNSAVED_CHANGES = "Unsaved changes - the pages are out of sync!";
+	public static final String MULTIPAGE_EDITOR_ERROR_NO_VALID_EDITOR_INPUT = "The editor input of the multipage editor is not of a valid type!",
+							   MULTIPAGE_EDITOR_ERROR_NO_DIAGRAM_FOUND = "There was no diagram found for the uri fragment of the diagram editor input",
+							   STATUS_MESSAGE_UNSAVED_CHANGES = "Unsaved changes - the pages are out of sync!";
 }
