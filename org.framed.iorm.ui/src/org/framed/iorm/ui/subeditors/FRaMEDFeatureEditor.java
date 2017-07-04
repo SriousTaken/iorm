@@ -149,7 +149,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	private Model readRootModel(IEditorInput editorInput) {
 		Diagram diagram = GeneralUtil.getMainDiagramForIEditorInput(editorInput);
 		if(diagram != null)
-			return GeneralUtil.getDiagramRootModel(diagram);
+			return GeneralUtil.getRootModelForDiagram(diagram);
 		return null;
 	}
 		

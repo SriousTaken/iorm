@@ -2,6 +2,7 @@ package org.framed.iorm.ui.subeditors;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.framed.iorm.featuremodel.FRaMEDFeature;
 import org.framed.iorm.model.Model;
@@ -38,8 +39,13 @@ public class FRaMEDDiagramEditor extends DiagramEditor  {
 	 * updates the value of the class variable {@link #selectedFeatures}
 	 */
 	public void updateSelectedFeatures() {
-		Model rootModel = GeneralUtil.getDiagramRootModel(this.getDiagramTypeProvider().getDiagram());
-		selectedFeatures = rootModel.getFramedConfiguration().getFeatures();
+		//Model rootModel = GeneralUtil.getRootModelForDiagram(this.getDiagramTypeProvider().getDiagram());
+		Diagram mainDiagram = GeneralUtil.getMainDiagramForIEditorInput(getEditorInput());
+		if(mainDiagram.getLink().getBusinessObjects().size() == 1 &&
+		   mainDiagram.getLink().getBusinessObjects().get(0) instanceof Model) {
+			Model rootModel = (Model) mainDiagram.getLink().getBusinessObjects().get(0);
+			selectedFeatures = rootModel.getFramedConfiguration().getFeatures();
+		} else System.err.println("asd"); //TODO
 	}
 	
 	/**

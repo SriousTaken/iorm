@@ -60,7 +60,7 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 		ChangeConfigurationContext cfmc = (ChangeConfigurationContext) context;		
 		return (cfmc.getBehaviorEditor() != null &&
 				cfmc.getConfiguration() != null &&
-				GeneralUtil.getDiagramRootModel(getDiagram()) != null);
+				GeneralUtil.getRootModelForDiagram(getDiagram()) != null);
 	}
 	 
 	/**
@@ -87,6 +87,6 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 			framedFeatureConfiguration.getFeatures().add(framedFeature);	
 		}
 		//Step 3
-		GeneralUtil.getDiagramRootModel(getDiagram()).setFramedConfiguration(framedFeatureConfiguration);
+		GeneralUtil.getRootModelForDiagram(getDiagram()).setFramedConfiguration(framedFeatureConfiguration);
 	}
 }

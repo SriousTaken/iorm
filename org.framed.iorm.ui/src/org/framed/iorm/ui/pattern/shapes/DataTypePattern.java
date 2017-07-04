@@ -130,7 +130,7 @@ public class DataTypePattern extends AbstractPattern{
 				//target container is diagram with root model
 				ContainerShape containerShape = getDiagram();
 				if(containerShape instanceof Diagram) {
-					if(GeneralUtil.getDiagramRootModel((Diagram) containerShape) != null)
+					if(GeneralUtil.getRootModelForDiagram((Diagram) containerShape) != null)
 						return true;
 		}	}	}
 		return false;
@@ -244,7 +244,7 @@ public class DataTypePattern extends AbstractPattern{
 		//target container is either diagram with model or a group
 		ContainerShape containerShape = getDiagram();
 		if(containerShape instanceof Diagram) {
-			if(GeneralUtil.getDiagramRootModel((Diagram) containerShape) != null)
+			if(GeneralUtil.getRootModelForDiagram((Diagram) containerShape) != null)
 				return true;
 		}
 		return false;
@@ -257,7 +257,7 @@ public class DataTypePattern extends AbstractPattern{
 		newDataType.setType(Type.DATA_TYPE);
 		newDataType.setName(STANDARD_DATATYPE_NAME);
 		//add new natural type to the elements of the model
-		Model model = GeneralUtil.getDiagramRootModel(getDiagram());
+		Model model = GeneralUtil.getRootModelForDiagram(getDiagram());
 		if(newDataType.eResource() != null) getDiagram().eResource().getContents().add(newDataType);
 		model.getElements().add(newDataType);
 		newDataType.setContainer(model);
@@ -462,11 +462,11 @@ public class DataTypePattern extends AbstractPattern{
 		if( pictogramElement.getGraphicsAlgorithm() != null &&
 			PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_DATATYPE_TYPEBODY)) {
 			//pictogram name of data type, attributes and operations
-			String pictogramTypeName = GeneralUtil.getPictogramTypeName(pictogramElement, SHAPE_ID_DATATYPE_NAME);
+			String pictogramTypeName = GeneralUtil.getNameOfPictogramElement(pictogramElement, SHAPE_ID_DATATYPE_NAME);
 			List<String> pictogramAttributeNames = GeneralUtil.getpictogramAttributeNames(pictogramElement, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER);
 			List<String> pictogramOperationNames = GeneralUtil.getpictogramOperationNames(pictogramElement, SHAPE_ID_DATATYPE_OPERATIONCONTAINER);
 			//business name and attributes
-			String businessTypeName = GeneralUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
+			String businessTypeName = GeneralUtil.getNameOfBusinessObject(getBusinessObjectForPictogramElement(pictogramElement));
 			List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 			List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 								
@@ -525,7 +525,7 @@ public class DataTypePattern extends AbstractPattern{
          
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
 		//business names of natural type, attributes and operations
-		String businessTypeName = GeneralUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
+		String businessTypeName = GeneralUtil.getNameOfBusinessObject(getBusinessObjectForPictogramElement(pictogramElement));
 		List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 		List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 		

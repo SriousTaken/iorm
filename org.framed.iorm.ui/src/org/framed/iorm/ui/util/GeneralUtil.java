@@ -26,11 +26,13 @@ import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.editor.IDiagramEditorInput;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.part.FileEditorInput;
 import org.framed.iorm.model.Model;
 import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.exceptions.NoDiagramFoundException;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.LayoutLiterals;
+import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.wizards.RoleModelWizard;
 
 public class GeneralUtil {
@@ -70,7 +72,7 @@ public class GeneralUtil {
 	 * @param diagram The diagram to get the model from
 	 * @return the root model of the given diagram if there is exactly one model linked and returns null else
 	 */
-	public static final Model getDiagramRootModel(Diagram diagram) {
+	public static final Model getRootModelForDiagram(Diagram diagram) {
 		if(diagram.getLink() != null) {
 			if(diagram.getLink().getBusinessObjects().size() == 1 &&
 			   diagram.getLink().getBusinessObjects().get(0) instanceof Model) {
@@ -146,25 +148,6 @@ public class GeneralUtil {
 		addContext.setLocation(createContext.getX(), createContext.getY());
 		addContext.setSize(createContext.getWidth(), createContext.getHeight());
 		return addContext;
-	}
-	
-	/**
-	 * This operation gets the name of a pictogram element with text shape as children.
-	 * @param pictogramElement the pictogram element to get the name of
-	 * @param SHAPE_ID_NAME the identifier of the textshape
-	 * @return the name of a pictogram element if it has a text shape as children and return null else 
-	 */
-	public static String getPictogramTypeName(PictogramElement pictogramElement, String SHAPE_ID_NAME) {
-		if (pictogramElement instanceof ContainerShape) {
-			ContainerShape containerShape = (ContainerShape) pictogramElement;
-			for (Shape shape : containerShape.getChildren()) {
-				if (shape.getGraphicsAlgorithm() instanceof Text) {
-					Text text = (Text) shape.getGraphicsAlgorithm();
-					if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_NAME)) {
-						return text.getValue();
-					}
-		} 	}	}
-		return null;
 	}
 	
 	/**
@@ -248,6 +231,31 @@ public class GeneralUtil {
 			}	}	
 		throw new NoDiagramFoundException();
 	}
+	
+	/**
+	 * generates an {@link IFileEditorInput} for a given resource
+	 * @param resource the resource to create the editor input for
+	 * @return the generated editor input
+	 */
+	public static IFileEditorInput getIFileEditorInputForResource(Resource resource) {
+		IPath path = new Path(resource.getURI().toFileString());
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
+		return new FileEditorInput(file);
+	}
+	
+	//TODO
+	public static Diagram getDiagramFromResourceByName(Resource resource, String diagramName) {
+		if(resource.getContents().get(0) instanceof Diagram) {
+			if(((Diagram) resource.getContents().get(0)).getContainer() == null) {
+				Diagram containerDiagram = (Diagram) resource.getContents().get(0);
+				for(Shape shape : containerDiagram.getChildren()) {
+					if(shape instanceof Diagram) {
+						Diagram diagram = (Diagram) shape;
+						if(diagram.getName().equals(diagramName)) 
+							return diagram;
+		}	}	}	}
+		throw new NoDiagramFoundException();
+	}
 
 	/**
 	 * This operation gets the names of the attributes of a pictogram element that has an attribute container shape.
@@ -300,11 +308,30 @@ public class GeneralUtil {
 	 * @param businessObject the business object to get the name of
 	 * @return the name of the business object if it is an {@link org.framed.iorm.model.Shape}
 	 */
-	public static String getBusinessObjectName(Object businessObject) {
+	public static String getNameOfBusinessObject(Object businessObject) {
 		if (businessObject instanceof org.framed.iorm.model.Shape) {
 			org.framed.iorm.model.Shape shape = (org.framed.iorm.model.Shape) businessObject;
 			return shape.getName();
 		}
+		return null;
+	}
+	
+	/**
+	 * This operation gets the name of a pictogram element with text shape as children.
+	 * @param pictogramElement the pictogram element to get the name of
+	 * @param SHAPE_ID_NAME the identifier of the textshape
+	 * @return the name of a pictogram element if it has a text shape as children and return null else 
+	 */
+	public static String getNameOfPictogramElement(PictogramElement pictogramElement, String SHAPE_ID_NAME) {
+		if (pictogramElement instanceof ContainerShape) {
+			ContainerShape containerShape = (ContainerShape) pictogramElement;
+			for (Shape shape : containerShape.getChildren()) {
+				if (shape.getGraphicsAlgorithm() instanceof Text) {
+					Text text = (Text) shape.getGraphicsAlgorithm();
+					if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_NAME)) {
+						return text.getValue();
+					}
+		} 	}	}
 		return null;
 	}
 }

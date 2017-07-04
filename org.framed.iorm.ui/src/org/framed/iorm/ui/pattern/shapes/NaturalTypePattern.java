@@ -129,7 +129,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 				//target container is diagram with root model
 				ContainerShape containerShape = getDiagram();
 				if(containerShape instanceof Diagram) {
-					if(GeneralUtil.getDiagramRootModel((Diagram) containerShape) != null)
+					if(GeneralUtil.getRootModelForDiagram((Diagram) containerShape) != null)
 						return true;
 		}	}	}
 		return false;
@@ -232,7 +232,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		//target container is either diagram with model or a group
 		ContainerShape containerShape = getDiagram();
 		if(containerShape instanceof Diagram) {
-			if(GeneralUtil.getDiagramRootModel((Diagram) containerShape) != null)
+			if(GeneralUtil.getRootModelForDiagram((Diagram) containerShape) != null)
 				return true;
 		}
 		return false;
@@ -245,7 +245,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		newNaturalType.setType(Type.NATURAL_TYPE);
 		newNaturalType.setName(STANDARD_NATURALTYPE_NAME);
 		//add new natural type to the elements of the model
-		Model model = GeneralUtil.getDiagramRootModel((Diagram) getDiagram());
+		Model model = GeneralUtil.getRootModelForDiagram((Diagram) getDiagram());
 		if(newNaturalType.eResource() != null) getDiagram().eResource().getContents().add(newNaturalType);
 		model.getElements().add(newNaturalType);
 		newNaturalType.setContainer(model);
@@ -450,11 +450,11 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		if(pictogramElement.getGraphicsAlgorithm() != null &&
 		   PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_TYPEBODY)) {
 			//pictogram name of natural type, attributes and operations
-			String pictogramTypeName = GeneralUtil.getPictogramTypeName(pictogramElement, SHAPE_ID_NATURALTYPE_NAME);
+			String pictogramTypeName = GeneralUtil.getNameOfPictogramElement(pictogramElement, SHAPE_ID_NATURALTYPE_NAME);
 			List<String> pictogramAttributeNames = GeneralUtil.getpictogramAttributeNames(pictogramElement, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER);
 			List<String> pictogramOperationNames = GeneralUtil.getpictogramOperationNames(pictogramElement, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER);
 			//business name and attributes
-			String businessTypeName = GeneralUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
+			String businessTypeName = GeneralUtil.getNameOfBusinessObject(getBusinessObjectForPictogramElement(pictogramElement));
 			List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 			List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 								
@@ -514,7 +514,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
 		
 		//business names of natural type, attributes and operations
-		String businessTypeName = GeneralUtil.getBusinessObjectName(getBusinessObjectForPictogramElement(pictogramElement));
+		String businessTypeName = GeneralUtil.getNameOfBusinessObject(getBusinessObjectForPictogramElement(pictogramElement));
 		List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 		List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 		

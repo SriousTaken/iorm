@@ -19,11 +19,13 @@ public class NameLiterals {
 	 * can be:<br>
 	 * (1) the name of the wizard or<br>
 	 * (2) the name of the role model wizard page or<br>
-	 * (3) the default name of a new diagram
+	 * (3) the default name of a new diagram or<br>
+	 * (4) the name of //TODO 
 	 */
 	public static final String WIZARD_WINDOW_NAME = "Role Model Wizard", 
 							   WIZARD_PAGE_NAME = "Role Model",
-							   STANDARD_DIAGRAM_NAME = "newDiagram";
+							   STANDARD_DIAGRAM_NAME = "newDiagram",
+							   CONTAINER_DIAGRAM_NAME = "Container";
 							  
 	/**
 	 * standard names for graphiti shapes

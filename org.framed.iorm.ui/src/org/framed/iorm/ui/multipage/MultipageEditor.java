@@ -5,8 +5,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
@@ -44,6 +46,9 @@ import org.framed.iorm.ui.wizards.RoleModelWizard; //*import for javadoc link
  * @author Kevin Kassin
  */
 public class MultipageEditor extends FormEditor implements ISelectionListener {
+	
+	//TODO
+	private boolean hasDoneChanges = false;
 	
 	/**
 	 * the identifier of the {@link DiagramTypeProvider} which is needed to instantiate an {@link DiagramEditorInput}
@@ -121,6 +126,7 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 */
 	@Override
 	public void dispose() {
+		MultipageEditorSynchronizationService.deregisterEditor(this);
 		super.dispose();
 	}
 
@@ -155,18 +161,27 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 */
 	@Override
 	protected void addPages() {	
+		//TODO deletes old pages
+		//for(int i = 0; i<getPageCount(); i++)
+		//	removePage(i);
 		if(getEditorInput() instanceof IFileEditorInput) {
-			addPageWithIFileEditorInput();
+			try {
+				addPageWithIFileEditorInput();
+			} catch (PartInitException e) { e.printStackTrace(); }
 			setPartName(getEditorInput().getName());
-		} else if(getEditorInput() instanceof DiagramEditorInput) {
+			return;
+		}	
+		if(getEditorInput() instanceof DiagramEditorInput) {
 			DiagramEditorInput diagramEditorInput = (DiagramEditorInput) getEditorInput();
-			addPagesWithDiagramEditorInput(diagramEditorInput, null);
+			try {
+				addPagesWithDiagramEditorInput(diagramEditorInput, null);
+			} catch (PartInitException e) { e.printStackTrace(); }
 			Resource resource = GeneralUtil.getResourceFromEditorInput(diagramEditorInput);	
 			Diagram diagram = GeneralUtil.getDiagramForResourceOfDiagramEditorInput(resource);
 			setPartName(MULTIPAGE_EDITOR_NAME_GROUP_DIAGRAM + " " + diagram.getName());
-		} else {
-			throw new InvalidTypeOfEditorInputException();
-		}
+			return;
+		} 
+		throw new InvalidTypeOfEditorInputException();
 	}
 	
 	/**
@@ -178,9 +193,10 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 * <p>
 	 * If the <em>main Diagram</em> is null in this operation there is no exception thrown, since this already happens in 
 	 * {@link GeneralUtil#getMainDiagramForIEditorInput(IEditorInput)}.
+	 * @throws PartInitException 
 	 * @see RoleModelWizard#createEmfFileForDiagram
 	 */
-	private void addPageWithIFileEditorInput() {
+	private void addPageWithIFileEditorInput() throws PartInitException {
 		Diagram mainDiagram = GeneralUtil.getMainDiagramForIEditorInput(getEditorInput());
 		if(mainDiagram != null) {
 			DiagramEditorInput diagramEditorInput = DiagramEditorInput.createEditorInput(mainDiagram, DIAGRAM_PROVIDER_ID);
@@ -205,14 +221,15 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 * Step 6: Its set the names of the pages.
 	 * <p>
 	 * If its not clear what <em>main diagram</em> means, see {@link RoleModelWizard#createEmfFileForDiagram} for reference.<br>
+	 * @throws PartInitException 
 	 * @see RoleModelWizard#createEmfFileForDiagram
 	 */
-	private void addPagesWithDiagramEditorInput(DiagramEditorInput diagramEditorInput, IFileEditorInput fileEditorInput) {
+	private void addPagesWithDiagramEditorInput(DiagramEditorInput diagramEditorInput, IFileEditorInput fileEditorInput) throws PartInitException {
 		//Step 1
 		Resource resource = GeneralUtil.getResourceFromEditorInput(diagramEditorInput);	
 		//Step 2
-		if(fileEditorInput == null) 
-			fileEditorInput = getIFileEditorInputForResource(resource);
+		if(fileEditorInput == null) fileEditorInput = GeneralUtil.getIFileEditorInputForResource(resource);
+		if(fileEditorInput == null) throw new PartInitException("asd"); //TODO
 		//Step 3
 		editorDiagram = new FRaMEDDiagramEditor();
 		try { 
@@ -244,22 +261,10 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 		setPageText(textViewerIORMIndex, TEXT_IORM_PAGE_NAME);
 		setPageText(textViewerCROMIndex, TEXT_CROM_PAGE_NAME);	
 		setPageText(editorFeaturesIndex, FEATURE_PAGE_NAME);
+		//TODO
+		MultipageEditorSynchronizationService.registerEditor(this);		
 	}
-	
-	/**
-	 * generates an {@link IFileEditorInput} for a given resource
-	 * @param resource the resource to create the editor input for
-	 * @return the generated editor input
-	 */
-	private IFileEditorInput getIFileEditorInputForResource(Resource resource) {
-		if (resource.getURI().isPlatformResource()) {
-			String platformString = resource.getURI().toPlatformString(true);
-			IFile iFile = (IFile) ResourcesPlugin.getWorkspace().getRoot().findMember(platformString);
-			return new FileEditorInput(iFile);
-		}
-		return null;
-	}
-	
+		
 	/**
 	 * This method catches property changes of the dirty state of the multipage editor.
 	 * <p>
@@ -286,6 +291,7 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 */
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		MultipageEditorSynchronizationService.getDirtyStates();
 		if(isDirty()) {
 			editorDiagram.doSave(monitor);
 			editorDiagram.updateSelectedFeatures();
@@ -293,6 +299,7 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 			if(editorFeatures != null)
 				editorFeatures.synchronizeConfigurationEditorAndModelConfiguration();
 			refreshFile();
+			MultipageEditorSynchronizationService.synchronize();
 		}
 	}
 	
@@ -307,7 +314,7 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 		IFileEditorInput fileEditorInput = null;
 		if(getEditorInput() instanceof DiagramEditorInput) {
 			Resource resource = GeneralUtil.getResourceFromEditorInput(getEditorInput());	
-			fileEditorInput = getIFileEditorInputForResource(resource);
+			fileEditorInput = GeneralUtil.getIFileEditorInputForResource(resource);
 		}
 		if(getEditorInput() instanceof IFileEditorInput) { 
 			fileEditorInput = (IFileEditorInput) getEditorInput();
@@ -332,6 +339,11 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 		super.pageChange(newPageIndex);
 	}
 	
+	//TODO publishes
+	public void setInput(IEditorInput editorInput) {
+		super.setInput(editorInput);
+	}
+	
 	/**
 	 * disables the save as function
 	 */
@@ -339,7 +351,7 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	public boolean isSaveAsAllowed() {
 		return false;
 	}
-		
+			
 	/**
 	 * operation not used
 	 */

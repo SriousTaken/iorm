@@ -59,7 +59,8 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 	 */
 	private final String FILE_EXTENSION_FOR_DIAGRAMS = NameLiterals.FILE_EXTENSION_FOR_DIAGRAMS,
 						 WIZARD_PAGE_NAME = NameLiterals.WIZARD_PAGE_NAME,
-						 WIZARD_WINDOW_NAME = NameLiterals.WIZARD_WINDOW_NAME;
+						 WIZARD_WINDOW_NAME = NameLiterals.WIZARD_WINDOW_NAME,
+						 CONTAINER_DIAGRAM_NAME = NameLiterals.CONTAINER_DIAGRAM_NAME;
 	
 	/**
 	 * the text literals for the wizard errors gathered from {@link TextLiterals}
@@ -168,7 +169,7 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 					@Override
 					protected void doExecute() {
 						resource.setTrackingModification(true);
-						resource.getContents().add(Graphiti.getPeCreateService().createDiagram(DIAGRAM_TYPE, "Container"));
+						resource.getContents().add(Graphiti.getPeCreateService().createDiagram(DIAGRAM_TYPE, CONTAINER_DIAGRAM_NAME));
 						((Diagram) resource.getContents().get(0)).getChildren().add(diagram);
 					}
 				});

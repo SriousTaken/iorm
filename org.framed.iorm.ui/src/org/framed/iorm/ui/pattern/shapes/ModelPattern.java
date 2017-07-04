@@ -99,7 +99,7 @@ public class ModelPattern extends AbstractPattern implements IPattern {
 	@Override
 	public boolean canAdd(IAddContext addContext) {
 		if(addContext.getNewObject() instanceof Model) {
-			return (GeneralUtil.getDiagramRootModel(getDiagram()) == null);
+			return (GeneralUtil.getRootModelForDiagram(getDiagram()) == null);
 		}  
 		return false;
 	}
@@ -126,7 +126,7 @@ public class ModelPattern extends AbstractPattern implements IPattern {
 	 */
 	@Override
 	public boolean canCreate(ICreateContext createContext) {
-		return (GeneralUtil.getDiagramRootModel(getDiagram()) == null);
+		return (GeneralUtil.getRootModelForDiagram(getDiagram()) == null);
 	}
 	
 	/**
