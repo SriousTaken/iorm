@@ -14,6 +14,7 @@ import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
+import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
@@ -217,11 +218,10 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 												   width-2*PUFFER_BETWEEN_ELEMENTS, height-GROUP_CORNER_RADIUS-2*PUFFER_BETWEEN_ELEMENTS);
 		
 		//diagram container shape and groups diagram
-		ContainerShape contentDiagramShape = pictogramElementCreateService.createContainerShape(containerShape, false);
 		Diagram contentDiagram = pictogramElementCreateService.createDiagram(DIAGRAM_TYPE, STANDART_GROUP_NAME, 10, false);
 		AddGroupOrCompartmentTypeContext agctc = (AddGroupOrCompartmentTypeContext) addContext;
 		link(contentDiagram, agctc.getModelToLink());
-		contentDiagramShape.getChildren().add(contentDiagram);
+		getDiagram().getContainer().getChildren().add(contentDiagram);
 		
 		//Step 3
 		PropertyUtil.setShape_IdValue(typeBodyRectangle, SHAPE_ID_GROUP_TYPEBODY);
@@ -447,11 +447,11 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 	        	if (shape.getGraphicsAlgorithm() instanceof Text) {
 	        		Text text = (Text) shape.getGraphicsAlgorithm();
 	                if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_GROUP_NAME)) {
+	                    //change diagram name
+	                	Diagram diagram = GeneralUtil.getGroupDiagramFromGroupShape(shape, getDiagram());
+	                	diagram.setName(businessTypeName);
 	                	//change group name
 	                	text.setValue(businessTypeName);
-	                    //change diagram name
-	                	Diagram diagram = GeneralUtil.getGroupDiagramFromGroupShape(shape);
-	                	diagram.setName(businessTypeName);
 	                	changed = true;
 	    }	}	}	}	
 	return changed;	
@@ -523,8 +523,15 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 	//delete parent container (the one that contains drop shadow shape and type body shape)
 	@Override
 	public void delete(IDeleteContext deleteContext) {
+		//delete groups diagram
+		Diagram groupDiagram = GeneralUtil.getGroupDiagramFromGroupShape((Shape) deleteContext.getPictogramElement(), getDiagram());
+		DeleteContext deleteContextForGroupDiagram = new DeleteContext(groupDiagram);
+		deleteContextForGroupDiagram.setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
+		super.delete(deleteContextForGroupDiagram);
+		//delete container shape 
 		ContainerShape containerShape = (ContainerShape) ((ContainerShape) deleteContext.getPictogramElement()).getContainer();
-		IDeleteContext deleteContextForAllShapes = new DeleteContext(containerShape);
+		DeleteContext deleteContextForAllShapes = new DeleteContext(containerShape);
+		deleteContextForAllShapes.setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
 		super.delete(deleteContextForAllShapes);
 	}
 }

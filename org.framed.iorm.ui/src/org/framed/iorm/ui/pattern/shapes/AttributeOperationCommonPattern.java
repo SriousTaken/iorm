@@ -6,6 +6,8 @@ import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IDirectEditingContext;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
+import org.eclipse.graphiti.features.context.impl.DeleteContext;
+import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -201,6 +203,7 @@ public class AttributeOperationCommonPattern extends AbstractPattern {
 	@Override
 	public void delete(IDeleteContext deleteContext) {
 		Shape ClassOrRole = ((Shape) deleteContext.getPictogramElement()).getContainer().getContainer();
+		((DeleteContext) deleteContext).setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
 		super.delete(deleteContext);
 		updatePictogramElement(ClassOrRole);
 	}

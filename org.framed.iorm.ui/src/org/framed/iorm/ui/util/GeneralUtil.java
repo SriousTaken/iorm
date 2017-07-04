@@ -168,6 +168,7 @@ public class GeneralUtil {
 	}
 	
 	/**
+	 * TODO
 	 * This operation fetches the groups diagram for a shape that is a part of a groups pictogram 
 	 * representation using the following steps:
 	 * <p>
@@ -178,30 +179,41 @@ public class GeneralUtil {
 	 * <p>
 	 * If its not clear what the different shapes are look for the pictogram structure of a group here: 
 	 * {@link org.framed.iorm.ui.pattern.shapes.GroupPattern#add}.
-	 * @param shapeToStartFrom the shape to start the search for the groups diagram 
+	 * @param groupShape the shape to start the search for the groups diagram 
 	 * @return the groups diagram, if the given shape was a name shape or the type body shape of a group
 	 */
-	public static Diagram getGroupDiagramFromGroupShape(Shape shapeToStartFrom) {
+	public static Diagram getGroupDiagramFromGroupShape(Shape groupShape, Diagram diagram) {
 		//Step 1
-		if(shapeToStartFrom.getGraphicsAlgorithm() == null) return null;
+		if(groupShape.getGraphicsAlgorithm() == null) return null;
 		else {
 			//Step 2
-			ContainerShape groupContainerShape = null;
-			if(PropertyUtil.isShape_IdValue(shapeToStartFrom.getGraphicsAlgorithm(), SHAPE_ID_GROUP_TYPEBODY))
-				groupContainerShape = shapeToStartFrom.getContainer();
-			if(PropertyUtil.isShape_IdValue(shapeToStartFrom.getGraphicsAlgorithm(), SHAPE_ID_GROUP_NAME))
-				groupContainerShape = shapeToStartFrom.getContainer().getContainer();
-			if(groupContainerShape != null) {
-			//Step 3
-				for(Shape shape : groupContainerShape.getChildren()) {
-					if(shape instanceof ContainerShape) { 
-						ContainerShape containerShape = (ContainerShape) shape; 
-						if(containerShape.getChildren().size() == 1 &&
-						   containerShape.getChildren().get(0) instanceof Diagram) {
-							Diagram diagram = (Diagram) containerShape.getChildren().get(0);
-							return diagram;
-		}	}	}	}	}
-		return null;
+			String groupName = null;
+			if(PropertyUtil.isShape_IdValue(groupShape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_TYPEBODY)) {
+				Shape groupNameShape = ((ContainerShape) groupShape).getChildren().get(0);
+				if(PropertyUtil.isShape_IdValue(groupNameShape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_NAME))
+					groupName = ((Text) groupNameShape.getGraphicsAlgorithm()).getValue();
+			}	
+			if(PropertyUtil.isShape_IdValue(groupShape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_NAME))
+				groupName = ((Text) groupShape.getGraphicsAlgorithm()).getValue();	
+		    Diagram containerDiagram = getContainerDiagramForAnyDiagram(diagram);
+			if(containerDiagram == null) throw new NoDiagramFoundException();
+			for(Shape shape : containerDiagram.getChildren()) {
+				if(shape instanceof Diagram) {
+					if(((Diagram) shape).getName().equals(groupName))
+						return ((Diagram) shape);
+				}	
+		}	}
+		throw new NoDiagramFoundException();	
+	}
+			
+	//TODO
+	private static Diagram getContainerDiagramForAnyDiagram(Diagram diagram) {
+		if(diagram.getContainer() == null) return diagram;
+		else {
+			if(diagram.getContainer() instanceof Diagram)
+				return getContainerDiagramForAnyDiagram((Diagram) diagram.getContainer());
+			else return null;
+		}	
 	}
 	
 	/**

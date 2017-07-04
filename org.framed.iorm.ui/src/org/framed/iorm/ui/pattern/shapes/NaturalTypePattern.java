@@ -17,6 +17,7 @@ import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
+import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
@@ -629,7 +630,8 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 	@Override
 	public void delete(IDeleteContext deleteContext) {
 		ContainerShape containerShape = (ContainerShape) ((ContainerShape) deleteContext.getPictogramElement()).getContainer();
-		IDeleteContext deleteContextForAllShapes = new DeleteContext(containerShape);
+		DeleteContext deleteContextForAllShapes = new DeleteContext(containerShape);
+		deleteContextForAllShapes.setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
 		super.delete(deleteContextForAllShapes);
 	}
 }
