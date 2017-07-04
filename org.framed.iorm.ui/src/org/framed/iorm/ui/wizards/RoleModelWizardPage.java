@@ -23,7 +23,7 @@ import org.framed.iorm.ui.util.DirectEditingUtil;
  * This class is an Eclipse wizard page that asks for a name of a new diagram. It is used by {@link RoleModelWizard}.
  * <p>
  * The code in this class is mostly taken and customized from the class "DiagramNameWizardPage.java" by Graphiti. 
- * You can find this class in the github repository of Graphiti. Also look there for reference too.
+ * You can find this class in the github repository of Graphiti. Look there for reference too.
  */
 public class RoleModelWizardPage extends WizardPage {
 

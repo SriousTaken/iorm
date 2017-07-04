@@ -9,7 +9,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
  * This class creates an Eclipse wizard is used to create a role model project
  * <p>
  * The code in this class is mostly taken and customized from the class "CreateSampleProjectWizard.java" by Graphiti. 
- * You can find this class in the github repository of Graphiti. Also look there for reference too.
+ * You can find this class in the github repository of Graphiti. Look there for reference too.
  */
 public class RoleModelProjectWizard extends BasicNewProjectResourceWizard {
 

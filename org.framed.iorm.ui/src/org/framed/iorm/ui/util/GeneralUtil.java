@@ -11,7 +11,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -23,13 +22,16 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.editor.IDiagramEditorInput;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.framed.iorm.model.Model;
 import org.framed.iorm.model.Type;
+import org.framed.iorm.ui.exceptions.NoDiagramFoundException;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.LayoutLiterals;
+import org.framed.iorm.ui.wizards.RoleModelWizard;
 
 public class GeneralUtil {
 	
@@ -66,15 +68,15 @@ public class GeneralUtil {
 	/**
 	 * This operation gets the root {@link Model} for a given {@link Diagram}.
 	 * @param diagram The diagram to get the model from
-	 * @return the root model of the given diagram if there is exactly one model found and returns null else
+	 * @return the root model of the given diagram if there is exactly one model linked and returns null else
 	 */
 	public static final Model getDiagramRootModel(Diagram diagram) {
-		List<Model> models=  new ArrayList<Model>();
-		for(EObject eObject : diagram.eResource().getContents()) {
-			if(eObject instanceof Model) {
-				models.add((Model) eObject);
-		}	}
-		if(models.size()==1) return models.get(0);
+		if(diagram.getLink() != null) {
+			if(diagram.getLink().getBusinessObjects().size() == 1 &&
+			   diagram.getLink().getBusinessObjects().get(0) instanceof Model) {
+				return (Model) diagram.getLink().getBusinessObjects().get(0);
+			}
+		}
 		return null;
 	}
 	
@@ -202,6 +204,39 @@ public class GeneralUtil {
 		return null;
 	}
 	
+	/**
+	 * returns the diagram for a resource fetched from a {@link DiagramEditorInput}
+	 * @param resource the resource to get the diagram from
+	 * @return the fetched diagram
+	 */
+	public static Diagram getDiagramForResourceOfDiagramEditorInput(Resource resource) {
+		Diagram diagram = null;
+		if(resource.getEObject(resource.getURI().fragment()) instanceof Diagram) {
+			diagram = (Diagram) resource.getEObject(resource.getURI().fragment());
+			return diagram;
+		}	
+		throw new NoDiagramFoundException();
+	}
+	
+	/**
+	 * fetches the <em>main diagram</em> for a given {@link IEditorInput}.
+	 * <p>
+	 * If its not clear what <em>main diagram</em> means, see {@link RoleModelWizard#createEmfFileForDiagram} for reference.
+	 * @param editorInput the editor input to get the <em>main diagram</em> for
+	 * @return the <em>main diagram</em> for an {@link IEditorInput}
+	 * @throws NoDiagramFoundException If no diagram can be fetched
+	 * @see RoleModelWizard#createEmfFileForDiagram
+	 */
+	public static Diagram getMainDiagramForIEditorInput(IEditorInput editorInput) {
+		Resource resource = GeneralUtil.getResourceFromEditorInput(editorInput);
+		if(resource.getContents().get(0) instanceof Diagram) {
+			Diagram containerDiagram = (Diagram) resource.getContents().get(0);
+			if(containerDiagram.getChildren().get(0) instanceof Diagram) {
+				return (Diagram) containerDiagram.getChildren().get(0);
+			}	}	
+		throw new NoDiagramFoundException();
+	}
+
 	/**
 	 * This operation gets the names of the attributes of a pictogram element that has an attribute container shape.
 	 * @param pictogramElement the pictogram element to get the attribute names of

@@ -57,7 +57,7 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 	 */
 	@Override
 	public boolean canExecute(ICustomContext context) {
-		ChangeConfigurationContext cfmc = (ChangeConfigurationContext) context;
+		ChangeConfigurationContext cfmc = (ChangeConfigurationContext) context;		
 		return (cfmc.getBehaviorEditor() != null &&
 				cfmc.getConfiguration() != null &&
 				GeneralUtil.getDiagramRootModel(getDiagram()) != null);

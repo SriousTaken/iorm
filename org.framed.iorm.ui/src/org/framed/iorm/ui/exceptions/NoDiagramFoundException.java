@@ -1,15 +1,16 @@
 package org.framed.iorm.ui.exceptions;
 
 import org.framed.iorm.ui.literals.TextLiterals;
-import org.framed.iorm.ui.multipage.MultipageEditor; //*import for javadoc link
+import org.framed.iorm.ui.util.GeneralUtil; //*import for javadoc link
 
 /**
  * This exception is thrown if the {@link MultipageEditor} can not gather the diagram for
- * a DiagramEditorInput performing the operation {@link MultipageEditor#addPagesWithDiagramEditorInput}.
+ * an {@link IEditorInput} performing the operations {@link GeneralUtil#addPagesWithDiagramEditorInput}
+ * and {@link GeneralUtil#getMainDiagramForIFileEditorInput}.
  * is of a not supported type.
  * @author Kevin Kassin
  */
-public class NoDiagramFoundInEditorInputException extends RuntimeException {
+public class NoDiagramFoundException extends RuntimeException {
 
 	/**
 	 * serial
@@ -24,7 +25,7 @@ public class NoDiagramFoundInEditorInputException extends RuntimeException {
 	/**
 	 * Class constructor
 	 */
-	public NoDiagramFoundInEditorInputException() {
+	public NoDiagramFoundException() {
 		super(MULTIPAGE_EDITOR_ERROR_NO_DIAGRAM_FOUND);
 	}
 }

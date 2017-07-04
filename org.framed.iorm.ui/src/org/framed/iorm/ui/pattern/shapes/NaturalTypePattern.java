@@ -135,9 +135,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 	}
 
 	@Override
-	public PictogramElement add(IAddContext addContext) {
-		//TODO: Group
-		
+	public PictogramElement add(IAddContext addContext) {		
 		//get container and new object
 		org.framed.iorm.model.Shape addedNaturalType = (org.framed.iorm.model.Shape) addContext.getNewObject();
 		ContainerShape targetDiagram = getDiagram();

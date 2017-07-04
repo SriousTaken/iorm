@@ -123,7 +123,8 @@ public class FRaMEDFeatureEditor extends EditorPart {
 		super();
 		this.multipageEditor = multipageEditor;
 		Resource resource = GeneralUtil.getResourceFromEditorInput(editorInput);
-		Model rootModel = readRootModel(resource);
+		if (resource == null) { throw new NullPointerException("The resource could not be loaded."); }
+		Model rootModel = readRootModel(editorInput);
 		IFeatureModel featureModel = readFeatureModel();
 		loadConfiguration(rootModel, featureModel);
 	}
@@ -139,15 +140,17 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	
 	/**
 	 * fetches the root model for a resource
+	 * <p>
+	 * If diagram is null in this operation there is no exception thrown, since this already happens in 
+	 * {@link GeneralUtil#getMainDiagramForIEditorInput(IEditorInput)}.
 	 * @param resource the resource to get the root model from
 	 * @return the root model of the resource is not null and the diagram has a root model and return null else
-	 */
-	private Model readRootModel(Resource resource) {
-		if (resource != null) {
-			Diagram diagram = (Diagram) resource.getContents().get(0);
+	 */ 
+	private Model readRootModel(IEditorInput editorInput) {
+		Diagram diagram = GeneralUtil.getMainDiagramForIEditorInput(editorInput);
+		if(diagram != null)
 			return GeneralUtil.getDiagramRootModel(diagram);
-		} else
-			throw new NullPointerException("The resource could not be loaded.");
+		return null;
 	}
 		
 	/**
