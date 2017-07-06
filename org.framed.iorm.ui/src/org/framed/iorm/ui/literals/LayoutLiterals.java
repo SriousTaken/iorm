@@ -79,7 +79,7 @@ public class LayoutLiterals {
 	 * <p>
 	 * the radius of the rounded corners of groups 
 	 */
-	public static final int GROUP_CORNER_RADIUS = HEIGHT_NAME_SHAPE;
+	public static final int GROUP_CORNER_RADIUS = 2*HEIGHT_NAME_SHAPE;
 	
 	/**
 	 * color value for connections

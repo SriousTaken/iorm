@@ -43,6 +43,7 @@ import org.framed.iorm.ui.literals.TextLiterals;
 import org.framed.iorm.ui.util.DirectEditingUtil;
 import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
+import org.framed.iorm.ui.wizards.RoleModelWizard;
 
 /**
  * This graphiti pattern class is used to work with {@link org.framed.iorm.model.Shape}s
@@ -157,11 +158,14 @@ public class GroupPattern extends AbstractPattern implements IPattern {
 	 * 			<li>model content container</li>
 	 * 			  <ul><li>model content rectangle</li></ul>
 	 * 		   </ul>
-	 *       <li>diagram container shape</li>
-	 *         <ul><li>groups diagram</li></ul>
 	 * 	   </ul>
 	 * </ul> 
-	 * It follows this steps:<br>
+	 * <p>
+	 * The groups diagram will be created outside of the groups <em>container shape</em>. It can be found as child of
+	 * the <em>container diagram</em> of the role model. If its not clear what <em>container diagram</em> means, see 
+	 * {@link RoleModelWizard#createEmfFileForDiagram} for reference.
+	 * <p>
+	 * It uses follows this steps:<br>
 	 * Step 1: It gets the new object, the diagram to create the group in and calculates the height 
 	 * 		   and width of the groups representation.<br>
 	 * Step 2: It creates the structure shown above.<br>

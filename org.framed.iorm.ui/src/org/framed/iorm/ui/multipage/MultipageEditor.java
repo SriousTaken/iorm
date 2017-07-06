@@ -1,20 +1,17 @@
 package org.framed.iorm.ui.multipage;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -22,8 +19,8 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.part.FileEditorInput;
 import org.framed.iorm.ui.exceptions.InvalidTypeOfEditorInputException;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
@@ -46,9 +43,6 @@ import org.framed.iorm.ui.wizards.RoleModelWizard; //*import for javadoc link
  * @author Kevin Kassin
  */
 public class MultipageEditor extends FormEditor implements ISelectionListener {
-	
-	//TODO
-	private boolean hasDoneChanges = false;
 	
 	/**
 	 * the identifier of the {@link DiagramTypeProvider} which is needed to instantiate an {@link DiagramEditorInput}
@@ -75,14 +69,29 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	
 	/**
 	 * text literas used for messages
-	 * <p>
+	 * <p
 	 * can be:<br>
 	 * (1) the message used for the workbench status line if there are unsaved changes gathered from {@link TextLiterals} or<br>
-	 * (2) the message used for a null pointer exceptions on a file editor input
+	 * (2) the message used for a null pointer exceptions on a file editor input or<br>
+	 * (3) the title of the message dialog if there are unsaved changes in a different multipage editor than the active one or<br>
+	 * (4) the text of the message dialog described in (3) or<br>
+	 * (5) the message for the {@link PartInitException} in {@link #addPagesWithDiagramEditorInput} if a file input can't be created 
+	 * 	   for a given resource
 	 */
 	private final String STATUS_MESSAGE_UNSAVED_CHANGES = TextLiterals.STATUS_MESSAGE_UNSAVED_CHANGES,
-						 MUTLIPAGE_EDITOR_ERROR_NULLPOINTER_ON_FILE_EDITOR_INPUT = TextLiterals.MUTLIPAGE_EDITOR_ERROR_NULLPOINTER_ON_FILE_EDITOR_INPUT;
-			
+						 MUTLIPAGE_EDITOR_ERROR_NULLPOINTER_ON_FILE_EDITOR_INPUT = TextLiterals.MUTLIPAGE_EDITOR_ERROR_NULLPOINTER_ON_FILE_EDITOR_INPUT,
+						 MESSAGE_UNSAVED_CHANGES_IN_OTHER_MULTIPAGE_EDITORS_TITLE = TextLiterals.MESSAGE_UNSAVED_CHANGES_IN_OTHER_MULTIPAGE_EDITORS_TITLE,
+						 MESSAGE_UNSAVED_CHANGES_IN_OTHER_MULTIPAGE_EDITORS_TEXT = TextLiterals.MESSAGE_UNSAVED_CHANGES_IN_OTHER_MULTIPAGE_EDITORS_TEXT,
+					     MESSAGE_FILE_EDITOR_INPUT_FOR_RESOURCE_IS_NULL = TextLiterals.MESSAGE_FILE_EDITOR_INPUT_FOR_RESOURCE_IS_NULL;
+	
+	/**
+	 * the active multipage editor before the a selection change was executed
+	 * <p>
+	 * This static reference is used to evaluate if a selection change affected the selection of the multipage editor page in the same
+	 * multipage editor or changed the selection to another opened multipage editor. This happens in the operation {@link selectionChanged}.
+	 */
+	private static MultipageEditor activeWorkbenchPart = null;
+	
 	/**
 	 * the subeditors of the multipage editor of type {@link FRaMEDDiagramEditor}
 	 * <p>
@@ -122,22 +131,26 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	}
 	
 	/**
-	 * dispose the editor on close or deletion of opened file
-	 */
-	@Override
-	public void dispose() {
-		MultipageEditorSynchronizationService.deregisterEditor(this);
-		super.dispose();
-	}
-
-	/**
 	 * initialize method
+	 * <p>
+	 * adds this object to the {@link ISelectionService} as post selection listener
 	 * @throws PartInitException if editor input is not of type {@link IFileEditorInput}	
 	 */
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		super.init(site, editorInput);
-		getSite().getWorkbenchWindow().getSelectionService().addSelectionListener(this);
+		 getSite().getWorkbenchWindow().getSelectionService().addPostSelectionListener(this);
+	}
+	
+	/**
+	 * dispose method
+	 * <p>
+	 * removes this object from the register of {@link MultipageEditor} of the {@link MultipageEditorSynchronizationService}
+	 */
+	@Override 
+	public void dispose() {
+		MultipageEditorSynchronizationService.deregisterEditor(this);
+		super.dispose();
 	}
 	
 	/**
@@ -147,11 +160,11 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	public FRaMEDDiagramEditor getDiagramEditor() {
 	    return editorDiagram;
 	}
-		
+
 	/**
-	 * delegates the task to add pages to the multipage editor depending on the type of
-	 * editor input
+	 * delegates the task to add pages to the multipage editor depending on the type of the editor input
 	 * <p>
+	 * also sets the name of the multipage editor
 	 * (1) If the editor input is of type {@link IFileEditorInput} it calls {@link #addPageWithIFileEditorInput}
 	 * 	   and sets the multipage editors name.<br>
 	 * (2) If the editor input is of type {@link DiagramEditorInput} it calls {@link #addPagesWithDiagramEditorInput},
@@ -161,9 +174,6 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 */
 	@Override
 	protected void addPages() {	
-		//TODO deletes old pages
-		//for(int i = 0; i<getPageCount(); i++)
-		//	removePage(i);
 		if(getEditorInput() instanceof IFileEditorInput) {
 			try {
 				addPageWithIFileEditorInput();
@@ -218,7 +228,7 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 * 			also saves the role model file.<br>
 	 * Step 5: It creates the feature editor and adds the page. To do that the created root model is needed.
 	 * 		   It also creates the editores and add the pages for the iorm and crom text viewers.<br>  
-	 * Step 6: Its set the names of the pages.
+	 * Step 6: It add its object to the register of multipage editors of the {@link MultipageEditorSynchronizationService}. 
 	 * <p>
 	 * If its not clear what <em>main diagram</em> means, see {@link RoleModelWizard#createEmfFileForDiagram} for reference.<br>
 	 * @throws PartInitException 
@@ -229,7 +239,7 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 		Resource resource = GeneralUtil.getResourceFromEditorInput(diagramEditorInput);	
 		//Step 2
 		if(fileEditorInput == null) fileEditorInput = GeneralUtil.getIFileEditorInputForResource(resource);
-		if(fileEditorInput == null) throw new PartInitException("asd"); //TODO
+		if(fileEditorInput == null) throw new PartInitException(MESSAGE_FILE_EDITOR_INPUT_FOR_RESOURCE_IS_NULL); 
 		//Step 3
 		editorDiagram = new FRaMEDDiagramEditor();
 		try { 
@@ -245,7 +255,7 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 		if(createModelFeature != null) {
 			CreateContext createContext = new CreateContext();
 			if(createModelFeature.canCreate(createContext)) createModelFeature.create(createContext);
-			doSave(new NullProgressMonitor());
+			doSave(new NullProgressMonitor()); 
 		}	
 		//Step 4
 		editorFeatures = new FRaMEDFeatureEditor(diagramEditorInput, this);
@@ -261,8 +271,8 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 		setPageText(textViewerIORMIndex, TEXT_IORM_PAGE_NAME);
 		setPageText(textViewerCROMIndex, TEXT_CROM_PAGE_NAME);	
 		setPageText(editorFeaturesIndex, FEATURE_PAGE_NAME);
-		//TODO
-		MultipageEditorSynchronizationService.registerEditor(this);		
+		//Step 6
+		MultipageEditorSynchronizationService.registerEditor(this);
 	}
 		
 	/**
@@ -275,9 +285,12 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	protected void handlePropertyChange(int propertyId) {
 		super.handlePropertyChange(propertyId);
 		IActionBars actionBars = getEditorSite().getActionBars();
-		if(isDirty()) actionBars.getStatusLineManager().setErrorMessage(STATUS_MESSAGE_UNSAVED_CHANGES);
-		else actionBars.getStatusLineManager().setErrorMessage(null);
-	}
+		if(propertyId == PROP_DIRTY) {
+			if(isDirty()) {
+				actionBars.getStatusLineManager().setErrorMessage(STATUS_MESSAGE_UNSAVED_CHANGES);
+			}
+			else actionBars.getStatusLineManager().setErrorMessage(null);
+	}	}
 	
 	/**
 	 * save method
@@ -285,14 +298,15 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 * This operation calls the save methods of the subeditors and synchronizes the feature configuration
 	 * in the feature editor with the one in the role model. This is needed because there can be inconsistencies
 	 * after undoing and redoing an feature configuration change.<br>
+	 * It also synchronizes between multiple opened multipage editors using the {@link MultipageEditorSynchronizationService}.
 	 * The check in this operation is needed because the first save of an multipage editor at its creation is done 
 	 * before the feature editor even exists.
 	 * @param monitor the monitor used for the save activity
 	 */
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		MultipageEditorSynchronizationService.getDirtyStates();
 		if(isDirty()) {
+			MultipageEditorSynchronizationService.updateDirtyStates();
 			editorDiagram.doSave(monitor);
 			editorDiagram.updateSelectedFeatures();
 			//check
@@ -301,7 +315,7 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 			refreshFile();
 			MultipageEditorSynchronizationService.synchronize();
 		}
-	}
+	}	
 	
 	/**
 	 * refreshes the file which is edited by the multipage editor
@@ -325,6 +339,36 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 			} catch (CoreException e) { e.printStackTrace(); }
 		} else throw new NullPointerException(MUTLIPAGE_EDITOR_ERROR_NULLPOINTER_ON_FILE_EDITOR_INPUT);
 	}
+	
+	/**
+	 * informs the user that there are unsaved changes in multipage editors different to the active one 
+	 * after a selection change 
+	 * <p>
+	 * This operation is called if the selection in the workbench of eclipse is changed. It evaluates if 
+	 * a selection change affected the selection of the multipage editor page in the same multipage editor
+	 * or changed the selection to another opened multipage editor.
+	 */
+	@Override
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+		if(part instanceof MultipageEditor) {
+			if(activeWorkbenchPart == null) {
+				activeWorkbenchPart = (MultipageEditor) part;
+				return;		
+			}
+			if(this.equals(part)) {
+				if(!(activeWorkbenchPart.equals(part))) {
+					boolean unsavedChangesInOtherMultipageEditors = false;
+					for(MultipageEditor multipageEditor : MultipageEditorSynchronizationService.getCopyOfRegisteredEditors()) {
+						if(!(multipageEditor.equals(this))) 
+							if(multipageEditor.isDirty())
+								unsavedChangesInOtherMultipageEditors = true;
+					}
+					if(unsavedChangesInOtherMultipageEditors) {	
+						Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+						MessageDialog.openInformation(shell, MESSAGE_UNSAVED_CHANGES_IN_OTHER_MULTIPAGE_EDITORS_TITLE, MESSAGE_UNSAVED_CHANGES_IN_OTHER_MULTIPAGE_EDITORS_TEXT);
+					}	
+					activeWorkbenchPart = (MultipageEditor) part;
+	}	}	} 	}
 		
 	/**
 	 * sets the selected page as active page
@@ -337,11 +381,6 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	@Override
 	protected void pageChange(int newPageIndex) {
 		super.pageChange(newPageIndex);
-	}
-	
-	//TODO publishes
-	public void setInput(IEditorInput editorInput) {
-		super.setInput(editorInput);
 	}
 	
 	/**
@@ -357,14 +396,4 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 */
 	@Override
 	public void doSaveAs() {}
-	
-	/**
-	 * operation not used
-	 */
-	public void resourceChanged(final IResourceChangeEvent event) {}
-	
-	/**
-	 * operation not used
-	 */
-	public void selectionChanged(IWorkbenchPart part, ISelection selection) {}
 }

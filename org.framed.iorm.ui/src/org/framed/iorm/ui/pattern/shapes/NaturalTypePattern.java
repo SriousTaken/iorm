@@ -262,7 +262,7 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		addGraphicalRepresentation(createContext, newNaturalType);
 		return new Object[] { newNaturalType };
 	}
-	
+		
 	//direct editing
 	//~~~~~~~~~~~~~~
 	private Object getBusinessObject(IDirectEditingContext editingContext) {

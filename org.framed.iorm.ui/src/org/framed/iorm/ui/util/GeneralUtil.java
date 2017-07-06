@@ -32,7 +32,6 @@ import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.exceptions.NoDiagramFoundException;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.LayoutLiterals;
-import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.wizards.RoleModelWizard;
 
 public class GeneralUtil {
@@ -151,19 +150,20 @@ public class GeneralUtil {
 	}
 	
 	/**
-	 * TODO
 	 * This operation fetches the groups diagram for a shape that is a part of a groups pictogram 
 	 * representation using the following steps:
 	 * <p>
 	 * Step 1: If the given shape has no graphics Algorithm it returns null.<br>
-	 * Step 2: It calculates the group container shape depending on the given shape.<br>
-	 * Step 3: It searches for the diagram container in the list of children of the group container shape
-	 * 		   and returns the found groups diagram.
+	 * Step 2: It gets the name of the group depending on the given shape.<br>
+	 * Step 3: It searches in the list of children of the container diagram for a diagram with the name
+	 * 		   found in step 2. If no such diagram can be found, throw a {@link NoDiagramFoundException}
 	 * <p>
 	 * If its not clear what the different shapes are look for the pictogram structure of a group here: 
-	 * {@link org.framed.iorm.ui.pattern.shapes.GroupPattern#add}.
+	 * {@link org.framed.iorm.ui.pattern.shapes.GroupPattern#add}.<br>
+	 * If its not clear what <em>container diagram</em> means, see {@link RoleModelWizard#createEmfFileForDiagram} for reference.
 	 * @param groupShape the shape to start the search for the groups diagram 
 	 * @return the groups diagram, if the given shape was a name shape or the type body shape of a group
+	 * @throws NoDiagramFoundException
 	 */
 	public static Diagram getGroupDiagramFromGroupShape(Shape groupShape, Diagram diagram) {
 		//Step 1
@@ -178,7 +178,8 @@ public class GeneralUtil {
 			}	
 			if(PropertyUtil.isShape_IdValue(groupShape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_NAME))
 				groupName = ((Text) groupShape.getGraphicsAlgorithm()).getValue();	
-		    Diagram containerDiagram = getContainerDiagramForAnyDiagram(diagram);
+		   //Step 3
+			Diagram containerDiagram = getContainerDiagramForAnyDiagram(diagram);
 			if(containerDiagram == null) throw new NoDiagramFoundException();
 			for(Shape shape : containerDiagram.getChildren()) {
 				if(shape instanceof Diagram) {
@@ -189,7 +190,13 @@ public class GeneralUtil {
 		throw new NoDiagramFoundException();	
 	}
 			
-	//TODO
+	/**
+	 * uses an recursive algorithm to find the <em>container diagram</em> of a role model
+	 * <p>
+	 * If its not clear what <em>container diagram</em> means, see {@link RoleModelWizard#createEmfFileForDiagram} for reference.
+	 * @param diagram the diagram to search the container diagram from
+	 * @return the container diagram of a role model
+	 */
 	private static Diagram getContainerDiagramForAnyDiagram(Diagram diagram) {
 		if(diagram.getContainer() == null) return diagram;
 		else {
@@ -203,6 +210,7 @@ public class GeneralUtil {
 	 * returns the diagram for a resource fetched from a {@link DiagramEditorInput}
 	 * @param resource the resource to get the diagram from
 	 * @return the fetched diagram
+	 * @throws NoDiagramFoundException
 	 */
 	public static Diagram getDiagramForResourceOfDiagramEditorInput(Resource resource) {
 		Diagram diagram = null;
@@ -243,7 +251,14 @@ public class GeneralUtil {
 		return new FileEditorInput(file);
 	}
 	
-	//TODO
+	/**
+	 * searches for a diagram with the given name in the given resource
+	 * <p>
+	 * @param resource the resource to search the diagram in
+	 * @param diagramName the name to search the diagram with
+	 * @return the diagram with the specific name in the resource
+	 * @throws NoDiagramFoundException
+	 */
 	public static Diagram getDiagramFromResourceByName(Resource resource, String diagramName) {
 		if(resource.getContents().get(0) instanceof Diagram) {
 			if(((Diagram) resource.getContents().get(0)).getContainer() == null) {

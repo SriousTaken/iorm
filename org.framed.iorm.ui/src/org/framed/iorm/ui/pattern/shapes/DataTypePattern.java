@@ -47,7 +47,7 @@ import org.framed.iorm.ui.util.DirectEditingUtil;
 import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
 
-public class DataTypePattern extends AbstractPattern{
+public class DataTypePattern extends AbstractPattern {
 	
 	//name literals
 	private final String DATATYPE_FEATURE_NAME = NameLiterals.DATATYPE_FEATURE_NAME,
@@ -138,8 +138,6 @@ public class DataTypePattern extends AbstractPattern{
 
 	@Override
 	public PictogramElement add(IAddContext addContext) {
-		//TODO: Group
-			
 		//get container and new object
 		org.framed.iorm.model.Shape addedDataType = (org.framed.iorm.model.Shape) addContext.getNewObject();
 		ContainerShape targetDiagram = getDiagram();
