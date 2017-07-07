@@ -29,7 +29,7 @@ import org.framed.iorm.ui.util.GeneralUtil;
  * (3) adding the root model to the diagram, if is not already has a root model attached
  * @author Kevin Kassin
  */
-public class ModelPattern extends AbstractPattern implements IPattern {
+public class ModelPattern extends FRaMEDShapePattern implements IPattern {
 	
 	/**
 	 * the features name gathered from {@link NameLiterals}
@@ -45,7 +45,7 @@ public class ModelPattern extends AbstractPattern implements IPattern {
 	 * Class constructor
 	 */
 	public ModelPattern() {
-		super(null);
+		super();
 	}
 	
 	/**

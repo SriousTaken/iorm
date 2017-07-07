@@ -47,7 +47,7 @@ import org.framed.iorm.ui.util.DirectEditingUtil;
 import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
 
-public class NaturalTypePattern extends AbstractPattern implements IPattern {
+public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 
 	//name literals
 	private final String NATURALTYPE_FEATURE_NAME = NameLiterals.NATURALTYPE_FEATURE_NAME,
@@ -79,24 +79,35 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 								 COLOR_BACKGROUND = LayoutLiterals.COLOR_BACKGROUND,
 								 COLOR_SHADOW = LayoutLiterals.COLOR_SHADOW;
 	
-	//services
-	private static final IPeCreateService pictogramElementCreateService = Graphiti.getPeCreateService();
-	private static final IGaService graphicAlgorithmService = Graphiti.getGaService();
-	
+	/**
+	 * Class constructor
+	 */
 	public NaturalTypePattern() {
-		super(null);
+		super();
 	}
 	
+	/**
+	 * get method for the features name
+	 * @return the name of the feature
+	 */
 	@Override
 	public String getCreateName() {
 		return NATURALTYPE_FEATURE_NAME;
 	}
 	
+	/**
+	 * enables the icon for the create feature in this pattern
+	 * @return the image identifier for the icon of the create feature in this pattern
+	 */
 	@Override
 	public String getCreateImageId() {
 		return IMG_ID_FEATURE_NATURALTYPE;
 	}
 	
+	/**
+	 * checks if pattern is applicable for a given business object
+	 * @return true, if business object is a {@link org.framed.iorm.model.Shape} of type {@link Type#NATURAL_TYPE}
+	 */
 	@Override
 	public boolean isMainBusinessObjectApplicable(Object businessObject) {
 		if(businessObject instanceof org.framed.iorm.model.Shape) {
@@ -106,12 +117,20 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		return false;
 	}
 
+	/**
+	 * checks if pattern is applicable for a given pictogram element
+	 * @return true, if business object of the pictogram element is a {@link org.framed.iorm.model.Shape} of type {@link Type#NATURAL_TYPE}
+	 */
 	@Override
 	protected boolean isPatternControlled(PictogramElement pictogramElement) {
 		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
 		return isMainBusinessObjectApplicable(businessObject);
 	}
 
+	/**
+	 * checks if the pictogram element to edit with the pattern is its root
+	 * @return true, if business object of the pictogram element is a {@link org.framed.iorm.model.Shape} of type {@link Type#NATURAL_TYPE}
+	 */
 	@Override
 	protected boolean isPatternRoot(PictogramElement pictogramElement) {
 		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
@@ -265,12 +284,9 @@ public class NaturalTypePattern extends AbstractPattern implements IPattern {
 		
 	//direct editing
 	//~~~~~~~~~~~~~~
-	private Object getBusinessObject(IDirectEditingContext editingContext) {
-		PictogramElement pictogramElement = editingContext.getPictogramElement();
-		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
-		return businessObject;
-	}
-	
+	/**
+	 * sets the editing type as a text field for the direct editing of the attributes or operations name
+	 */
 	@Override
 	public int getEditingType() {
 		return TYPE_TEXT;

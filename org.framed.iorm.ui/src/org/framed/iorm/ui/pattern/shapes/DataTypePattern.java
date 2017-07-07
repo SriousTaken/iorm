@@ -30,6 +30,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.pattern.AbstractPattern;
+import org.eclipse.graphiti.pattern.IPattern;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
@@ -47,7 +48,7 @@ import org.framed.iorm.ui.util.DirectEditingUtil;
 import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
 
-public class DataTypePattern extends AbstractPattern {
+public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 	
 	//name literals
 	private final String DATATYPE_FEATURE_NAME = NameLiterals.DATATYPE_FEATURE_NAME,
@@ -80,24 +81,35 @@ public class DataTypePattern extends AbstractPattern {
 								 COLOR_BACKGROUND = LayoutLiterals.COLOR_BACKGROUND,
 								 COLOR_SHADOW = LayoutLiterals.COLOR_SHADOW;
 	
-	//services
-	private final IPeCreateService pictogramElementCreateService = Graphiti.getPeCreateService();
-	private final IGaService graphicAlgorithmService = Graphiti.getGaService();
-	
+	/**
+	 * Class constructor
+	 */
 	public DataTypePattern() {
-		super(null);
+		super();
 	}
 	
+	/**
+	 * get method for the features name
+	 * @return the name of the feature
+	 */
 	@Override
 	public String getCreateName() {
 		return DATATYPE_FEATURE_NAME;
 	}
 	
+	/**
+	 * enables the icon for the create feature in this pattern
+	 * @return the image identifier for the icon of the create feature in this pattern
+	 */
 	@Override
 	public String getCreateImageId() {
 		return IMG_ID_FEATURE_DATATYPE;
 	}
 	
+	/**
+	 * checks if pattern is applicable for a given business object
+	 * @return true, if business object is a {@link org.framed.iorm.model.Shape} of type {@link Type#DATA_TYPE}
+	 */
 	@Override
 	public boolean isMainBusinessObjectApplicable(Object businessObject) {
 		if(businessObject instanceof org.framed.iorm.model.Shape) {
@@ -107,12 +119,20 @@ public class DataTypePattern extends AbstractPattern {
 		return false;
 	}
 
+	/**
+	 * checks if pattern is applicable for a given pictogram element
+	 * @return true, if business object of the pictogram element is a {@link org.framed.iorm.model.Shape} of type {@link Type#DATA_TYPE}
+	 */
 	@Override
 	protected boolean isPatternControlled(PictogramElement pictogramElement) {
 		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
 		return isMainBusinessObjectApplicable(businessObject);
 	}
 
+	/**
+	 * checks if the pictogram element to edit with the pattern is its root
+	 * @return true, if business object of the pictogram element is a {@link org.framed.iorm.model.Shape} of type {@link Type#DATA_TYPE}
+	 */
 	@Override
 	protected boolean isPatternRoot(PictogramElement pictogramElement) {
 		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
@@ -274,13 +294,10 @@ public class DataTypePattern extends AbstractPattern {
 	}
 	
 	//direct editing feature
-	//~~~~~~~~~~~~~~~~~~~~~~~
-	private Object getBusinessObject(IDirectEditingContext editingContext) {
-		PictogramElement pictogramElement = editingContext.getPictogramElement();
-		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
-		return businessObject;
-	}
-		
+	//~~~~~~~~~~~~~~~~~~~~~~~	
+	/**
+	 * sets the editing type as a text field for the direct editing of the attributes or operations name
+	 */
 	@Override
 	public int getEditingType() {
 		return TYPE_TEXT;
