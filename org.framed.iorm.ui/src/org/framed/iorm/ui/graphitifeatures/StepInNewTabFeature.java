@@ -50,7 +50,7 @@ public class StepInNewTabFeature extends AbstractStepInFeature {
 	@Override
 	public void execute(ICustomContext context) {
 		ContainerShape typeBodyShape = (ContainerShape) context.getPictogramElements()[0];
-		Diagram groupDiagram = GeneralUtil.getGroupDiagramFromGroupShape(typeBodyShape, getDiagram());
+		Diagram groupDiagram = GeneralUtil.getGroupDiagramForGroupShape(typeBodyShape, getDiagram());
 		IEditorInput diagramEditorInput = DiagramEditorInput.createEditorInput(groupDiagram, DIAGRAM_PROVIDER_ID);
 		try {
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(diagramEditorInput, EDITOR_ID);

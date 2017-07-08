@@ -1,6 +1,7 @@
 package org.framed.iorm.ui.literals;
 
 import org.framed.iorm.ui.exceptions.FeatureModelNotReadableException; //*import for javadoc link
+import org.framed.iorm.ui.exceptions.NoDiagramFoundException; //*import for javadoc link
 import org.framed.iorm.ui.wizards.RoleModelWizardPage; //*import for javadoc link
 import org.framed.iorm.ui.wizards.RoleModelWizard; //*import for javadoc link
 import org.eclipse.ui.PartInitException; //*import for javadoc link
@@ -36,6 +37,11 @@ public class TextLiterals {
 	public static final String FEATUREMODEL_NOT_READABLE_MESSAGE = "The feature model could not be read!";
 	
 	/**
+	 * the error message for the {@link NoDiagramFoundException}
+	 */
+	public static final String ERROR_NO_DIAGRAM_FOUND = "There was no diagram found for the the diagram editor input!";
+				
+	/**
 	 * messages used in the Eclipse wizards
 	 * <p>
 	 * can be:<br>
@@ -60,15 +66,13 @@ public class TextLiterals {
 	 * <p>
 	 * can be:<br>
 	 * (1) the error message if the editor input can not be used for the {@link MultipageEditor} or<br>
-	 * (2) the error message if the {@link MultipageEditor} can not find the diagram for a DiagramEditorInput or<br>
-	 * (3) the error message if the {@link MultipageEditor} could not gather a the file imput to refresh a file or<br>
-	 * (4) the message of the workbench status line if there are unsaved changes or<br>
-	 * (5) the title for the message dialog if there are unsaved changes in a different multipage editor than the active one or<br>
-	 * (6) the text for the message dialog described in (5) or<br>
-	 * (7) the message for {@link PartInitException} if the file editor input for a source could not be created
+	 * (2) the error message if the {@link MultipageEditor} could not gather a the file imput to refresh a file or<br>
+	 * (3) the message of the workbench status line if there are unsaved changes or<br>
+	 * (4) the title for the message dialog if there are unsaved changes in a different multipage editor than the active one or<br>
+	 * (5) the text for the message dialog described in (5) or<br>
+	 * (6) the message for {@link PartInitException} if the file editor input for a source could not be created
 	 */
 	public static final String MULTIPAGE_EDITOR_ERROR_NO_VALID_EDITOR_INPUT = "The editor input of the multipage editor is not of a valid type!",
-							   MULTIPAGE_EDITOR_ERROR_NO_DIAGRAM_FOUND = "There was no diagram found for the the diagram editor input!",
 							   MUTLIPAGE_EDITOR_ERROR_NULLPOINTER_ON_FILE_EDITOR_INPUT = "The file editor input used to refresh the file is null!",
 							   STATUS_MESSAGE_UNSAVED_CHANGES = "Unsaved changes - the pages are out of sync!",
 							   MESSAGE_UNSAVED_CHANGES_IN_OTHER_MULTIPAGE_EDITORS_TITLE = "Unsaved changes in other multipage editors!",

@@ -8,8 +8,16 @@ import org.eclipse.ui.PlatformUI;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.multipage.MultipageEditor;
 import org.framed.iorm.ui.util.PropertyUtil;
+import org.framed.iorm.ui.graphitifeatures.StepInFeature; //*import for javadoc link
+import org.framed.iorm.ui.graphitifeatures.StepInNewTabFeature; //*import for javadoc link
 
-//TODO
+/**
+ * This class is an abstract super class for the graphiti custom features {@link StepInFeature} and
+ * {@link StepInNewTabFeature}.
+ * <p>
+ * It collects common attributes and operations of those two features.
+ * @author Kevin Kassin
+ */
 public abstract class AbstractStepInFeature extends AbstractCustomFeature {
 
 	/**
@@ -44,7 +52,7 @@ public abstract class AbstractStepInFeature extends AbstractCustomFeature {
 	/**
 	 * This methods checks if the feature can be executed.
 	 * <p>
-	 * It return true if<br>
+	 * It returns true if<br>
 	 * (1) exactly one pictogram element is selected and<br>
 	 * (2) this pictogram element has a graphics algorithm that is the type body of a 
 	 * group, compartment type or role group and<br>
@@ -57,8 +65,9 @@ public abstract class AbstractStepInFeature extends AbstractCustomFeature {
 			if(customContext.getPictogramElements()[0].getGraphicsAlgorithm() != null) {
 				GraphicsAlgorithm graphicAlgorithm =  customContext.getPictogramElements()[0].getGraphicsAlgorithm();
 				if(PropertyUtil.isShape_IdValue(graphicAlgorithm, SHAPE_ID_GROUP_TYPEBODY)) { 
-					MultipageEditor multipageEditor = (MultipageEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-					if(!(multipageEditor.getDiagramEditor().isDirty()))
+					MultipageEditor multipageEditor = 
+						(MultipageEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+					if(!(multipageEditor.isDirty()))
 						return true;
 		}	}	}
 		return false;

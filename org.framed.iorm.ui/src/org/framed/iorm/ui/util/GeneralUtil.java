@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -24,14 +25,17 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.editor.IDiagramEditorInput;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.framed.iorm.model.Model;
 import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.exceptions.NoDiagramFoundException;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.LayoutLiterals;
+import org.framed.iorm.ui.multipage.MultipageEditor;
 import org.framed.iorm.ui.wizards.RoleModelWizard;
 
 public class GeneralUtil {
@@ -42,7 +46,7 @@ public class GeneralUtil {
 	 */
 	private static final String SHAPE_ID_GROUP_TYPEBODY = IdentifierLiterals.SHAPE_ID_GROUP_TYPEBODY,
 								SHAPE_ID_GROUP_NAME = IdentifierLiterals.SHAPE_ID_GROUP_NAME;
-								
+	
 	/**
 	 * the layout integers this class need to perform the operation {@link #calculateHorizontalCenter}
 	 * gathered from {@link LayoutLiterals}
@@ -165,7 +169,7 @@ public class GeneralUtil {
 	 * @return the groups diagram, if the given shape was a name shape or the type body shape of a group
 	 * @throws NoDiagramFoundException
 	 */
-	public static Diagram getGroupDiagramFromGroupShape(Shape groupShape, Diagram diagram) {
+	public static Diagram getGroupDiagramForGroupShape(Shape groupShape, Diagram diagram) {
 		//Step 1
 		if(groupShape.getGraphicsAlgorithm() == null) return null;
 		else {
@@ -190,6 +194,23 @@ public class GeneralUtil {
 		throw new NoDiagramFoundException();	
 	}
 			
+	/**
+	 * fetches the diagram in which a given shape in contained
+	 * @param shape the shape to get containing diagram for
+	 * @return the diagram that contains the given shape
+	 */
+	public static Diagram getDiagramForContainedShape(Shape shape) {
+		if(shape.getContainer() == null) return null;
+		if(shape.getContainer() instanceof Diagram) {	 
+			return (Diagram) shape.getContainer();
+		}
+		if(shape.getContainer() instanceof Shape &&
+		   !(shape.getContainer() instanceof Diagram)) {
+			return getDiagramForContainedShape(shape.getContainer());
+		}
+		return null;
+	}
+	
 	/**
 	 * uses an recursive algorithm to find the <em>container diagram</em> of a role model
 	 * <p>
@@ -348,5 +369,23 @@ public class GeneralUtil {
 					}
 		} 	}	}
 		return null;
+	}
+	
+	/**
+	 * manages to close a given multipage editor at the next reasonable opportunity usind the operation 
+	 * {@link Display#asyncExec}
+	 * <p>
+	 * It also saves the multipage editor before closing it to clean up the dirty state of the whole workbench.
+	 * @param multipageEditorToClose
+	 */
+	public static void closeMultipageEditorWhenPossible(MultipageEditor multipageEditorToClose) {
+		Display display = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().getDisplay();
+		display.asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				multipageEditorToClose.getDiagramEditor().doSave(new NullProgressMonitor());
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeEditor(multipageEditorToClose, false);
+			}
+		});
 	}
 }

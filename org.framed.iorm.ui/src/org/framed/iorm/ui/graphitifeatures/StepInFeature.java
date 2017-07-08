@@ -1,12 +1,10 @@
 package org.framed.iorm.ui.graphitifeatures;
 
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -15,7 +13,7 @@ import org.framed.iorm.ui.multipage.MultipageEditor;
 import org.framed.iorm.ui.util.GeneralUtil;
 
 /**
- * This graphiti custom feature is used to step in groups and compartment types remaining still showing one tab.
+ * This graphiti custom feature is used to step in groups and compartment types remaining still showing the same number of tabs.
  * <p>
  * It extends {@link AbstractStepInFeature}.
  * @author Kevin Kassin
@@ -50,37 +48,19 @@ public class StepInFeature extends AbstractStepInFeature {
 	 * <p>
 	 * There are no checks for types and the size of the list of selected pictograms needed since this checks are
 	 * already done in {@link AbstractStepInFeature#canExecute}.<br>
-	 * The operation {@link #closeMultipageEditorWhenPossible} knows how to close the editor when its not used anymore. 
+	 * The operation {@link GeneralUtil#closeMultipageEditorWhenPossible} knows how to close the editor when its not used anymore. 
 	 * That why the operation can be called at the start of the execute operation.
 	 */
 	@Override
 	public void execute(ICustomContext context) {
 		MultipageEditor multipageEditorToClose = 
 				(MultipageEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-		closeMultipageEditorWhenPossible(multipageEditorToClose);
+		GeneralUtil.closeMultipageEditorWhenPossible(multipageEditorToClose);
 		ContainerShape typeBodyShape = (ContainerShape) context.getPictogramElements()[0];
-		Diagram groupDiagram = GeneralUtil.getGroupDiagramFromGroupShape(typeBodyShape, getDiagram());
+		Diagram groupDiagram = GeneralUtil.getGroupDiagramForGroupShape(typeBodyShape, getDiagram());
 		IEditorInput diagramEditorInput = DiagramEditorInput.createEditorInput(groupDiagram, DIAGRAM_PROVIDER_ID);
 		try {
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(diagramEditorInput, EDITOR_ID);
 		} catch (PartInitException e) { e.printStackTrace(); }
 	}	
-	
-	/**
-	 * manages to close a given multipage editor at the next reasonable opportunity usind the operation 
-	 * {@link Display#asyncExec}
-	 * <p>
-	 * It also saves the multipage editor before closing it to clean up the dirty state of the whole workbench.
-	 * @param multipageEditorToClose
-	 */
-	private void closeMultipageEditorWhenPossible(MultipageEditor multipageEditorToClose) {
-		Display display = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().getDisplay();
-		display.asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				multipageEditorToClose.getDiagramEditor().doSave(new NullProgressMonitor());
-				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeEditor(multipageEditorToClose, false);
-			}
-		});
-	}
 }

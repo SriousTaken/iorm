@@ -64,8 +64,11 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 				   SHAPE_ID_GROUP_NAME = IdentifierLiterals.SHAPE_ID_GROUP_NAME, 
 				   SHAPE_ID_GROUP_LINE = IdentifierLiterals.SHAPE_ID_GROUP_LINE,
 				   SHAPE_ID_GROUP_MODEL = IdentifierLiterals.SHAPE_ID_GROUP_MODEL,
+				   //TODO trennen
 				   IMG_ID_FEATURE_GROUP = IdentifierLiterals.IMG_ID_FEATURE_GROUP,
-				   DIAGRAM_TYPE = IdentifierLiterals.DIAGRAM_TYPE_ID;
+				   DIAGRAM_TYPE = IdentifierLiterals.DIAGRAM_TYPE_ID,
+				   
+				   DIAGRAM_KIND_GROUP_DIAGRAM = IdentifierLiterals.DIAGRAM_KIND_GROUP_DIAGRAM;
 	
 	//text
 	private String DIRECTEDITING_GROUP = TextLiterals.DIRECTEDITING_GROUP;
@@ -245,6 +248,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 		
 		//diagram container shape and groups diagram
 		Diagram contentDiagram = pictogramElementCreateService.createDiagram(DIAGRAM_TYPE, STANDART_GROUP_NAME, 10, false);
+		PropertyUtil.setDiagram_KindValue(contentDiagram, DIAGRAM_KIND_GROUP_DIAGRAM);
 		AddGroupOrCompartmentTypeContext agctc = (AddGroupOrCompartmentTypeContext) addContext;
 		link(contentDiagram, agctc.getModelToLink());
 		getDiagram().getContainer().getChildren().add(contentDiagram);
@@ -471,7 +475,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	        		Text text = (Text) shape.getGraphicsAlgorithm();
 	                if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_GROUP_NAME)) {
 	                    //change diagram name
-	                	Diagram diagram = GeneralUtil.getGroupDiagramFromGroupShape(shape, getDiagram());
+	                	Diagram diagram = GeneralUtil.getGroupDiagramForGroupShape(shape, getDiagram());
 	                	diagram.setName(businessTypeName);
 	                	//change group name
 	                	text.setValue(businessTypeName);
@@ -547,7 +551,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	@Override
 	public void delete(IDeleteContext deleteContext) {
 		//delete groups diagram
-		Diagram groupDiagram = GeneralUtil.getGroupDiagramFromGroupShape((Shape) deleteContext.getPictogramElement(), getDiagram());
+		Diagram groupDiagram = GeneralUtil.getGroupDiagramForGroupShape((Shape) deleteContext.getPictogramElement(), getDiagram());
 		DeleteContext deleteContextForGroupDiagram = new DeleteContext(groupDiagram);
 		deleteContextForGroupDiagram.setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
 		super.delete(deleteContextForGroupDiagram);

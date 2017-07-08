@@ -4,10 +4,10 @@ import org.framed.iorm.ui.literals.TextLiterals;
 import org.framed.iorm.ui.util.GeneralUtil; //*import for javadoc link
 
 /**
- * This exception is thrown if the {@link MultipageEditor} can not gather the diagram for
- * an {@link IEditorInput} performing the operations {@link GeneralUtil#addPagesWithDiagramEditorInput}
- * and {@link GeneralUtil#getMainDiagramForIFileEditorInput}.
- * is of a not supported type.
+ * 
+ * This exception is thrown if not diagram can be gathered for in a operation that is supposed to find one.
+ * <p>
+ * This exceptions heavily used for methods in {@link GeneralUtil}.
  * @author Kevin Kassin
  */
 public class NoDiagramFoundException extends RuntimeException {
@@ -20,12 +20,12 @@ public class NoDiagramFoundException extends RuntimeException {
 	/**
 	 * the exceptions message gathered from {@link TextLiterals}
 	 */
-	private static final String MULTIPAGE_EDITOR_ERROR_NO_DIAGRAM_FOUND = TextLiterals.MULTIPAGE_EDITOR_ERROR_NO_DIAGRAM_FOUND;
+	private static final String ERROR_NO_DIAGRAM_FOUND = TextLiterals.ERROR_NO_DIAGRAM_FOUND;
 
 	/**
 	 * Class constructor
 	 */
 	public NoDiagramFoundException() {
-		super(MULTIPAGE_EDITOR_ERROR_NO_DIAGRAM_FOUND);
+		super(ERROR_NO_DIAGRAM_FOUND);
 	}
 }

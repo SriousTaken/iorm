@@ -5,6 +5,7 @@ import org.framed.iorm.ui.multipage.MultipageEditor; //*import for javadoc link
 import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor; //*import for javadoc link
 import org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor; //*import for javadoc link
 import org.framed.iorm.ui.util.PropertyUtil; //*import for javadoc link
+import org.framed.iorm.ui.wizards.RoleModelWizard;
 
 /**
  * This class saves severals static Strings used as identifiers.
@@ -59,6 +60,19 @@ public class IdentifierLiterals {
 	 * the idenfier of the feature model the {@link FRaMEDFeatureEditor} uses
 	 */
 	public static final String FEATUREMODEL_ID = "org.framed.iorm.featuremodel";
+	
+	/**
+	 * key values used to identify properties in {@link PropertyUtil}
+	 * <p>
+	 * can be:<br>
+	 * (1) the key value for the property shape id or<br>
+	 * (2) the key value for the property diagram kind
+	 * <p>
+	 * The word <em>kind</em> is chosen to differ the diagram kind property from the <em>diagram types</em> 
+	 * of the graphiti framework.
+	 */
+	public static final String KEY_SHAPE_ID = "shape id",
+							   KEY_DIAGRAM_KIND = "diagram kind";
 	
 	/**
 	 * identifers used for the natural type
@@ -139,11 +153,21 @@ public class IdentifierLiterals {
 	 */
 	public static final String SHAPE_ID_INHERITANCE_LINE = "shape_inheritance_con",
 							   SHAPE_ID_INHERITANCE_DECORATOR = "shape_inheritance_dec";
-
+	
 	/**
-	 * key values used to identify properties in {@link PropertyUtil}
+	 * the kinds of diagrams used in the editor
 	 * <p>
-	 * the key value for the property shape id
+	 * can be:<br>
+	 * (1) the container diagram of the role model or<br>
+	 * (2) the main diagram of the role model or<br>
+	 * (3) a diagram used to save the gaphical content of a group
+	 * <p>
+	 * If its not clear what <em>main diagram</em> and <em>container diagram</em> means, see 
+	 * {@link RoleModelWizard#createEmfFileForDiagram} for reference.<br>
+	 * The word <em>kind</em> is chosen to differ this property from the <em>diagram types</em> of the 
+	 * graphiti framework.
 	 */
-	public static final String KEY_SHAPE_ID = "shape-id";
+	public static final String DIAGRAM_KIND_CONTAINER_DIAGRAM = "auto_diagram_container_diagram",
+							   DIAGRAM_KIND_MAIN_DIAGRAM = "auto_diagram_id_main_diagram",
+							   DIAGRAM_KIND_GROUP_DIAGRAM = "group_diagram";
 }

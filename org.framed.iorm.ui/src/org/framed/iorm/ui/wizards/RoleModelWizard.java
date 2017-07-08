@@ -37,6 +37,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
+import org.framed.iorm.ui.util.PropertyUtil;
 
 /**
  * This class implements an Eclipse wizard to create a role model.
@@ -48,11 +49,20 @@ import org.framed.iorm.ui.literals.TextLiterals;
 public class RoleModelWizard extends BasicNewResourceWizard {
 	
 	/**
-	 * identifier literals for the diagram type, the diagram type provider and the multipage editors
-	 * id gathered from {@link IdentifierLiterals}
+	 * identifier literals for the diagram type and the multipage editors identifier
+	 * gathered from {@link IdentifierLiterals}
 	 */
 	private final String DIAGRAM_TYPE = IdentifierLiterals.DIAGRAM_TYPE_ID,
 						 EDITOR_ID = IdentifierLiterals.EDITOR_ID;
+	
+	/**
+	 * the value used to identify the kind of diagrams for the <em>container</em> and <em>main diagram</em>
+	 * <p>
+	 * If its not clear what <em>container diagram</em> and <em>main diagram</em> means, see 
+	 * {@link #createEmfFileForDiagram} for reference.
+	 */
+	private final String DIAGRAM_KIND_CONTAINER_DIAGRAM = IdentifierLiterals.DIAGRAM_KIND_CONTAINER_DIAGRAM,
+						 DIAGRAM_KIND_MAIN_DIAGRAM = IdentifierLiterals.DIAGRAM_KIND_MAIN_DIAGRAM;
 	
 	/**
 	 * name literals for the file extension of the new diagram, the wizard page and window gathered from {@link NameLiterals}
@@ -121,10 +131,11 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 			return false;
 		}
 		//Step 3
-		Diagram diagram = Graphiti.getPeCreateService().createDiagram(DIAGRAM_TYPE, diagramName, true);
+		Diagram mainDiagram = Graphiti.getPeCreateService().createDiagram(DIAGRAM_TYPE, diagramName, true);
+		PropertyUtil.setDiagram_KindValue(mainDiagram, DIAGRAM_KIND_MAIN_DIAGRAM);
 		IFile diagramFile = project.getFile(diagramName + FILE_EXTENSION_FOR_DIAGRAMS);
 		URI uri = URI.createPlatformResourceURI(diagramFile.getFullPath().toString(), true);
-		createEmfFileForDiagram(uri, diagram);
+		createEmfFileForDiagram(uri, mainDiagram);
 		IFileEditorInput editorInput = new FileEditorInput(diagramFile);
 		try {
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(editorInput, EDITOR_ID);
@@ -155,9 +166,9 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 	 * The code in this class is mostly taken and customized from the class "FileService.java" by Graphiti. 
 	 * You can find this class in the github repository of Graphiti. Look there for reference too.
 	 * @param diagramResourceUri the URI to save the emf file to
-	 * @param diagram the <em>main diagram<em> to create the emf file file
+	 * @param mainDiagram the <em>main diagram<em> to create the emf file file
 	 */
-	public void createEmfFileForDiagram(URI diagramResourceUri, final Diagram diagram) {
+	public void createEmfFileForDiagram(URI diagramResourceUri, final Diagram mainDiagram) {
 		// Create a resource set and EditingDomain
 				final TransactionalEditingDomain editingDomain = GraphitiUiInternal.getEmfService()
 						.createResourceSetAndEditingDomain();
@@ -169,8 +180,10 @@ public class RoleModelWizard extends BasicNewResourceWizard {
 					@Override
 					protected void doExecute() {
 						resource.setTrackingModification(true);
-						resource.getContents().add(Graphiti.getPeCreateService().createDiagram(DIAGRAM_TYPE, CONTAINER_DIAGRAM_NAME));
-						((Diagram) resource.getContents().get(0)).getChildren().add(diagram);
+						Diagram containerDiagram = Graphiti.getPeCreateService().createDiagram(DIAGRAM_TYPE, CONTAINER_DIAGRAM_NAME);
+						PropertyUtil.setDiagram_KindValue(containerDiagram, DIAGRAM_KIND_CONTAINER_DIAGRAM);
+						resource.getContents().add(containerDiagram);
+						((Diagram) resource.getContents().get(0)).getChildren().add(mainDiagram);
 					}
 				});
 				save(editingDomain, Collections.<Resource, Map<?, ?>> emptyMap());
