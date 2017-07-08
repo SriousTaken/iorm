@@ -39,19 +39,21 @@ public class TextLiterals {
 	 * messages used in the Eclipse wizards
 	 * <p>
 	 * can be:<br>
-	 * (1) the description message for the {@link RoleModelWizardPage} or<br>
-	 * (2) the message for the user if his input for the diagrams name is invalid or<br>
-	 * (3) the title of the error message if no project is selected at role model creation or<br>
-	 * (4) the error message if no project is selected at role model creation or<br>
-	 * (5) the warning for a risk of deadlock when creating a role model in {@link RoleModelWizard} or<br>
-	 * (6) the message if saving the file of a new role model failed in {@link RoleModelWizard}
+	 * (1) the label of the {@link RoleModelWizardPage} for the diagram name or<br>
+	 * (2) the description message for the {@link RoleModelWizardPage} or<br>
+	 * (3) the message for the user if his input for the diagrams name is invalid or<br>
+	 * (4) the title of the error message if no project is selected at role model creation or<br>
+	 * (5) the error message if no project is selected at role model creation or<br>
+	 * (6) the warning for a risk of deadlock when creating a role model in {@link RoleModelWizard} or<br>
+	 * (7) the message if saving the file of a new role model failed in {@link RoleModelWizard} 
 	 */
-	public static final String WIZARD_PAGE_DESC = "Enter the name of the Role Model",
+	public static final String WIZARD_PAGE_LABEL = "Diagram Name",
+							   WIZARD_PAGE_DESC = "Enter the name of the Role Model",
 							   WIZARD_MESSAGE_INVALID_INPUT = "A diagrams name cant be empty and cant contains spaces. Numbers are allowed but as first symbol.",
 							   WIZARD_ERROR_NO_PROJECT_TITLE = "No Project Selected",
 							   WIZARD_ERROR_NO_PROJECT_TEXT = "Please choose a CROM project to create the role model in!",
 							   WIZARD_ERROR_DEADLOCK_DANGER = "Saving called from within a command (likely produces a deadlock)",
-							   WIZARD_ERROR_SAVING_FAILED = "Saving failed";
+							   WIZARD_ERROR_SAVING_FAILED = "Saving failed";			  
 	
 	/**
 	 * messages used for the multipage editor

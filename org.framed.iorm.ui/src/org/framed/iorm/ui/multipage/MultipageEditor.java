@@ -139,7 +139,7 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		super.init(site, editorInput);
-		 getSite().getWorkbenchWindow().getSelectionService().addPostSelectionListener(this);
+		getSite().getWorkbenchWindow().getSelectionService().addPostSelectionListener(this);
 	}
 	
 	/**

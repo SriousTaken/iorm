@@ -1,6 +1,7 @@
 package org.framed.iorm.ui.literals;
 
 import org.framed.iorm.ui.commands.ConfigurationEditorChangeCommand; //*import for javadoc link
+import org.framed.iorm.ui.wizards.RoleModelWizard;
 
 /**
  * This class saves severals static Strings used as names.
@@ -20,7 +21,9 @@ public class NameLiterals {
 	 * (1) the name of the wizard or<br>
 	 * (2) the name of the role model wizard page or<br>
 	 * (3) the default name of a new diagram or<br>
-	 * (4) the name of //TODO 
+	 * (4) the name of of the container diagram
+	 * <p>
+	 *  If its not clear what <em>container diagram</em> means, see {@link RoleModelWizard#createEmfFileForDiagram} for reference.
 	 */
 	public static final String WIZARD_WINDOW_NAME = "Role Model Wizard", 
 							   WIZARD_PAGE_NAME = "Role Model",
@@ -75,6 +78,7 @@ public class NameLiterals {
 							   CHANGECONFIGURATION_FEATURE_NAME = "Change Feature Model",
 							   GROUP_FEATURE_NAME = "Group",
 							   STEP_IN_FEATURE_NAME = "Step In",
+							   STEP_IN_NEW_TAB_FEATURE_NAME = "Step In New Tab",
 							   STEP_OUT_FEATURE_NAME = "Step out";
 	
 	/**

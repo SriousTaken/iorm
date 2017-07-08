@@ -25,7 +25,6 @@ Require-Bundle: org.framed.iorm.model.edit;visibility:=reexport,
  org.eclipse.core.resources;bundle-version="3.11.1";visibility:=reexport,
  org.eclipse.ui.workbench
 Import-Package: de.ovgu.featureide.fm.ui.editors.configuration,
- org.eclipse.graphiti.examples.common,
  org.eclipse.graphiti.features;version="0.13.2",
  org.framed.iorm.featuremodel,
  org.framed.iorm.model,

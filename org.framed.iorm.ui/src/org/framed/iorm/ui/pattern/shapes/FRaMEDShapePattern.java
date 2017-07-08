@@ -7,7 +7,8 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 
-public class FRaMEDShapePattern extends AbstractPattern {
+//TODO
+public abstract class FRaMEDShapePattern extends AbstractPattern {
 	
 	public FRaMEDShapePattern() {
 		super(null);
@@ -33,23 +34,17 @@ public class FRaMEDShapePattern extends AbstractPattern {
 	 * to be overriden in it subclasses
 	 */
 	@Override
-	public boolean isMainBusinessObjectApplicable(Object mainBusinessObject) {
-		return false;
-	}
+	public abstract boolean isMainBusinessObjectApplicable(Object mainBusinessObject);
 
 	/**
 	 * to be overriden in it subclasses
 	 */
 	@Override
-	protected boolean isPatternControlled(PictogramElement pictogramElement) {
-		return false;
-	}
+	protected abstract boolean isPatternControlled(PictogramElement pictogramElement);
 
 	/**
 	 * to be overriden in it subclasses
 	 */
 	@Override
-	protected boolean isPatternRoot(PictogramElement pictogramElement) {
-		return false;
-	}
+	protected abstract boolean isPatternRoot(PictogramElement pictogramElement);
 }

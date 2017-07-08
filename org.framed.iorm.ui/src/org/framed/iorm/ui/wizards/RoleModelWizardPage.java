@@ -4,7 +4,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.graphiti.examples.common.Messages;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -33,11 +32,16 @@ public class RoleModelWizardPage extends WizardPage {
 	private final String STANDARD_DIAGRAM_NAME = NameLiterals.STANDARD_DIAGRAM_NAME;
 	
 	/**
-	 * the message that ask for a name of the new diagram gathered from {@link TextLiterals} and
-	 * the message that informs the user about an invalid input for the name
+	 * the messages used for eclipse wizards gathered from {@link TextLiterals}
+	 * <p>
+	 * can be:<br>
+	 * (1) the message that ask for a name of the new diagram<br>
+	 * (2) the message that informs the user about an invalid input for the name<br>
+	 * (3) the label for the wizard page that asks for a diagram name
 	 */
 	private final String WIZARD_PAGE_DESC = TextLiterals.WIZARD_PAGE_DESC,
-						 WIZARD_MESSAGE_INVALID_INPUT = TextLiterals.WIZARD_MESSAGE_INVALID_INPUT;
+						 WIZARD_MESSAGE_INVALID_INPUT = TextLiterals.WIZARD_MESSAGE_INVALID_INPUT,
+						 WIZARD_PAGE_LABEL = TextLiterals.WIZARD_PAGE_LABEL;
 
 	/**
 	 * the layout integer that defines the leght of the used textfield gathered from {@link LayoutLiterals}
@@ -140,7 +144,7 @@ public class RoleModelWizardPage extends WizardPage {
 		projectGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		// new project label
 		Label projectLabel = new Label(projectGroup, SWT.NONE);
-		projectLabel.setText(Messages.DiagramNameWizardPage_Label);
+		projectLabel.setText(WIZARD_PAGE_LABEL);
 		projectLabel.setFont(parent.getFont());
 		// new project name entry field
 		textField = new Text(projectGroup, SWT.BORDER);

@@ -39,6 +39,7 @@ public class ToolBehaviorProvider extends DefaultToolBehaviorProvider{
 	 */
 	private final String CHANGECONFIGURATION_FEATURE_NAME = NameLiterals.CHANGECONFIGURATION_FEATURE_NAME,
 						 STEP_IN_FEATURE_NAME = NameLiterals.STEP_IN_FEATURE_NAME,
+						 STEP_IN_NEW_TAB_FEATURE_NAME = NameLiterals.STEP_IN_NEW_TAB_FEATURE_NAME,
 						 STEP_OUT_FEATURE_NAME = NameLiterals.STEP_OUT_FEATURE_NAME;
 	
 	/**
@@ -46,8 +47,7 @@ public class ToolBehaviorProvider extends DefaultToolBehaviorProvider{
 	 * <p>
 	 * can be:<br>
 	 * (1) the shape identifier of type body rectangle of a group or<br>
-	 * (2) the shape identifier of type body rectangle of a compartment type or<br>
-	 * (3) the shape identifier of type body rectangle of a role group 
+	 * (2) the shape identifier of type body rectangle of a compartment type
 	 */
 	private final String SHAPE_ID_GROUP_TYPEBODY = IdentifierLiterals.SHAPE_ID_GROUP_TYPEBODY;
 	
@@ -81,9 +81,10 @@ public class ToolBehaviorProvider extends DefaultToolBehaviorProvider{
 	 * Step 1: It iterates over all custom feature to probably add to the list of custom feature to show in
 	 * 		   the context menu.<br>
 	 * Step 2: If its the change configuration custom feature, never add it to this list.<br>
-	 * Step 3: If its the step in feature check if the right clicked pictogram element (exactly one!) has a
-	 * 		   graphics algorithm that is the type body of a group, compartment type or role group. If yes, add the
+	 * Step 3: If its the step in or the step in new tab feature check if the right clicked pictogram element (exactly one!) 
+	 * 		   has a graphics algorithm that is the type body of a group, compartment type or role group. If yes, add the
 	 * 		   corresponding context menu entry to the context menu.
+	 * TODO
 	 */
 	@Override
 	public IContextMenuEntry[] getContextMenu(ICustomContext customContext) {
@@ -96,7 +97,8 @@ public class ToolBehaviorProvider extends DefaultToolBehaviorProvider{
 				case CHANGECONFIGURATION_FEATURE_NAME: 
 					break;
 				//Step 3	
-				case STEP_IN_FEATURE_NAME: 
+				case STEP_IN_FEATURE_NAME :
+				case STEP_IN_NEW_TAB_FEATURE_NAME:	
 					if(customContext.getPictogramElements().length == 1) {
 						if(customContext.getPictogramElements()[0].getGraphicsAlgorithm() != null &&
 						   !(customContext.getPictogramElements()[0] instanceof Diagram)) {
