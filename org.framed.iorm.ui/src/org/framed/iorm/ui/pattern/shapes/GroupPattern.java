@@ -1,5 +1,7 @@
 package org.framed.iorm.ui.pattern.shapes;
 
+import java.util.List;
+
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IDirectEditingInfo;
@@ -32,6 +34,7 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.framed.iorm.model.Model;
+import org.framed.iorm.model.ModelElement;
 import org.framed.iorm.model.OrmFactory;
 import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.contexts.AddGroupOrCompartmentTypeContext;
@@ -64,6 +67,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 				   SHAPE_ID_GROUP_NAME = IdentifierLiterals.SHAPE_ID_GROUP_NAME, 
 				   SHAPE_ID_GROUP_LINE = IdentifierLiterals.SHAPE_ID_GROUP_LINE,
 				   SHAPE_ID_GROUP_MODEL = IdentifierLiterals.SHAPE_ID_GROUP_MODEL,
+				   SHAPE_ID_GROUP_ELEMENT = IdentifierLiterals.SHAPE_ID_GROUP_ELEMENT,
 				   //TODO trennen
 				   IMG_ID_FEATURE_GROUP = IdentifierLiterals.IMG_ID_FEATURE_GROUP,
 				   DIAGRAM_TYPE = IdentifierLiterals.DIAGRAM_TYPE_ID,
@@ -79,7 +83,8 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 				HEIGHT_NAME_SHAPE = LayoutLiterals.HEIGHT_NAME_SHAPE,
 				PUFFER_BETWEEN_ELEMENTS = LayoutLiterals.PUFFER_BETWEEN_ELEMENTS,
 				GROUP_CORNER_RADIUS = LayoutLiterals.GROUP_CORNER_RADIUS,
-				SHADOW_SIZE = LayoutLiterals.SHADOW_SIZE;
+				SHADOW_SIZE = LayoutLiterals.SHADOW_SIZE,
+				HEIGHT_GROUP_ELEMENT_SHAPE = LayoutLiterals.HEIGHT_GROUP_ELEMENT_SHAPE;
 	private IColorConstant COLOR_TEXT = LayoutLiterals.COLOR_TEXT,
 			   			   COLOR_LINES = LayoutLiterals.COLOR_LINES,
 			   			   COLOR_BACKGROUND = LayoutLiterals.COLOR_BACKGROUND,
@@ -422,8 +427,26 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 		            	newWidth = (containerWidth-2*PUFFER_BETWEEN_ELEMENTS);            				
 		        	rectangle.setHeight(newHeight);
 		            rectangle.setWidth(newWidth);
-		            layoutChanged = true;
-		 }	}	}        
+		              
+		            /*
+		            //TODO needed?
+		            //set place of group elements
+	            	//for(int i = 0; i<groupElements.size(); i++) {
+	            	//	((ContainerShape) shape).getChildren().get(i).getGraphicsAlgorithm().setY(i*HEIGHT_GROUP_ELEMENT_SHAPE);
+            		//}
+	     
+	            	//set all attributes visible //TODO: Blödsinn
+	            	for(int j = 0; j<groupModel.getElements().size(); j++) groupElements.get(j).setVisible(true);
+	            	
+	            	//check if not all attributes fit in the attribute field
+	            	if(groupElements.size()*HEIGHT_GROUP_ELEMENT_SHAPE>newHeight) {	            		
+	            		int fittingAttributes = (newHeight-HEIGHT_GROUP_ELEMENT_SHAPE)/HEIGHT_GROUP_ELEMENT_SHAPE;	   
+	            		//set not fitting attributes to invisible
+	            		for(int k = fittingAttributes; k<groupElements.size(); k++) {
+	            			groupElements.get(k).setVisible(false);            				
+	            	}	}*/
+	            	layoutChanged = true;
+	     }	}	}        
 	     return layoutChanged;
 	}
 	
@@ -452,16 +475,24 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 			String pictogramTypeName = GeneralUtil.getNameOfPictogramElement(pictogramElement, SHAPE_ID_GROUP_NAME);
 			//business name and attributes
 			String businessTypeName = GeneralUtil.getNameOfBusinessObject(getBusinessObjectForPictogramElement(pictogramElement));
+			//model element names in model
+			List<String> modelElementsNames = GeneralUtil.getModelElementsNames(pictogramElement, getDiagram());
+ 			//model element names in model container of shape
+			List<String> modelContainerElementsNames = GeneralUtil.getModelContainerElementsNames(pictogramElement);		
 				
 			//check for update: different names, different amount of attibutes/ operations
 			if(pictogramTypeName==null || businessTypeName==null) return Reason.createTrueReason("Name is null.");
-			if(!(pictogramTypeName.equals(businessTypeName))) return Reason.createTrueReason("Name is out of date.");  
-		}
+			if(!(pictogramTypeName.equals(businessTypeName))) return Reason.createTrueReason("Name is out of date.");
+			if(modelElementsNames.size() != modelContainerElementsNames.size()) return Reason.createTrueReason("Different amount of Group Elements.");
+			for(int i=0; i<modelElementsNames.size(); i++) {
+				if(!(modelElementsNames.get(i).equals(modelContainerElementsNames.get(i)))) return Reason.createTrueReason("Different names of Group Elements.");
+		}	}
 		return Reason.createFalseReason();
 	}
 		
 	@Override
 	public boolean update(IUpdateContext updateContext) {
+		int counter;
 		boolean changed = false;
 	         
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
@@ -480,16 +511,43 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	                	//change group name
 	                	text.setValue(businessTypeName);
 	                	changed = true;
-	    }	}	}	}	
-	return changed;	
-	}
+	                }
+	        	}    
+	        	if (shape.getGraphicsAlgorithm() instanceof Rectangle) {  
+	        		Rectangle rectangle = (Rectangle) shape.getGraphicsAlgorithm();
+	        		if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_GROUP_MODEL)) {
+		                ContainerShape modelContainerShape = (ContainerShape) shape;
+			            Diagram groupsDiagram = GeneralUtil.getGroupDiagramForGroupShape(typeBodyShape, getDiagram());
+			            Model groupModel = GeneralUtil.getRootModelForDiagram(groupsDiagram);
+		             
+			            counter = 0;
+		                modelContainerShape.getChildren().clear();
+			            for(ModelElement modelElement : groupModel.getElements()) {							//TODO GROUP: name
+			            	Shape groupElementShape = pictogramElementCreateService.createShape(modelContainerShape, true);
+			            	Text groupElementText = graphicAlgorithmService.createText(groupElementShape, modelElement.getName());
+			            	groupElementText.setForeground(manageColor(COLOR_TEXT));
+			            	graphicAlgorithmService.setLocationAndSize(groupElementText, PUFFER_BETWEEN_ELEMENTS, HEIGHT_NAME_SHAPE+PUFFER_BETWEEN_ELEMENTS+HEIGHT_GROUP_ELEMENT_SHAPE*counter, 
+			            			modelContainerShape.getGraphicsAlgorithm().getWidth()-2*PUFFER_BETWEEN_ELEMENTS, HEIGHT_GROUP_ELEMENT_SHAPE);
+			            	PropertyUtil.setShape_IdValue(groupElementText, SHAPE_ID_GROUP_ELEMENT);
+			            	counter++;		
+			            }
+			            changed = true;
+			            this.layoutPictogramElement(typeBodyShape);
+	        		} 	
+	        	}	
+	        }
+	   }     
+	return changed;
+	}	
 	
 	//move feature
 	//~~~~~~~~~~~~
 	//disable that the user can move the drop shadow manually
 	@Override
 	public boolean canMoveShape(IMoveShapeContext moveContext) {
-		if(PropertyUtil.isShape_IdValue(moveContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_SHADOW)) {
+		System.out.println(moveContext.getPictogramElement().getGraphicsAlgorithm());
+		if(PropertyUtil.isShape_IdValue(moveContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_SHADOW) ||
+		   PropertyUtil.isShape_IdValue(moveContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_ELEMENT)) {
 			return false;
 		}
 		ContainerShape typeBodyShape = (ContainerShape) moveContext.getPictogramElement();
@@ -530,7 +588,8 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	//disable that the user can resize the drop shadow manually
 	@Override
 	public boolean canResizeShape(IResizeShapeContext resizeContext) {
-		if(PropertyUtil.isShape_IdValue(resizeContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_SHADOW)) {
+		if(PropertyUtil.isShape_IdValue(resizeContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_SHADOW) ||
+		   PropertyUtil.isShape_IdValue(resizeContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_ELEMENT)) {
 			return false;
 		}
 		return super.canResizeShape(resizeContext);
@@ -538,16 +597,17 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 		
 	//delete feature
 	//~~~~~~~~~~~~~~
-	//disable that the user can delete the drop shadow manually
+	//disable that the user can delete the drop shadow and group elements manually
 	@Override
 	public boolean canDelete(IDeleteContext deleteContext) {
-		if(PropertyUtil.isShape_IdValue(deleteContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_SHADOW)) {
+		if(PropertyUtil.isShape_IdValue(deleteContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_SHADOW) ||
+		   PropertyUtil.isShape_IdValue(deleteContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_ELEMENT)) {
 			return false;
 		}
 		return super.canDelete(deleteContext);
 	}
 			
-	//delete parent container (the one that contains drop shadow shape and type body shape)
+	//
 	@Override
 	public void delete(IDeleteContext deleteContext) {
 		//delete groups diagram

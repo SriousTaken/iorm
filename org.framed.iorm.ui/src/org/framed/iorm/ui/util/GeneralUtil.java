@@ -31,6 +31,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.framed.iorm.model.Model;
+import org.framed.iorm.model.ModelElement;
 import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.exceptions.NoDiagramFoundException;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
@@ -45,7 +46,8 @@ public class GeneralUtil {
 	 * {@link #getGroupDiagramFromGroupShape} gathered from {@link IdentifierLiterals}
 	 */
 	private static final String SHAPE_ID_GROUP_TYPEBODY = IdentifierLiterals.SHAPE_ID_GROUP_TYPEBODY,
-								SHAPE_ID_GROUP_NAME = IdentifierLiterals.SHAPE_ID_GROUP_NAME;
+								SHAPE_ID_GROUP_NAME = IdentifierLiterals.SHAPE_ID_GROUP_NAME,
+								SHAPE_ID_GROUP_MODEL = IdentifierLiterals.SHAPE_ID_GROUP_MODEL;
 	
 	/**
 	 * the layout integers this class need to perform the operation {@link #calculateHorizontalCenter}
@@ -166,6 +168,7 @@ public class GeneralUtil {
 	 * {@link org.framed.iorm.ui.pattern.shapes.GroupPattern#add}.<br>
 	 * If its not clear what <em>container diagram</em> means, see {@link RoleModelWizard#createEmfFileForDiagram} for reference.
 	 * @param groupShape the shape to start the search for the groups diagram 
+	 * @param diagram the diagram the groups pictogram elements are located in
 	 * @return the groups diagram, if the given shape was a name shape or the type body shape of a group
 	 * @throws NoDiagramFoundException
 	 */
@@ -370,6 +373,33 @@ public class GeneralUtil {
 		} 	}	}
 		return null;
 	}
+	
+	//TODO
+	public static List<String> getModelElementsNames(PictogramElement pictogramElement, Diagram diagram) {
+		List<String> modelElementsNames = new ArrayList<String>();
+		Diagram groupDiagram = GeneralUtil.getGroupDiagramForGroupShape((ContainerShape) pictogramElement, diagram);
+		Model groupModel = GeneralUtil.getRootModelForDiagram(groupDiagram);
+		for(ModelElement modelElement : groupModel.getElements()) {
+			modelElementsNames.add(modelElement.getName());
+		}
+		return modelElementsNames;
+	}
+	
+	//TODO
+	public static List<String> getModelContainerElementsNames(PictogramElement pictogramElement) {
+		List<String> modelContainerElementsNames = new ArrayList<String>();
+		if(pictogramElement instanceof ContainerShape) {
+			ContainerShape containerShape = (ContainerShape) pictogramElement;
+			for(Shape shape : containerShape.getChildren()) {
+				if(PropertyUtil.isShape_IdValue(shape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_MODEL)) {
+					ContainerShape modelContainer = (ContainerShape) shape; 
+					for(Shape modelContainterElement : modelContainer.getChildren()) {
+						Text text = (Text) modelContainterElement.getGraphicsAlgorithm();
+						modelContainerElementsNames.add(text.getValue());
+		}	}	}	}	
+		return modelContainerElementsNames;
+	}
+	
 	
 	/**
 	 * manages to close a given multipage editor at the next reasonable opportunity usind the operation 

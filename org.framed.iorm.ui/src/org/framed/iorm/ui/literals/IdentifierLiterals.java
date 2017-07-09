@@ -123,12 +123,14 @@ public class IdentifierLiterals {
 	 * (3) name rectange or<br>
 	 * (4) line or<br>
 	 * (5) model container rectangle 
+	 * TODO
 	 */
 	public static final String SHAPE_ID_GROUP_TYPEBODY = "shape_group_typebody",
 						 	   SHAPE_ID_GROUP_SHADOW = "shape_group_shadow",
 						 	   SHAPE_ID_GROUP_NAME = "shape_group_name", 
 						 	   SHAPE_ID_GROUP_LINE = "shape_group_line",
-						 	   SHAPE_ID_GROUP_MODEL = "shape_group_model";
+						 	   SHAPE_ID_GROUP_MODEL = "shape_group_model",
+						 	   SHAPE_ID_GROUP_ELEMENT = "shape_group_element";
 	
 	/**
 	 * identifers used for attributes
