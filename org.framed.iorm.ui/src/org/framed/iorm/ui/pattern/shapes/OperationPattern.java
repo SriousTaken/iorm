@@ -42,8 +42,8 @@ public class OperationPattern extends FRaMEDShapePattern implements IPattern {
 	}
 	
 	/**
-	 * get method for the features name
-	 * @return the name of the feature
+	 * get method for the create features name
+	 * @return the name of the create feature
 	 */
 	@Override
 	public String getCreateName() {

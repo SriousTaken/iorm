@@ -55,7 +55,7 @@ public class StepInFeature extends AbstractStepInFeature {
 	public void execute(ICustomContext context) {
 		MultipageEditor multipageEditorToClose = 
 				(MultipageEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-		GeneralUtil.closeMultipageEditorWhenPossible(multipageEditorToClose);
+		closeMultipageEditorWhenPossible(multipageEditorToClose);
 		ContainerShape typeBodyShape = (ContainerShape) context.getPictogramElements()[0];
 		Diagram groupDiagram = GeneralUtil.getGroupDiagramForGroupShape(typeBodyShape, getDiagram());
 		IEditorInput diagramEditorInput = DiagramEditorInput.createEditorInput(groupDiagram, DIAGRAM_PROVIDER_ID);

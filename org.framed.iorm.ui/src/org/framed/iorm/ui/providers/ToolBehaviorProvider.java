@@ -11,6 +11,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.palette.IPaletteCompartmentEntry;
+import org.eclipse.graphiti.palette.IToolEntry;
 import org.eclipse.graphiti.tb.DefaultToolBehaviorProvider;
 import org.eclipse.graphiti.tb.IContextButtonPadData;
 import org.eclipse.graphiti.tb.IContextMenuEntry;
@@ -33,7 +34,8 @@ public class ToolBehaviorProvider extends DefaultToolBehaviorProvider{
 	 * gathered from {@link NameLiterals}
 	 */
 	private final String ATTRIBUTE_OPERATION_COMMON_FEATURE_NAME = NameLiterals.ATTRIBUTE_OPERATION_COMMON_FEATURE_NAME,
-						 MODEL_FEATURE_NAME = NameLiterals.MODEL_FEATURE_NAME;
+						 MODEL_FEATURE_NAME = NameLiterals.MODEL_FEATURE_NAME,
+						 GROUP_OR_COMPARTMENT_TYPE_ELEMENT_FEATURE_NAME = NameLiterals.GROUP_OR_COMPARTMENT_TYPE_ELEMENT_FEATURE_NAME;
 	
 	//TODO
 	private final String DIAGRAM_KIND_GROUP_DIAGRAM = IdentifierLiterals.DIAGRAM_KIND_GROUP_DIAGRAM;
@@ -143,17 +145,24 @@ public class ToolBehaviorProvider extends DefaultToolBehaviorProvider{
 	 * This is done for patterns which dont have a create features or whichs create features should not be used by the user
 	 * manually. Explicitly this patterns are:<br>
 	 * (1) {@link AttributeOperationCommonPattern} and<br>
-	 * (2) {@link ModelPattern}.
+	 * (2) {@link ModelPattern}
+	 * TODO.
 	 */
 	@Override
 	public IPaletteCompartmentEntry[] getPalette() {
 		List<IPaletteCompartmentEntry> paletteCompartmentEntry = new ArrayList<IPaletteCompartmentEntry>();
-	    IPaletteCompartmentEntry[] superCompartments = super.getPalette();
+		List<IToolEntry> toolEntriesToDelete = new ArrayList<IToolEntry>();
+		IPaletteCompartmentEntry[] superCompartments = super.getPalette();
 	    for(int i = 0; i < superCompartments[1].getToolEntries().size(); i++) {
-	    	if(superCompartments[1].getToolEntries().get(i).getLabel().equals(ATTRIBUTE_OPERATION_COMMON_FEATURE_NAME) ||
-	    	   superCompartments[1].getToolEntries().get(i).getLabel().equals(MODEL_FEATURE_NAME))
-	    		superCompartments[1].getToolEntries().remove(i);
+	    	IToolEntry toolEntry = superCompartments[1].getToolEntries().get(i);
+	    	if(toolEntry.getLabel().equals(ATTRIBUTE_OPERATION_COMMON_FEATURE_NAME) ||
+	    	   toolEntry.getLabel().equals(MODEL_FEATURE_NAME) ||
+	    	   toolEntry.getLabel().equals(GROUP_OR_COMPARTMENT_TYPE_ELEMENT_FEATURE_NAME))
+	    		toolEntriesToDelete.add(toolEntry);
 	    }
+	    for(IToolEntry toolEntryToDelete : toolEntriesToDelete) {
+	    	superCompartments[1].getToolEntries().remove(toolEntryToDelete);
+	    }	
 	    for (int j = 0; j < superCompartments.length; j++) {
 	    	paletteCompartmentEntry.add(superCompartments[j]);
 	    }

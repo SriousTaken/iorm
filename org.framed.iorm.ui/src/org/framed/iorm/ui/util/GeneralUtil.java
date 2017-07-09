@@ -295,6 +295,42 @@ public class GeneralUtil {
 		}	}	}	}
 		throw new NoDiagramFoundException();
 	}
+	
+	//TODO
+	public static List<ContainerShape> getAllGroupTypeBodiesForContainerDiagram(Diagram containerDiagram) {
+		List<ContainerShape> groupTypeBodies = new ArrayList<ContainerShape>();
+		Diagram mainDiagram = (Diagram) containerDiagram.getChildren().get(0);//TODO better
+		for(Shape shape : mainDiagram.getChildren()) {
+			if(shape instanceof ContainerShape &&
+			   ((ContainerShape) shape).getGraphicsAlgorithm() == null) {
+				ContainerShape containershape = (ContainerShape) shape;
+				for(Shape innerShape : containershape.getChildren()) {
+					if(innerShape.getGraphicsAlgorithm() != null &&
+					   PropertyUtil.isShape_IdValue(innerShape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_TYPEBODY)) {
+						groupTypeBodies.add((ContainerShape) innerShape);
+					}
+				}
+			}
+		}
+		return groupTypeBodies;
+	}
+	
+	public static ContainerShape getGroupTypeBodyForGroupsDiagram(Diagram diagram) {
+		String groupName = null,
+			   diagramName = diagram.getName();
+		Diagram containerDiagram = getContainerDiagramForAnyDiagram(diagram);
+		List<ContainerShape> groupTypeBodies = getAllGroupTypeBodiesForContainerDiagram(containerDiagram);
+		for(ContainerShape groupTypeBody : groupTypeBodies) {
+			for(Shape innerShape : groupTypeBody.getChildren()) {
+				if(PropertyUtil.isShape_IdValue(innerShape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_NAME))
+					groupName = ((Text) innerShape.getGraphicsAlgorithm()).getValue();
+			}
+			if(groupName != null &&
+			   groupName.equals(diagramName))
+				return groupTypeBody;
+		}
+		return null;
+	}
 
 	/**
 	 * This operation gets the names of the attributes of a pictogram element that has an attribute container shape.

@@ -83,8 +83,8 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 	}
 	
 	/**
-	 * get method for the features name
-	 * @return the name of the feature
+	 * get method for the create features name
+	 * @return the name of the create feature
 	 */
 	@Override
 	public String getCreateName() {
@@ -237,6 +237,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 		pictogramElementCreateService.createChopboxAnchor(typeBodyShape);
 		//set container as layout target
 		layoutPictogramElement(containerShape);
+		updateContainingGroup();
 		return containerShape;
 	}
 	
@@ -317,6 +318,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 		org.framed.iorm.model.Shape naturalType = (org.framed.iorm.model.Shape) getBusinessObject(editingContext);
 		naturalType.setName(value);
 	    updatePictogramElement(((Shape) editingContext.getPictogramElement()).getContainer());
+	    updateContainingGroup();
 	}
 	
 	//layout feature
@@ -569,7 +571,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 								operationShape.getGraphicsAlgorithm().setY(newY+counter*HEIGHT_OPERATION_SHAPE);
 								changed = true;
 								counter++;
-		}	}	}	}	}	}
+		}	}	}	}	}	}        
         return changed;
 	}	
 	
@@ -645,5 +647,6 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 		DeleteContext deleteContextForAllShapes = new DeleteContext(containerShape);
 		deleteContextForAllShapes.setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
 		super.delete(deleteContextForAllShapes);
+		updateContainingGroup();
 	}
 }

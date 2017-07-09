@@ -85,8 +85,8 @@ public class AttributeOperationCommonPattern extends FRaMEDShapePattern implemen
 	}
 	
 	/**
-	 * get method for the features name
-	 * @return the name of the feature
+	 * get method for the create features name
+	 * @return the name of the create feature
 	 */
 	@Override
 	public String getCreateName() {
@@ -286,18 +286,7 @@ public class AttributeOperationCommonPattern extends FRaMEDShapePattern implemen
 	}
 	
 	//delete feature
-	//~~~~~~~~~~~~~~
-	/**
-	 * checks if delete feature can be called for attributes and operation
-	 * <p>
-	 * It can be called always, so true is returned.
-	 * @return true
-	 */
-	@Override
-	public boolean canDelete(IDeleteContext deleteContext) {
-		return true;
-	}
-	
+	//~~~~~~~~~~~~~~	
 	/**
 	 * deletes an attribute or operation from the pictogram and business model
 	 * <p>

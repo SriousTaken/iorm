@@ -98,8 +98,8 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	}
 	
 	/**
-	 * get method for the features name
-	 * @return the name of the feature
+	 * get method for the create features name
+	 * @return the name of the create feature
 	 */
 	@Override
 	public String getCreateName() {
@@ -279,6 +279,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 		directEditingInfo.setPictogramElement(nameShape);
 		directEditingInfo.setGraphicsAlgorithm(text);
 		layoutPictogramElement(containerShape);
+		updateContainingGroup();
 		return containerShape;
 	}
 		
@@ -360,6 +361,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 		org.framed.iorm.model.Shape group = (org.framed.iorm.model.Shape) getBusinessObject(editingContext);
 		group.setName(value);
 		updatePictogramElement(((Shape) editingContext.getPictogramElement()).getContainer());
+		updateContainingGroup();
 	}
 		
 	//layout feature
@@ -545,7 +547,6 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	//disable that the user can move the drop shadow manually
 	@Override
 	public boolean canMoveShape(IMoveShapeContext moveContext) {
-		System.out.println(moveContext.getPictogramElement().getGraphicsAlgorithm());
 		if(PropertyUtil.isShape_IdValue(moveContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_SHADOW) ||
 		   PropertyUtil.isShape_IdValue(moveContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_ELEMENT)) {
 			return false;
@@ -620,5 +621,6 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 		DeleteContext deleteContextForAllShapes = new DeleteContext(containerShape);
 		deleteContextForAllShapes.setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
 		super.delete(deleteContextForAllShapes);
+		updateContainingGroup();
 	}
 }

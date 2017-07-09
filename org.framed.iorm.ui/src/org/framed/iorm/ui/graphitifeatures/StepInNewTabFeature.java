@@ -1,14 +1,17 @@
 package org.framed.iorm.ui.graphitifeatures;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.framed.iorm.ui.literals.NameLiterals;
+import org.framed.iorm.ui.multipage.MultipageEditor;
 import org.framed.iorm.ui.util.GeneralUtil;
 
 /**
@@ -49,6 +52,14 @@ public class StepInNewTabFeature extends AbstractStepInFeature {
 	 */
 	@Override
 	public void execute(ICustomContext context) {
+		MultipageEditor multipageEditorTosave = 
+				(MultipageEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		Display display = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().getDisplay();
+		display.asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				multipageEditorTosave.getDiagramEditor().doSave(new NullProgressMonitor());
+		}	});	
 		ContainerShape typeBodyShape = (ContainerShape) context.getPictogramElements()[0];
 		Diagram groupDiagram = GeneralUtil.getGroupDiagramForGroupShape(typeBodyShape, getDiagram());
 		IEditorInput diagramEditorInput = DiagramEditorInput.createEditorInput(groupDiagram, DIAGRAM_PROVIDER_ID);

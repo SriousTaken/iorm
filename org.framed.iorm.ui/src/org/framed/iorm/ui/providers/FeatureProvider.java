@@ -16,6 +16,7 @@ import org.framed.iorm.ui.pattern.connections.InheritancePattern;
 import org.framed.iorm.ui.pattern.shapes.AttributeOperationCommonPattern;
 import org.framed.iorm.ui.pattern.shapes.AttributePattern;
 import org.framed.iorm.ui.pattern.shapes.DataTypePattern;
+import org.framed.iorm.ui.pattern.shapes.GroupOrCompartmentTypeElementPattern;
 import org.framed.iorm.ui.pattern.shapes.GroupPattern;
 import org.framed.iorm.ui.pattern.shapes.ModelPattern;
 import org.framed.iorm.ui.pattern.shapes.NaturalTypePattern;
@@ -30,7 +31,7 @@ public class FeatureProvider extends DefaultFeatureProviderWithPatterns {
 	/**
 	 * Class constructor
 	 * <p>
-	 * It gets the pattern that are used to created, edit and delete shape (Step 1) and 
+	 * It sets the pattern that are used to created, edit and delete shape (Step 1) and 
 	 * connections (Step 2) in the editor for the diagram type.
 	 * @param diagramTypeProvider the provider of the edited diagram type
 	 */
@@ -41,9 +42,10 @@ public class FeatureProvider extends DefaultFeatureProviderWithPatterns {
       addPattern(new NaturalTypePattern());
       addPattern(new DataTypePattern());
       addPattern(new GroupPattern());
+      addPattern(new GroupOrCompartmentTypeElementPattern());
       addPattern(new AttributeOperationCommonPattern());
       addPattern(new AttributePattern());
-      addPattern(new OperationPattern());
+      addPattern(new OperationPattern()); 
       //Step 2
       addConnectionPattern(new InheritancePattern());
 	}	
