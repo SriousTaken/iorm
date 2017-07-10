@@ -34,7 +34,7 @@ public class GroupOrCompartmentTypeElementPattern extends FRaMEDShapePattern imp
 		if(pictogramElement instanceof Shape) {
 			Shape shape = (Shape) pictogramElement;
 			if(shape.getGraphicsAlgorithm() instanceof Text &&
-			   PropertyUtil.isShape_IdValue(shape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_ELEMENT)) 
+			   PropertyUtil.isShape_IdValue(shape, SHAPE_ID_GROUP_ELEMENT)) 
 				return true;
 		}	
 		return false;
@@ -45,7 +45,7 @@ public class GroupOrCompartmentTypeElementPattern extends FRaMEDShapePattern imp
 		if(pictogramElement instanceof Shape) {
 			Shape shape = (Shape) pictogramElement;
 			if(shape.getGraphicsAlgorithm() instanceof Text
-			   && PropertyUtil.isShape_IdValue(shape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_ELEMENT)) 
+			   && PropertyUtil.isShape_IdValue(shape, SHAPE_ID_GROUP_ELEMENT)) 
 				return true;
 		}	
 		return false;

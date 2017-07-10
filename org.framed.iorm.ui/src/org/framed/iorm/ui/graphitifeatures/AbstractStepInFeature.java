@@ -5,6 +5,7 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
@@ -64,17 +65,16 @@ public abstract class AbstractStepInFeature extends AbstractCustomFeature {
 	@Override
 	public boolean canExecute(ICustomContext customContext) {
 		if(customContext.getPictogramElements().length == 1) {
-			if(customContext.getPictogramElements()[0].getGraphicsAlgorithm() != null) {
-				GraphicsAlgorithm graphicAlgorithm =  customContext.getPictogramElements()[0].getGraphicsAlgorithm();
-				if(PropertyUtil.isShape_IdValue(graphicAlgorithm, SHAPE_ID_GROUP_TYPEBODY)) { 
-					MultipageEditor multipageEditor = 
-						(MultipageEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-					if(!(multipageEditor.isDirty()))
-						return true;
-		}	}	}
+			if(PropertyUtil.isShape_IdValue((Shape) customContext.getPictogramElements()[0], SHAPE_ID_GROUP_TYPEBODY)) { 
+				MultipageEditor multipageEditor = 
+					(MultipageEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+				if(!(multipageEditor.isDirty()))
+					return true;
+		}	}	
 		return false;
 	}
 	
+	//TODO
 	public static void saveMultipageEditorWhenPossible(MultipageEditor multipageEditorToClose) {
 		Display display = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().getDisplay();
 		display.asyncExec(new Runnable() {

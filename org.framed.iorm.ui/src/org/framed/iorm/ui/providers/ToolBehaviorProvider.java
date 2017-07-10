@@ -111,8 +111,7 @@ public class ToolBehaviorProvider extends DefaultToolBehaviorProvider{
 					if(customContext.getPictogramElements().length == 1) {
 						if(customContext.getPictogramElements()[0].getGraphicsAlgorithm() != null &&
 						   !(customContext.getPictogramElements()[0] instanceof Diagram)) {
-							GraphicsAlgorithm graphicAlgorithm =  customContext.getPictogramElements()[0].getGraphicsAlgorithm();
-							if(PropertyUtil.isShape_IdValue(graphicAlgorithm, SHAPE_ID_GROUP_TYPEBODY)) 
+							if(PropertyUtil.isShape_IdValue((Shape) customContext.getPictogramElements()[0], SHAPE_ID_GROUP_TYPEBODY)) 
 								contextMenuEntries.add(superContextEntries[i]);
 					}	}
 					break;

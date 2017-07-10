@@ -56,7 +56,8 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 	private final String DIRECTEDITING_DATATYPE = TextLiterals.DIRECTEDITING_DATATYPE;
 	
 	//ID literals
-	private final String SHAPE_ID_DATATYPE_TYPEBODY = IdentifierLiterals.SHAPE_ID_DATATYPE_TYPEBODY,
+	private final String SHAPE_ID_DATATYPE_CONTAINER = IdentifierLiterals.SHAPE_ID_DATATYPE_CONTAINER,
+						 SHAPE_ID_DATATYPE_TYPEBODY = IdentifierLiterals.SHAPE_ID_DATATYPE_TYPEBODY,
 						 SHAPE_ID_DATATYPE_SHADOW = IdentifierLiterals.SHAPE_ID_DATATYPE_SHADOW,
 						 SHAPE_ID_DATATYPE_NAME = IdentifierLiterals.SHAPE_ID_DATATYPE_NAME,
 					     SHAPE_ID_DATATYPE_FIRSTLINE = IdentifierLiterals.SHAPE_ID_DATATYPE_FIRSTLINE,
@@ -225,13 +226,14 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 												   width-2*PUFFER_BETWEEN_ELEMENTS, horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS);
 		
 		//setProperties
-		PropertyUtil.setShape_IdValue(typeBodyPolygon, SHAPE_ID_DATATYPE_TYPEBODY);
-		PropertyUtil.setShape_IdValue(dropShadowPolygon, SHAPE_ID_DATATYPE_SHADOW);
-		PropertyUtil.setShape_IdValue(text, SHAPE_ID_DATATYPE_NAME);
-		PropertyUtil.setShape_IdValue(firstPolyline, SHAPE_ID_DATATYPE_FIRSTLINE);
-		PropertyUtil.setShape_IdValue(attributeRectangle, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER);
-		PropertyUtil.setShape_IdValue(secondPolyline, SHAPE_ID_DATATYPE_SECONDLINE);
-		PropertyUtil.setShape_IdValue(operationRectangle, SHAPE_ID_DATATYPE_OPERATIONCONTAINER);
+		PropertyUtil.setShape_IdValue(containerShape, SHAPE_ID_DATATYPE_CONTAINER);
+		PropertyUtil.setShape_IdValue(typeBodyShape, SHAPE_ID_DATATYPE_TYPEBODY);
+		PropertyUtil.setShape_IdValue(dropShadowShape, SHAPE_ID_DATATYPE_SHADOW);
+		PropertyUtil.setShape_IdValue(nameShape, SHAPE_ID_DATATYPE_NAME);
+		PropertyUtil.setShape_IdValue(firstLineShape, SHAPE_ID_DATATYPE_FIRSTLINE);
+		PropertyUtil.setShape_IdValue(attributeContainer, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER);
+		PropertyUtil.setShape_IdValue(secondLineShape, SHAPE_ID_DATATYPE_SECONDLINE);
+		PropertyUtil.setShape_IdValue(operationContainer, SHAPE_ID_DATATYPE_OPERATIONCONTAINER);
 		//set links
 		link(containerShape, addedDataType);
 		link(dropShadowShape, addedDataType);
@@ -359,7 +361,7 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 		//return false is container is overall container that has typeBodyShape and dropShadowShape as children
 		if(container.getGraphicsAlgorithm() == null)  return false; 
 		//container is typeBodyShape, else return false
-		if(PropertyUtil.isShape_IdValue(container.getGraphicsAlgorithm(), SHAPE_ID_DATATYPE_TYPEBODY))
+		if(PropertyUtil.isShape_IdValue(container, SHAPE_ID_DATATYPE_TYPEBODY))
 			typeBodyPolygon = (Polygon) container.getGraphicsAlgorithm(); 
 		else return false;
 		//get the drop shadow polygon to the type body polygon
@@ -382,7 +384,7 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 	        //name
 	        if (graphicsAlgorithm instanceof Text) {
 	        	Text text = (Text) graphicsAlgorithm;	
-	            if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_DATATYPE_NAME)) {
+	            if(PropertyUtil.isShape_IdValue(shape, SHAPE_ID_DATATYPE_NAME)) {
 	            	graphicAlgorithmService.setLocationAndSize(text, DATATYPE_CORNER_SIZE, 0, containerWidth-2*DATATYPE_CORNER_SIZE, HEIGHT_NAME_SHAPE);
 	            	layoutChanged=true;
 	            }	
@@ -390,12 +392,12 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 	       //first and second line
 	       if (graphicsAlgorithm instanceof Polyline) {	   
 	    	   Polyline polyline = (Polyline) graphicsAlgorithm;  
-		       if(PropertyUtil.isShape_IdValue(polyline, SHAPE_ID_DATATYPE_SECONDLINE)) {   
+		       if(PropertyUtil.isShape_IdValue(shape, SHAPE_ID_DATATYPE_SECONDLINE)) {   
 		            polyline.getPoints().set(0, graphicAlgorithmService.createPoint(0, (((containerHeight)-HEIGHT_NAME_SHAPE-DATATYPE_CORNER_SIZE)/2)+HEIGHT_NAME_SHAPE));
 		            polyline.getPoints().set(1, graphicAlgorithmService.createPoint(containerWidth, (((containerHeight-HEIGHT_NAME_SHAPE-DATATYPE_CORNER_SIZE))/2)+HEIGHT_NAME_SHAPE));
 		            layoutChanged=true;
 		      }
-		      if(PropertyUtil.isShape_IdValue(polyline, SHAPE_ID_DATATYPE_FIRSTLINE)) {
+		      if(PropertyUtil.isShape_IdValue(shape, SHAPE_ID_DATATYPE_FIRSTLINE)) {
 		            polyline.getPoints().set(1, graphicAlgorithmService.createPoint(containerWidth-PUFFER_BETWEEN_ELEMENTS, polyline.getPoints().get(1).getY()));
 		            layoutChanged=true;
 		      }	
@@ -403,7 +405,7 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 	       //attribute and operation container
 	       if (graphicsAlgorithm instanceof Rectangle) {
 	    	   Rectangle rectangle = (Rectangle) graphicsAlgorithm;  
-		       if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER)) {
+		       if(PropertyUtil.isShape_IdValue(shape, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER)) {
 		    	   int newHeight = (((containerHeight)-HEIGHT_NAME_SHAPE-DATATYPE_CORNER_SIZE)/2)-PUFFER_BETWEEN_ELEMENTS,
 		               newWidth = (typeBodyPolygon.getWidth()-2*PUFFER_BETWEEN_ELEMENTS);            				
 		           rectangle.setHeight(newHeight);
@@ -423,7 +425,7 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 		            }	            			
 		            layoutChanged=true;
 		       }
-		       if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_OPERATIONCONTAINER)) {
+		       if(PropertyUtil.isShape_IdValue(shape, SHAPE_ID_DATATYPE_OPERATIONCONTAINER)) {
 		    	   int horizontalCenter = GeneralUtil.calculateHorizontalCenter(Type.DATA_TYPE, containerHeight);
 		           int newHeight = horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS;
 		           int newWidth = typeBodyPolygon.getWidth()-2*PUFFER_BETWEEN_ELEMENTS;		
@@ -475,7 +477,7 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 		//check for changed names 
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
 		if( pictogramElement.getGraphicsAlgorithm() != null &&
-			PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_DATATYPE_TYPEBODY)) {
+			PropertyUtil.isShape_IdValue((Shape) pictogramElement, SHAPE_ID_DATATYPE_TYPEBODY)) {
 			//pictogram name of data type, attributes and operations
 			String pictogramTypeName = PatternUtil.getNameOfPictogramElement(pictogramElement, SHAPE_ID_DATATYPE_NAME);
 			List<String> pictogramAttributeNames = PatternUtil.getpictogramAttributeNames(pictogramElement, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER);
@@ -506,13 +508,11 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 			for (Shape shape : containerShape.getChildren()) {
 				if(shape instanceof ContainerShape) {
 					ContainerShape innerContainerShape = (ContainerShape) shape;
-					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
-						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER)) {
-							for(Shape attributeShape : innerContainerShape.getChildren()) {
-								NamedElement attribute = (NamedElement) getBusinessObjectForPictogramElement(attributeShape);
-								businessAttributeNames.add(attribute.getName());
-		}	}	}	}	}	}	
+					if(PropertyUtil.isShape_IdValue(innerContainerShape, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER)) {
+						for(Shape attributeShape : innerContainerShape.getChildren()) {
+							NamedElement attribute = (NamedElement) getBusinessObjectForPictogramElement(attributeShape);
+							businessAttributeNames.add(attribute.getName());
+		}	}	}	}	}		
 		return businessAttributeNames;
 	}
 	
@@ -523,13 +523,11 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 			for (Shape shape : containerShape.getChildren()) {
 				if(shape instanceof ContainerShape) {
 					ContainerShape innerContainerShape = (ContainerShape) shape;
-					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
-						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_OPERATIONCONTAINER)) {
-							for(Shape operationShape : innerContainerShape.getChildren()) {
-								NamedElement operation = (NamedElement) getBusinessObjectForPictogramElement(operationShape);
-								businessOperationNames.add(operation.getName());
-		}	}	}	}	}	}	
+					if(PropertyUtil.isShape_IdValue(innerContainerShape, SHAPE_ID_DATATYPE_OPERATIONCONTAINER)) {
+						for(Shape operationShape : innerContainerShape.getChildren()) {
+							NamedElement operation = (NamedElement) getBusinessObjectForPictogramElement(operationShape);
+							businessOperationNames.add(operation.getName());
+		}	}	}	}	}		
 		return businessOperationNames;
 	}
 	
@@ -551,7 +549,7 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
             for (Shape shape : containerShape.getChildren()) {
                 if (shape.getGraphicsAlgorithm() instanceof Text) {
                     Text text = (Text) shape.getGraphicsAlgorithm();
-                    if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_DATATYPE_NAME)) {
+                    if(PropertyUtil.isShape_IdValue(shape, SHAPE_ID_DATATYPE_NAME)) {
                     	text.setValue(businessTypeName);
                     	returnValue = true;
                     }           
@@ -560,11 +558,10 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
                 if(shape instanceof ContainerShape) {
                 	ContainerShape innerContainerShape = (ContainerShape) shape;
 					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
-						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
 						//Attributes
 						counter = 0;
 						newY = HEIGHT_NAME_SHAPE+PUFFER_BETWEEN_ELEMENTS;
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER)) {
+						if(PropertyUtil.isShape_IdValue(innerContainerShape, SHAPE_ID_DATATYPE_ATTRIBUTECONTAINER)) {
 							for(Shape attributeShape : innerContainerShape.getChildren()) {
 								Text text = (Text) attributeShape.getGraphicsAlgorithm();
 								text.setValue(businessAttributeNames.get(counter));
@@ -576,7 +573,7 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 						//Operations
 						counter = 0;
 						newY = horizontalCenter+PUFFER_BETWEEN_ELEMENTS;
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_DATATYPE_OPERATIONCONTAINER)) {
+						if(PropertyUtil.isShape_IdValue(innerContainerShape, SHAPE_ID_DATATYPE_OPERATIONCONTAINER)) {
 							for(Shape operationShape : innerContainerShape.getChildren()) {
 								Text text = (Text) operationShape.getGraphicsAlgorithm();
 								text.setValue(businessOperationNames.get(counter));									
@@ -592,7 +589,7 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 	//disable that the user can move the drop shadow manually
 	@Override
 	public boolean canMoveShape(IMoveShapeContext moveContext) {
-		if(PropertyUtil.isShape_IdValue(moveContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_DATATYPE_SHADOW)) {
+		if(PropertyUtil.isShape_IdValue((Shape) moveContext.getPictogramElement(), SHAPE_ID_DATATYPE_SHADOW)) {
 			return false;
 		}
 		ContainerShape typeBodyShape = (ContainerShape) moveContext.getPictogramElement();
@@ -634,7 +631,7 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 	//disable that the user can resize the drop shadow manually
 	@Override
 	public boolean canResizeShape(IResizeShapeContext resizeContext) {
-		if(PropertyUtil.isShape_IdValue(resizeContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_DATATYPE_SHADOW)) {
+		if(PropertyUtil.isShape_IdValue((Shape) resizeContext.getPictogramElement(), SHAPE_ID_DATATYPE_SHADOW)) {
 			return false;
 		}
 		return super.canResizeShape(resizeContext);
@@ -684,7 +681,7 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 	//disable that the user can delete the drop shadow manually
 	@Override
 	public boolean canDelete(IDeleteContext deleteContext) {
-		if(PropertyUtil.isShape_IdValue(deleteContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_DATATYPE_SHADOW)) {
+		if(PropertyUtil.isShape_IdValue((Shape) deleteContext.getPictogramElement(), SHAPE_ID_DATATYPE_SHADOW)) {
 			return false;
 		}
 		return super.canDelete(deleteContext);

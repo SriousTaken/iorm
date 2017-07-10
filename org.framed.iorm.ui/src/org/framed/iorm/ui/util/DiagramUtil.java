@@ -62,12 +62,12 @@ public class DiagramUtil {
 		else {
 			//Step 2
 			String groupName = null;
-			if(PropertyUtil.isShape_IdValue(groupShape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_TYPEBODY)) {
+			if(PropertyUtil.isShape_IdValue(groupShape, SHAPE_ID_GROUP_TYPEBODY)) {
 				Shape groupNameShape = ((ContainerShape) groupShape).getChildren().get(0);
-				if(PropertyUtil.isShape_IdValue(groupNameShape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_NAME))
+				if(PropertyUtil.isShape_IdValue(groupNameShape, SHAPE_ID_GROUP_NAME))
 					groupName = ((Text) groupNameShape.getGraphicsAlgorithm()).getValue();
 			}	
-			if(PropertyUtil.isShape_IdValue(groupShape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_NAME))
+			if(PropertyUtil.isShape_IdValue(groupShape, SHAPE_ID_GROUP_NAME))
 				groupName = ((Text) groupShape.getGraphicsAlgorithm()).getValue();	
 		    //Step 3
 			Diagram containerDiagram = DiagramUtil.getContainerDiagramForAnyDiagram(diagram);

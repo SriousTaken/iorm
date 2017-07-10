@@ -21,7 +21,6 @@ import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
-import org.framed.iorm.ui.util.PropertyUtil;
 import org.framed.iorm.model.Shape; //*import for javadoc link
 
 /**
@@ -41,12 +40,9 @@ public class InheritancePattern extends AbstractConnectionPattern {
 	private static final String INHERITANCE_FEATURE_NAME = NameLiterals.INHERITANCE_FEATURE_NAME;
 	
 	/**
-	 * the identifier for the polyline of the inheritances gathered from {@link IdentifierLiterals} and
-	 * the identifier for the icon of the create feature
+	 * the identifier for the icon of the create feature gathered from {@link IdentifierLiterals}
 	 */
-	private static final String SHAPE_ID_INHERITANCE_LINE = IdentifierLiterals.SHAPE_ID_INHERITANCE_LINE,
-								SHAPE_ID_INHERITANCE_DECORATOR = IdentifierLiterals.SHAPE_ID_INHERITANCE_DECORATOR,
-								IMG_ID_FEATURE_INHERITANCE = IdentifierLiterals.IMG_ID_FEATURE_INHERITANCE;
+	private static final String IMG_ID_FEATURE_INHERITANCE = IdentifierLiterals.IMG_ID_FEATURE_INHERITANCE;
 	
 	/**
 	 * the layout integers used to layout the arrowhead of the inheritances gathered from {@link LayoutLiterals}
@@ -120,8 +116,7 @@ public class InheritancePattern extends AbstractConnectionPattern {
 	 * <p>
 	 * Step 1: create a connection shape and polyline as its graphic algorithm
 	 * Step 2: create the a connection decorator and a arrowhead as its graphic algorithm 
-	 * Step 3: set property ID for polyline and the arrowhead
-	 * Step 4: link the pictogram elements and the business objects
+	 * Step 3: link the pictogram elements and the business objects
 	 */
 	public PictogramElement add(IAddContext addContext) {
 		IAddConnectionContext addConnectionContext = (IAddConnectionContext) addContext;
@@ -144,9 +139,6 @@ public class InheritancePattern extends AbstractConnectionPattern {
 	    arrowhead.setForeground(manageColor(COLOR_CONNECTIONS));
 	    arrowhead.setBackground(manageColor(COLOR_INHERITANCE_ARROWHEAD));
 	    //Step 3
-	    PropertyUtil.setShape_IdValue(polyline, SHAPE_ID_INHERITANCE_LINE);
-	    PropertyUtil.setShape_IdValue(arrowhead, SHAPE_ID_INHERITANCE_DECORATOR);
-	    //Step 4
 	    link(connection, addedInheritance);
 	    return connection;
 	}

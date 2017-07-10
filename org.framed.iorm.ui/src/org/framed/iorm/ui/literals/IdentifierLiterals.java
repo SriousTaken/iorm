@@ -86,7 +86,8 @@ public class IdentifierLiterals {
 	 * (6) attribute container rectangle or<br>
 	 * (7) operation container rectangle
 	 */
-	public static final String SHAPE_ID_NATURALTYPE_TYPEBODY = "shape_nt_typebody",
+	public static final String SHAPE_ID_NATURALTYPE_CONTAINER = "shape_nt_container",
+							   SHAPE_ID_NATURALTYPE_TYPEBODY = "shape_nt_typebody",
 						 	   SHAPE_ID_NATURALTYPE_SHADOW = "shape_nt_shadow",
 						 	   SHAPE_ID_NATURALTYPE_NAME = "shape_nt_name", 
 						 	   SHAPE_ID_NATURALTYPE_FIRSTLINE = "shape_nt_firstline",
@@ -106,7 +107,8 @@ public class IdentifierLiterals {
 	 * (6) attribute container rectangle or<br>
 	 * (7) operation container rectangle 
 	 */
-	public static final String SHAPE_ID_DATATYPE_TYPEBODY = "shape_dt_typebody",
+	public static final String SHAPE_ID_DATATYPE_CONTAINER = "shape_dt_container",
+							   SHAPE_ID_DATATYPE_TYPEBODY = "shape_dt_typebody",
 						 	   SHAPE_ID_DATATYPE_SHADOW = "shape_dt_shadow",
 						 	   SHAPE_ID_DATATYPE_NAME = "shape_dt_name", 
 						 	   SHAPE_ID_DATATYPE_FIRSTLINE = "shape_dt_firstline",
@@ -125,7 +127,8 @@ public class IdentifierLiterals {
 	 * (5) model container rectangle 
 	 * TODO
 	 */
-	public static final String SHAPE_ID_GROUP_TYPEBODY = "shape_group_typebody",
+	public static final String SHAPE_ID_GROUP_CONTAINER = "shape_group_container",
+							   SHAPE_ID_GROUP_TYPEBODY = "shape_group_typebody",
 						 	   SHAPE_ID_GROUP_SHADOW = "shape_group_shadow",
 						 	   SHAPE_ID_GROUP_NAME = "shape_group_name", 
 						 	   SHAPE_ID_GROUP_LINE = "shape_group_line",

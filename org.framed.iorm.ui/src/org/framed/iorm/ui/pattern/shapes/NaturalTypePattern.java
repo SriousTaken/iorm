@@ -55,7 +55,8 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 	private final String DIRECTEDITING_NATURALTYPE = TextLiterals.DIRECTEDITING_NATURALTYPE;
 	
 	//ID literals
-	private final String SHAPE_ID_NATURALTYPE_TYPEBODY = IdentifierLiterals.SHAPE_ID_NATURALTYPE_TYPEBODY,
+	private final String SHAPE_ID_NATURALTYPE_CONTAINER = IdentifierLiterals.SHAPE_ID_NATURALTYPE_CONTAINER,
+						 SHAPE_ID_NATURALTYPE_TYPEBODY = IdentifierLiterals.SHAPE_ID_NATURALTYPE_TYPEBODY,
 						 SHAPE_ID_NATURALTYPE_SHADOW = IdentifierLiterals.SHAPE_ID_NATURALTYPE_SHADOW,
 						 SHAPE_ID_NATURALTYPE_NAME = IdentifierLiterals.SHAPE_ID_NATURALTYPE_NAME,
 						 SHAPE_ID_NATURALTYPE_FIRSTLINE = IdentifierLiterals.SHAPE_ID_NATURALTYPE_FIRSTLINE,
@@ -214,13 +215,14 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 									 			   width-2*PUFFER_BETWEEN_ELEMENTS, horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS);
 		
 		//setProperties
-		PropertyUtil.setShape_IdValue(typeBodyRectangle, SHAPE_ID_NATURALTYPE_TYPEBODY);
-		PropertyUtil.setShape_IdValue(dropShadowRectangle, SHAPE_ID_NATURALTYPE_SHADOW);
-		PropertyUtil.setShape_IdValue(text, SHAPE_ID_NATURALTYPE_NAME);
-		PropertyUtil.setShape_IdValue(firstPolyline, SHAPE_ID_NATURALTYPE_FIRSTLINE);
-		PropertyUtil.setShape_IdValue(attributeRectangle, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER);
-		PropertyUtil.setShape_IdValue(secondPolyline, SHAPE_ID_NATURALTYPE_SECONDLINE);
-		PropertyUtil.setShape_IdValue(operationRectangle, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER);
+		PropertyUtil.setShape_IdValue(containerShape, SHAPE_ID_NATURALTYPE_CONTAINER);
+		PropertyUtil.setShape_IdValue(typeBodyShape, SHAPE_ID_NATURALTYPE_TYPEBODY);
+		PropertyUtil.setShape_IdValue(dropShadowShape, SHAPE_ID_NATURALTYPE_SHADOW);
+		PropertyUtil.setShape_IdValue(nameShape, SHAPE_ID_NATURALTYPE_NAME);
+		PropertyUtil.setShape_IdValue(firstLineShape, SHAPE_ID_NATURALTYPE_FIRSTLINE);
+		PropertyUtil.setShape_IdValue(attributeContainer, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER);
+		PropertyUtil.setShape_IdValue(secondLineShape, SHAPE_ID_NATURALTYPE_SECONDLINE);
+		PropertyUtil.setShape_IdValue(operationContainer, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER);
 		//set links
 		link(containerShape, addedNaturalType);
 		link(typeBodyShape, addedNaturalType);
@@ -348,7 +350,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 		//return false is container is overall container that has typeBodyShape and dropShadowShape as children
 		if(container.getGraphicsAlgorithm() == null)  return false; 
 		//container is typeBodyShape, else return false
-		if(PropertyUtil.isShape_IdValue(container.getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_TYPEBODY))
+		if(PropertyUtil.isShape_IdValue(container, SHAPE_ID_NATURALTYPE_TYPEBODY))
 			typeBodyRectangle = (Rectangle) container.getGraphicsAlgorithm(); 
 		else return false;
 		//get the drop shadow rectangle to the type body rectangle
@@ -371,7 +373,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
             //name
             if (graphicsAlgorithm instanceof Text) {
             	Text text = (Text) graphicsAlgorithm;	
-            	if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_NATURALTYPE_NAME)) {
+            	if(PropertyUtil.isShape_IdValue(shape, SHAPE_ID_NATURALTYPE_NAME)) {
             		graphicAlgorithmService.setLocationAndSize(text, 0, 0, containerWidth, HEIGHT_NAME_SHAPE);
             		layoutChanged=true;
             	}	
@@ -379,12 +381,12 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
             //first and second line
             if (graphicsAlgorithm instanceof Polyline) {	   
 	            Polyline polyline = (Polyline) graphicsAlgorithm;  
-	            if(PropertyUtil.isShape_IdValue(polyline, SHAPE_ID_NATURALTYPE_SECONDLINE)) {   
+	            if(PropertyUtil.isShape_IdValue(shape, SHAPE_ID_NATURALTYPE_SECONDLINE)) {   
 	            	polyline.getPoints().set(0, graphicAlgorithmService.createPoint(0, (((containerHeight)-HEIGHT_NAME_SHAPE)/2)+HEIGHT_NAME_SHAPE));
 	            	polyline.getPoints().set(1, graphicAlgorithmService.createPoint(containerWidth, (((containerHeight)-HEIGHT_NAME_SHAPE)/2)+HEIGHT_NAME_SHAPE));
 	            	layoutChanged=true;
 	            }
-	            if(PropertyUtil.isShape_IdValue(polyline, SHAPE_ID_NATURALTYPE_FIRSTLINE)) {
+	            if(PropertyUtil.isShape_IdValue(shape, SHAPE_ID_NATURALTYPE_FIRSTLINE)) {
 	            	polyline.getPoints().set(1, graphicAlgorithmService.createPoint(containerWidth, polyline.getPoints().get(1).getY()));
 	            	layoutChanged=true;
 	            }	
@@ -392,7 +394,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
             //attribute and operation container
             if (graphicsAlgorithm instanceof Rectangle) {
             	Rectangle rectangle = (Rectangle) graphicsAlgorithm;  
-	            if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER)) {
+	            if(PropertyUtil.isShape_IdValue(shape, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER)) {
 	            	int newHeight = (((containerHeight)-HEIGHT_NAME_SHAPE)/2)-PUFFER_BETWEEN_ELEMENTS,
 	            		newWidth = (typeBodyRectangle.getWidth()-2*PUFFER_BETWEEN_ELEMENTS);            				
 	            	rectangle.setHeight(newHeight);
@@ -413,7 +415,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 	            	}	            			
 	            	layoutChanged=true;
 	            }
-	            if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER)) {
+	            if(PropertyUtil.isShape_IdValue(shape, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER)) {
 	            	int horizontalCenter = GeneralUtil.calculateHorizontalCenter(Type.NATURAL_TYPE, containerHeight);
 	            	int newHeight = horizontalCenter-HEIGHT_NAME_SHAPE-2*PUFFER_BETWEEN_ELEMENTS;
 	            	int newWidth = typeBodyRectangle.getWidth()-2*PUFFER_BETWEEN_ELEMENTS;		
@@ -464,7 +466,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
 		
 		if(pictogramElement.getGraphicsAlgorithm() != null &&
-		   PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_TYPEBODY)) {
+		   PropertyUtil.isShape_IdValue((Shape) pictogramElement, SHAPE_ID_NATURALTYPE_TYPEBODY)) {
 			//pictogram name of natural type, attributes and operations
 			String pictogramTypeName = PatternUtil.getNameOfPictogramElement(pictogramElement, SHAPE_ID_NATURALTYPE_NAME);
 			List<String> pictogramAttributeNames = PatternUtil.getpictogramAttributeNames(pictogramElement, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER);
@@ -495,13 +497,11 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 			for (Shape shape : containerShape.getChildren()) {
 				if(shape instanceof ContainerShape) {
 					ContainerShape innerContainerShape = (ContainerShape) shape;
-					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
-						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER)) {
-							for(Shape attributeShape : innerContainerShape.getChildren()) {
-								NamedElement attribute = (NamedElement) getBusinessObjectForPictogramElement(attributeShape);
-								businessAttributeNames.add(attribute.getName());
-		}	}	}	}	}	}	
+					if(PropertyUtil.isShape_IdValue(innerContainerShape, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER)) {
+						for(Shape attributeShape : innerContainerShape.getChildren()) {
+							NamedElement attribute = (NamedElement) getBusinessObjectForPictogramElement(attributeShape);
+							businessAttributeNames.add(attribute.getName());
+		}	}	}	}	}		
 		return businessAttributeNames;
 	}
 	
@@ -512,13 +512,11 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 			for (Shape shape : containerShape.getChildren()) {
 				if(shape instanceof ContainerShape) {
 					ContainerShape innerContainerShape = (ContainerShape) shape;
-					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
-						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER)) {
-							for(Shape operationShape : innerContainerShape.getChildren()) {
-								NamedElement operation = (NamedElement) getBusinessObjectForPictogramElement(operationShape);
-								businessOperationNames.add(operation.getName());
-		}	}	}	}	}	}	
+					if(PropertyUtil.isShape_IdValue(innerContainerShape, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER)) {
+						for(Shape operationShape : innerContainerShape.getChildren()) {
+							NamedElement operation = (NamedElement) getBusinessObjectForPictogramElement(operationShape);
+							businessOperationNames.add(operation.getName());
+		}	}	}	}	}		
 		return businessOperationNames;
 	}
 	
@@ -541,7 +539,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
             for (Shape shape : containerShape.getChildren()) {
                 if (shape.getGraphicsAlgorithm() instanceof Text) {
                     Text text = (Text) shape.getGraphicsAlgorithm();
-                    if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_NATURALTYPE_NAME)) {
+                    if(PropertyUtil.isShape_IdValue(shape, SHAPE_ID_NATURALTYPE_NAME)) {
                     	text.setValue(businessTypeName);
                     	changed = true;
                     }           
@@ -550,11 +548,10 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
                 if(shape instanceof ContainerShape) {
                 	ContainerShape innerContainerShape = (ContainerShape) shape;
 					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
-						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
 						//Attributes
 						counter = 0;
 						newY = HEIGHT_NAME_SHAPE+PUFFER_BETWEEN_ELEMENTS;
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER)) {
+						if(PropertyUtil.isShape_IdValue(innerContainerShape, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER)) {
 							for(Shape attributeShape : innerContainerShape.getChildren()) {
 								Text text = (Text) attributeShape.getGraphicsAlgorithm();
 								text.setValue(businessAttributeNames.get(counter));
@@ -566,7 +563,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 						//Operations
 						counter = 0;
 						newY = horizontalCenter+PUFFER_BETWEEN_ELEMENTS;
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER)) {
+						if(PropertyUtil.isShape_IdValue(innerContainerShape, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER)) {
 							for(Shape operationShape : innerContainerShape.getChildren()) {
 								Text text = (Text) operationShape.getGraphicsAlgorithm();
 								text.setValue(businessOperationNames.get(counter));									
@@ -582,7 +579,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 	//disable that the user can move the drop shadow manually
 	@Override
 	public boolean canMoveShape(IMoveShapeContext moveContext) {
-		if(PropertyUtil.isShape_IdValue(moveContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_SHADOW)) {
+		if(PropertyUtil.isShape_IdValue((Shape) moveContext.getPictogramElement(), SHAPE_ID_NATURALTYPE_SHADOW)) {
 			return false;
 		}
 		ContainerShape typeBodyShape = (ContainerShape) moveContext.getPictogramElement();
@@ -625,7 +622,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 	//disable that the user can resize the drop shadow manually
 	@Override
 	public boolean canResizeShape(IResizeShapeContext resizeContext) {
-		if(PropertyUtil.isShape_IdValue(resizeContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_SHADOW)) {
+		if(PropertyUtil.isShape_IdValue((Shape) resizeContext.getPictogramElement(), SHAPE_ID_NATURALTYPE_SHADOW)) {
 			return false;
 		}
 		return super.canResizeShape(resizeContext);
@@ -636,7 +633,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 	//disable that the user can delete the drop shadow manually
 	@Override
 	public boolean canDelete(IDeleteContext deleteContext) {
-		if(PropertyUtil.isShape_IdValue(deleteContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_SHADOW)) {
+		if(PropertyUtil.isShape_IdValue((Shape) deleteContext.getPictogramElement(), SHAPE_ID_NATURALTYPE_SHADOW)) {
 			return false;
 		}
 		return super.canDelete(deleteContext);

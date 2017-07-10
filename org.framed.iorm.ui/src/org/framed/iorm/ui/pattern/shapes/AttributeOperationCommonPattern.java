@@ -196,7 +196,7 @@ public class AttributeOperationCommonPattern extends FRaMEDShapePattern implemen
 	    	text.setForeground(manageColor(COLOR_TEXT));
 	    	graphicAlgorithmService.setLocationAndSize(text, PUFFER_BETWEEN_ELEMENTS, HEIGHT_NAME_SHAPE+PUFFER_BETWEEN_ELEMENTS+HEIGHT_ATTRIBUTE_SHAPE*attributeContainerSize, 
 	    								 classOrRoleContainer.getGraphicsAlgorithm().getWidth()-2*PUFFER_BETWEEN_ELEMENTS, HEIGHT_ATTRIBUTE_SHAPE);
-	    	PropertyUtil.setShape_IdValue(text, SHAPE_ID_ATTRIBUTE_TEXT);
+	    	PropertyUtil.setShape_IdValue(attributeOrOperationShape, SHAPE_ID_ATTRIBUTE_TEXT);
 	    } else {
 			if(addedAttributeOrOperation.getName().equals(STANDARD_OPERATION_NAME)) {
 		    	attributeOrOperationShape = pictogramElementCreateService.createShape(operationContainer, true);
@@ -204,7 +204,7 @@ public class AttributeOperationCommonPattern extends FRaMEDShapePattern implemen
 		    	text.setForeground(manageColor(COLOR_TEXT));
 		    	graphicAlgorithmService.setLocationAndSize(text, PUFFER_BETWEEN_ELEMENTS, PUFFER_BETWEEN_ELEMENTS+horizontalCenter+HEIGHT_OPERATION_SHAPE*operationContainerSize, 
 						 classOrRoleContainer.getGraphicsAlgorithm().getWidth()-2*PUFFER_BETWEEN_ELEMENTS, HEIGHT_OPERATION_SHAPE);
-		    	PropertyUtil.setShape_IdValue(text, SHAPE_ID_OPERATION_TEXT);	      	
+		    	PropertyUtil.setShape_IdValue(attributeOrOperationShape, SHAPE_ID_OPERATION_TEXT);	      	
 		    } else return null;    
 	    }	
 		//Step 4

@@ -2,6 +2,7 @@ package org.framed.iorm.ui.util;
 
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 
@@ -13,41 +14,47 @@ import org.framed.iorm.ui.literals.IdentifierLiterals;
  */
 public class PropertyUtil {
 	
-	//Shape ID
-	//~~~~~~~~
+	//Shape Identifier
+	//~~~~~~~~~~~~~~~~
 	/**
 	 * the key to identify the property shape id gathered from {@link IdentifierLiterals}
 	 */
 	public static final String KEY_SHAPE_ID = IdentifierLiterals.KEY_SHAPE_ID;
 	
 	/**
-	 * set the property shape id for a given graphic algorithm
-	 * @param graphicAlgorithm the graphic algorithm to set the property for
+	 * set the property shape id for a given shape
+	 * @param shape the shape to set the property for
 	 * @param value the new value of the property
 	 */
-	public static final void setShape_IdValue(GraphicsAlgorithm graphicAlgorithm, String value) {
-		Graphiti.getPeService().setPropertyValue(graphicAlgorithm, KEY_SHAPE_ID, value);
+	public static final void setShape_IdValue(Shape shape, String value) {
+		Graphiti.getPeService().setPropertyValue(shape, KEY_SHAPE_ID, value);
 	}
 	
 	/**
-	 * checks if the property shape id for a given graphic algorithm equals the given value
-	 * @param graphicAlgorithm the graphic algorithm to check the property for
+	 * checks if the property shape id for a given shape equals the given value
+	 * @param shape the shape to check the property for
 	 * @param value the value to check the property against
 	 * @return boolean if the property value equals the given value
 	 */
-	public static final boolean isShape_IdValue(GraphicsAlgorithm graphicAlgorithm, String value) {
-		return (Graphiti.getPeService().getPropertyValue(graphicAlgorithm, KEY_SHAPE_ID).equals(value));
+	public static final boolean isShape_IdValue(Shape shape, String value) {
+		return (Graphiti.getPeService().getPropertyValue(shape, KEY_SHAPE_ID).equals(value));
 	}
 	
-	//Diagram ID
-	//~~~~~~~~~~
+	//Diagram Kind
+	//~~~~~~~~~~~~~~~~~~
 	/**
 	 * the key to identify the property diagram kind gathered from {@link IdentifierLiterals}
+	 * <P>
+	 * The word <em>kind</em> is chosen to differ this property from the <em>diagram types</em> of the 
+	 * graphiti framework.
 	 */
 	public static final String KEY_DIAGRAM_KIND = IdentifierLiterals.KEY_DIAGRAM_KIND;
 	
 	/**
 	 * set the property diagram kind for a given diagram
+	 * <P>
+	 * The word <em>kind</em> is chosen to differ this property from the <em>diagram types</em> of the 
+	 * graphiti framework.
 	 * @param diagram the diagram to set the property for
 	 * @param value the new value of the property
 	 */
@@ -57,6 +64,9 @@ public class PropertyUtil {
 	
 	/**
 	 * checks if the property diagram kind for a given graphic algorithm equals the given value
+	 * <P>
+	 * The word <em>kind</em> is chosen to differ this property from the <em>diagram types</em> of the 
+	 * graphiti framework.
 	 * @param diagram the diagram to check the property for
 	 * @param value the value to check the property against
 	 * @return boolean if the property value equals the given value

@@ -3,7 +3,6 @@ package org.framed.iorm.ui.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -11,6 +10,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.framed.iorm.model.Model;
 import org.framed.iorm.model.ModelElement;
+import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.pattern.shapes.GroupPattern; //*import for javadoc link
 
@@ -40,7 +40,7 @@ public class PatternUtil {
 		if(pictogramElement instanceof ContainerShape) {
 			ContainerShape containerShape = (ContainerShape) pictogramElement;
 			for(Shape shape : containerShape.getChildren()) {
-				if(PropertyUtil.isShape_IdValue(shape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_MODEL)) {
+				if(PropertyUtil.isShape_IdValue(shape, SHAPE_ID_GROUP_MODEL)) {
 					ContainerShape modelContainer = (ContainerShape) shape; 
 					for(Shape modelContainterElement : modelContainer.getChildren()) {
 						Text text = (Text) modelContainterElement.getGraphicsAlgorithm();
@@ -77,7 +77,7 @@ public class PatternUtil {
 			for (Shape shape : containerShape.getChildren()) {
 				if (shape.getGraphicsAlgorithm() instanceof Text) {
 					Text text = (Text) shape.getGraphicsAlgorithm();
-					if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_NAME)) {
+					if(PropertyUtil.isShape_IdValue(shape, SHAPE_ID_NAME)) {
 						return text.getValue();
 					}
 		} 	}	}
@@ -110,13 +110,11 @@ public class PatternUtil {
 			for (Shape shape : containerShape.getChildren()) {
 				if(shape instanceof ContainerShape) {
 					ContainerShape innerContainerShape = (ContainerShape) shape;
-					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
-						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_OPERATIONCONTAINER)) {
-									for(Shape operationShape : innerContainerShape.getChildren()) {
-										Text text = (Text) operationShape.getGraphicsAlgorithm();
-										pictogramOperationNames.add(text.getValue());
-		}	}	}	}	}	}
+					if(PropertyUtil.isShape_IdValue(innerContainerShape, SHAPE_ID_OPERATIONCONTAINER)) {
+						for(Shape operationShape : innerContainerShape.getChildren()) {
+							Text text = (Text) operationShape.getGraphicsAlgorithm();
+							pictogramOperationNames.add(text.getValue());
+		}	}	}	}	}	
 		return pictogramOperationNames;
 	}
 
@@ -133,13 +131,11 @@ public class PatternUtil {
 			for (Shape shape : containerShape.getChildren()) {
 				if(shape instanceof ContainerShape) {
 					ContainerShape innerContainerShape = (ContainerShape) shape;
-					if(innerContainerShape.getGraphicsAlgorithm() instanceof Rectangle) {
-						Rectangle rectangle = (Rectangle) innerContainerShape.getGraphicsAlgorithm();
-						if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_ATTRIBUTECONTAINER)) {
-							for(Shape attributeShape : innerContainerShape.getChildren()) {
-								Text text = (Text) attributeShape.getGraphicsAlgorithm();
-								pictogrammAttributeNames.add(text.getValue());
-		}	}	}	}	}	}
+					if(PropertyUtil.isShape_IdValue(innerContainerShape, SHAPE_ID_ATTRIBUTECONTAINER)) {
+						for(Shape attributeShape : innerContainerShape.getChildren()) {
+							Text text = (Text) attributeShape.getGraphicsAlgorithm();
+							pictogrammAttributeNames.add(text.getValue());
+		}	}	}	}	}	
 		return pictogrammAttributeNames;
 	}
 
@@ -157,7 +153,7 @@ public class PatternUtil {
 		List<ContainerShape> groupTypeBodies = getAllGroupTypeBodiesForContainerDiagram(containerDiagram);
 		for(ContainerShape groupTypeBody : groupTypeBodies) {
 			for(Shape innerShape : groupTypeBody.getChildren()) {
-				if(PropertyUtil.isShape_IdValue(innerShape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_NAME))
+				if(PropertyUtil.isShape_IdValue(innerShape, SHAPE_ID_GROUP_NAME))
 					groupName = ((Text) innerShape.getGraphicsAlgorithm()).getValue();
 			}
 			if(groupName != null &&
@@ -180,10 +176,31 @@ public class PatternUtil {
 				ContainerShape containershape = (ContainerShape) shape;
 				for(Shape innerShape : containershape.getChildren()) {
 					if(innerShape.getGraphicsAlgorithm() != null &&
-					   PropertyUtil.isShape_IdValue(innerShape.getGraphicsAlgorithm(), SHAPE_ID_GROUP_TYPEBODY)) {
+					   PropertyUtil.isShape_IdValue(innerShape, SHAPE_ID_GROUP_TYPEBODY)) {
 						groupTypeBodies.add((ContainerShape) innerShape);
 		}	}	}	}
 		return groupTypeBodies;
+	}
+	
+	public static List<String> getListOfModelElementNamesOfType(Diagram diagram, Type type) {
+		List<ModelElement> modelElements = new ArrayList<ModelElement>();
+		getListOfModelElementsOfType(diagram, type, modelElements);
+		return null;
+	}
+	
+	private static List<ModelElement> getListOfModelElementsOfType(Diagram diagram, Type type, List<ModelElement> modelElements) {
+		for(Shape shape : diagram.getChildren()) {
+			//diagram
+			if(shape instanceof Diagram) {
+				getListOfModelElementsOfType((Diagram) shape, type, modelElements);
+			}
+			if(shape instanceof ContainerShape &&
+			   !(shape instanceof Diagram)) {
+				ContainerShape containerShape = (ContainerShape) shape;
+				getListOfModelElementsOfType((Diagram) shape, type, modelElements);
+			}
+		}		
+		return null;
 	}
 	
 	/**
