@@ -10,6 +10,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.multipage.MultipageEditor;
+import org.framed.iorm.ui.util.DiagramUtil;
 import org.framed.iorm.ui.util.GeneralUtil;
 
 /**
@@ -57,7 +58,7 @@ public class StepInFeature extends AbstractStepInFeature {
 				(MultipageEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		closeMultipageEditorWhenPossible(multipageEditorToClose);
 		ContainerShape typeBodyShape = (ContainerShape) context.getPictogramElements()[0];
-		Diagram groupDiagram = GeneralUtil.getGroupDiagramForGroupShape(typeBodyShape, getDiagram());
+		Diagram groupDiagram = DiagramUtil.getGroupDiagramForGroupShape(typeBodyShape, getDiagram());
 		IEditorInput diagramEditorInput = DiagramEditorInput.createEditorInput(groupDiagram, DIAGRAM_PROVIDER_ID);
 		try {
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(diagramEditorInput, EDITOR_ID);

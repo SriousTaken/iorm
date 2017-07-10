@@ -7,7 +7,7 @@ import org.eclipse.graphiti.pattern.AbstractPattern;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
-import org.framed.iorm.ui.util.GeneralUtil;
+import org.framed.iorm.ui.util.PatternUtil;
 
 //TODO
 public abstract class FRaMEDShapePattern extends AbstractPattern {
@@ -23,7 +23,7 @@ public abstract class FRaMEDShapePattern extends AbstractPattern {
 	}
 	
 	protected void updateContainingGroup() {
-		ContainerShape groupTypeBodyToUpdate = GeneralUtil.getGroupTypeBodyForGroupsDiagram(getDiagram());
+		ContainerShape groupTypeBodyToUpdate = PatternUtil.getGroupTypeBodyForGroupsDiagram(getDiagram());
         updatePictogramElement(groupTypeBodyToUpdate);
 	}
 	

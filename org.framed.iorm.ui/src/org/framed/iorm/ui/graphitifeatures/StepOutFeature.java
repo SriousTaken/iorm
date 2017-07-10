@@ -13,6 +13,8 @@ import org.framed.iorm.ui.exceptions.NoDiagramFoundException;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.multipage.MultipageEditor;
+import org.framed.iorm.ui.util.DiagramUtil;
+import org.framed.iorm.ui.util.EditorInputUtil;
 import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
 
@@ -96,7 +98,7 @@ public class StepOutFeature extends AbstractCustomFeature {
 		if(customContext.getPictogramElements()[0] instanceof Shape &&
 		   !(customContext.getPictogramElements()[0] instanceof Diagram)) {
 			Diagram diagramContainingShape = 
-				GeneralUtil.getDiagramForContainedShape((Shape) customContext.getPictogramElements()[0]);
+				DiagramUtil.getDiagramForContainedShape((Shape) customContext.getPictogramElements()[0]);
 			if(diagramContainingShape == null) throw new NoDiagramFoundException();
 			stepOutOfDiagramIfPossible(diagramContainingShape);
 		}
@@ -130,8 +132,8 @@ public class StepOutFeature extends AbstractCustomFeature {
 				MultipageEditor multipageEditorToClose = 
 						(MultipageEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 				GeneralUtil.closeMultipageEditorWhenPossible(multipageEditorToClose);
-				Resource resource = GeneralUtil.getResourceFromEditorInput(multipageEditorToClose.getEditorInput());
-				IFileEditorInput fileEditorInput = GeneralUtil.getIFileEditorInputForResource(resource);
+				Resource resource = EditorInputUtil.getResourceFromEditorInput(multipageEditorToClose.getEditorInput());
+				IFileEditorInput fileEditorInput = EditorInputUtil.getIFileEditorInputForResource(resource);
 				try {
 					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(fileEditorInput, EDITOR_ID);
 				} catch (PartInitException e) { e.printStackTrace(); }

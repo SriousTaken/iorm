@@ -6,9 +6,9 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.framed.iorm.featuremodel.FRaMEDFeature;
 import org.framed.iorm.model.Model;
-import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.multipage.MultipageEditor; //*import for javadoc link
 import org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor; //*import for javadoc link
+import org.framed.iorm.ui.util.DiagramUtil;
 
 /**
  * the diagram editor used by {@link MultipageEditor}
@@ -40,7 +40,7 @@ public class FRaMEDDiagramEditor extends DiagramEditor  {
 	 */
 	public void updateSelectedFeatures() {
 		//Model rootModel = GeneralUtil.getRootModelForDiagram(this.getDiagramTypeProvider().getDiagram());
-		Diagram mainDiagram = GeneralUtil.getMainDiagramForIEditorInput(getEditorInput());
+		Diagram mainDiagram = DiagramUtil.getMainDiagramForIEditorInput(getEditorInput());
 		if(mainDiagram.getLink().getBusinessObjects().size() == 1 &&
 		   mainDiagram.getLink().getBusinessObjects().get(0) instanceof Model) {
 			Model rootModel = (Model) mainDiagram.getLink().getBusinessObjects().get(0);

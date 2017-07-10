@@ -17,7 +17,7 @@ import org.eclipse.graphiti.tb.IContextButtonPadData;
 import org.eclipse.graphiti.tb.IContextMenuEntry;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
-import org.framed.iorm.ui.util.GeneralUtil;
+import org.framed.iorm.ui.util.DiagramUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
 import org.framed.iorm.ui.providers.FeatureProvider; //*import for javadoc link
 import org.framed.iorm.ui.pattern.shapes.AttributeOperationCommonPattern; //*import for javadoc link
@@ -126,7 +126,7 @@ public class ToolBehaviorProvider extends DefaultToolBehaviorProvider{
 						}
 						if(customContext.getPictogramElements()[0] instanceof Shape) {
 							Shape shape = (Shape) customContext.getPictogramElements()[0];
-							Diagram diagram = GeneralUtil.getDiagramForContainedShape(shape);
+							Diagram diagram = DiagramUtil.getDiagramForContainedShape(shape);
 							if(diagram != null) {
 								if(PropertyUtil.isDiagram_KindValue(diagram, DIAGRAM_KIND_GROUP_DIAGRAM))
 									contextMenuEntries.add(superContextEntries[i]);

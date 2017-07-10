@@ -39,8 +39,10 @@ import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
+import org.framed.iorm.ui.util.DiagramUtil;
 import org.framed.iorm.ui.util.DirectEditingUtil;
 import org.framed.iorm.ui.util.GeneralUtil;
+import org.framed.iorm.ui.util.PatternUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
 
 public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
@@ -144,7 +146,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 				//target container is diagram with root model
 				ContainerShape containerShape = getDiagram();
 				if(containerShape instanceof Diagram) {
-					if(GeneralUtil.getRootModelForDiagram((Diagram) containerShape) != null)
+					if(DiagramUtil.getLinkedModelForDiagram((Diagram) containerShape) != null)
 						return true;
 		}	}	}
 		return false;
@@ -248,7 +250,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 		//target container is either diagram with model or a group
 		ContainerShape containerShape = getDiagram();
 		if(containerShape instanceof Diagram) {
-			if(GeneralUtil.getRootModelForDiagram((Diagram) containerShape) != null)
+			if(DiagramUtil.getLinkedModelForDiagram((Diagram) containerShape) != null)
 				return true;
 		}
 		return false;
@@ -261,7 +263,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 		newNaturalType.setType(Type.NATURAL_TYPE);
 		newNaturalType.setName(STANDARD_NATURALTYPE_NAME);
 		//add new natural type to the elements of the model
-		Model model = GeneralUtil.getRootModelForDiagram((Diagram) getDiagram());
+		Model model = DiagramUtil.getLinkedModelForDiagram((Diagram) getDiagram());
 		if(newNaturalType.eResource() != null) getDiagram().eResource().getContents().add(newNaturalType);
 		model.getElements().add(newNaturalType);
 		newNaturalType.setContainer(model);
@@ -464,11 +466,11 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 		if(pictogramElement.getGraphicsAlgorithm() != null &&
 		   PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_NATURALTYPE_TYPEBODY)) {
 			//pictogram name of natural type, attributes and operations
-			String pictogramTypeName = GeneralUtil.getNameOfPictogramElement(pictogramElement, SHAPE_ID_NATURALTYPE_NAME);
-			List<String> pictogramAttributeNames = GeneralUtil.getpictogramAttributeNames(pictogramElement, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER);
-			List<String> pictogramOperationNames = GeneralUtil.getpictogramOperationNames(pictogramElement, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER);
+			String pictogramTypeName = PatternUtil.getNameOfPictogramElement(pictogramElement, SHAPE_ID_NATURALTYPE_NAME);
+			List<String> pictogramAttributeNames = PatternUtil.getpictogramAttributeNames(pictogramElement, SHAPE_ID_NATURALTYPE_ATTRIBUTECONTAINER);
+			List<String> pictogramOperationNames = PatternUtil.getpictogramOperationNames(pictogramElement, SHAPE_ID_NATURALTYPE_OPERATIONCONTAINER);
 			//business name and attributes
-			String businessTypeName = GeneralUtil.getNameOfBusinessObject(getBusinessObjectForPictogramElement(pictogramElement));
+			String businessTypeName = PatternUtil.getNameOfBusinessObject(getBusinessObjectForPictogramElement(pictogramElement));
 			List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 			List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 								
@@ -528,7 +530,7 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
 		
 		//business names of natural type, attributes and operations
-		String businessTypeName = GeneralUtil.getNameOfBusinessObject(getBusinessObjectForPictogramElement(pictogramElement));
+		String businessTypeName = PatternUtil.getNameOfBusinessObject(getBusinessObjectForPictogramElement(pictogramElement));
 		List<String> businessAttributeNames = getBusinessAttributeNames(pictogramElement);
 		List<String> businessOperationNames = getBusinessOperationNames(pictogramElement);
 		

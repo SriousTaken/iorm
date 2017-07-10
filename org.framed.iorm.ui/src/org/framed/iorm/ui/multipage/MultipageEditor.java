@@ -28,7 +28,8 @@ import org.framed.iorm.ui.literals.TextLiterals;
 import org.framed.iorm.ui.subeditors.FRaMEDDiagramEditor;
 import org.framed.iorm.ui.subeditors.FRaMEDFeatureEditor;
 import org.framed.iorm.ui.subeditors.FRaMEDTextViewer;
-import org.framed.iorm.ui.util.GeneralUtil;
+import org.framed.iorm.ui.util.DiagramUtil;
+import org.framed.iorm.ui.util.EditorInputUtil;
 import org.framed.iorm.ui.providers.DiagramTypeProvider; //*import for javadoc link
 import org.framed.iorm.ui.wizards.RoleModelWizard; //*import for javadoc link
 
@@ -186,8 +187,8 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 			try {
 				addPagesWithDiagramEditorInput(diagramEditorInput, null);
 			} catch (PartInitException e) { e.printStackTrace(); }
-			Resource resource = GeneralUtil.getResourceFromEditorInput(diagramEditorInput);	
-			Diagram diagram = GeneralUtil.getDiagramForResourceOfDiagramEditorInput(resource);
+			Resource resource = EditorInputUtil.getResourceFromEditorInput(diagramEditorInput);	
+			Diagram diagram = DiagramUtil.getDiagramForResourceOfDiagramEditorInput(resource);
 			setPartName(MULTIPAGE_EDITOR_NAME_GROUP_DIAGRAM + " " + diagram.getName());
 			return;
 		} 
@@ -202,12 +203,12 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 * If its not clear what <em>main diagram</em> means, see {@link RoleModelWizard#createEmfFileForDiagram} for reference.
 	 * <p>
 	 * If the <em>main Diagram</em> is null in this operation there is no exception thrown, since this already happens in 
-	 * {@link GeneralUtil#getMainDiagramForIEditorInput(IEditorInput)}.
+	 * {@link DiagramUtil#getMainDiagramForIEditorInput(IEditorInput)}.
 	 * @throws PartInitException 
 	 * @see RoleModelWizard#createEmfFileForDiagram
 	 */
 	private void addPageWithIFileEditorInput() throws PartInitException {
-		Diagram mainDiagram = GeneralUtil.getMainDiagramForIEditorInput(getEditorInput());
+		Diagram mainDiagram = DiagramUtil.getMainDiagramForIEditorInput(getEditorInput());
 		if(mainDiagram != null) {
 			DiagramEditorInput diagramEditorInput = DiagramEditorInput.createEditorInput(mainDiagram, DIAGRAM_PROVIDER_ID);
 			addPagesWithDiagramEditorInput(diagramEditorInput, (IFileEditorInput) getEditorInput());
@@ -236,9 +237,9 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	 */
 	private void addPagesWithDiagramEditorInput(DiagramEditorInput diagramEditorInput, IFileEditorInput fileEditorInput) throws PartInitException {
 		//Step 1
-		Resource resource = GeneralUtil.getResourceFromEditorInput(diagramEditorInput);	
+		Resource resource = EditorInputUtil.getResourceFromEditorInput(diagramEditorInput);	
 		//Step 2
-		if(fileEditorInput == null) fileEditorInput = GeneralUtil.getIFileEditorInputForResource(resource);
+		if(fileEditorInput == null) fileEditorInput = EditorInputUtil.getIFileEditorInputForResource(resource);
 		if(fileEditorInput == null) throw new PartInitException(MESSAGE_FILE_EDITOR_INPUT_FOR_RESOURCE_IS_NULL); 
 		//Step 3
 		editorDiagram = new FRaMEDDiagramEditor();
@@ -327,8 +328,8 @@ public class MultipageEditor extends FormEditor implements ISelectionListener {
 	public void refreshFile() throws NullPointerException {
 		IFileEditorInput fileEditorInput = null;
 		if(getEditorInput() instanceof DiagramEditorInput) {
-			Resource resource = GeneralUtil.getResourceFromEditorInput(getEditorInput());	
-			fileEditorInput = GeneralUtil.getIFileEditorInputForResource(resource);
+			Resource resource = EditorInputUtil.getResourceFromEditorInput(getEditorInput());	
+			fileEditorInput = EditorInputUtil.getIFileEditorInputForResource(resource);
 		}
 		if(getEditorInput() instanceof IFileEditorInput) { 
 			fileEditorInput = (IFileEditorInput) getEditorInput();

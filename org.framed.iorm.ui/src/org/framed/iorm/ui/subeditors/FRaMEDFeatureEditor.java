@@ -35,7 +35,9 @@ import org.framed.iorm.ui.exceptions.FeatureModelNotReadableException;
 import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.URLLiterals;
 import org.framed.iorm.ui.multipage.MultipageEditor;
-import org.framed.iorm.ui.util.GeneralUtil;
+import org.framed.iorm.ui.util.DiagramUtil;
+import org.framed.iorm.ui.util.EditorInputUtil;
+
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.configuration.Configuration;
 import de.ovgu.featureide.fm.core.configuration.SelectableFeature;
@@ -114,7 +116,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	 * (1) {@link #getResourceFromEditorInput}<br>
 	 * (2) {@link #readRootModel}<br>
 	 * (3) {@link #readFeatureModel}<br>
-	 * (4) {@link GeneralUtil#getResourceFromEditorInput}<br> 
+	 * (4) {@link EditorInputUtil#getResourceFromEditorInput}<br> 
 	 * (5) {@link #loadConfiguration}
 	 * @param editorInput the opened diagram
 	 * @param multipageEditor the multipage editor that uses this editor
@@ -122,7 +124,7 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	public FRaMEDFeatureEditor(IEditorInput editorInput, MultipageEditor multipageEditor) {
 		super();
 		this.multipageEditor = multipageEditor;
-		Resource resource = GeneralUtil.getResourceFromEditorInput(editorInput);
+		Resource resource = EditorInputUtil.getResourceFromEditorInput(editorInput);
 		if (resource == null) { throw new NullPointerException("The resource could not be loaded."); }
 		Model rootModel = readRootModel(editorInput);
 		IFeatureModel featureModel = readFeatureModel();
@@ -142,14 +144,14 @@ public class FRaMEDFeatureEditor extends EditorPart {
 	 * fetches the root model for a resource
 	 * <p>
 	 * If diagram is null in this operation there is no exception thrown, since this already happens in 
-	 * {@link GeneralUtil#getMainDiagramForIEditorInput(IEditorInput)}.
+	 * {@link DiagramUtil#getMainDiagramForIEditorInput(IEditorInput)}.
 	 * @param resource the resource to get the root model from
 	 * @return the root model of the resource is not null and the diagram has a root model and return null else
 	 */ 
 	private Model readRootModel(IEditorInput editorInput) {
-		Diagram diagram = GeneralUtil.getMainDiagramForIEditorInput(editorInput);
+		Diagram diagram = DiagramUtil.getMainDiagramForIEditorInput(editorInput);
 		if(diagram != null)
-			return GeneralUtil.getRootModelForDiagram(diagram);
+			return DiagramUtil.getLinkedModelForDiagram(diagram);
 		return null;
 	}
 		

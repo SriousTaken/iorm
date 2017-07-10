@@ -9,7 +9,8 @@ import org.framed.iorm.featuremodel.FeatureName;
 import org.framed.iorm.featuremodel.FeaturemodelFactory;
 import org.framed.iorm.ui.contexts.ChangeConfigurationContext;
 import org.framed.iorm.ui.literals.NameLiterals;
-import org.framed.iorm.ui.util.GeneralUtil;
+import org.framed.iorm.ui.util.DiagramUtil;
+
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.configuration.Configuration;
 import org.framed.iorm.ui.commands.ConfigurationEditorChangeCommand; //*import for javadoc link 
@@ -60,7 +61,7 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 		ChangeConfigurationContext cfmc = (ChangeConfigurationContext) context;		
 		return (cfmc.getBehaviorEditor() != null &&
 				cfmc.getConfiguration() != null &&
-				GeneralUtil.getRootModelForDiagram(getDiagram()) != null);
+				DiagramUtil.getLinkedModelForDiagram(getDiagram()) != null);
 	}
 	 
 	/**
@@ -87,6 +88,6 @@ public class ChangeConfigurationFeature extends AbstractCustomFeature  {
 			framedFeatureConfiguration.getFeatures().add(framedFeature);	
 		}
 		//Step 3
-		GeneralUtil.getRootModelForDiagram(getDiagram()).setFramedConfiguration(framedFeatureConfiguration);
+		DiagramUtil.getLinkedModelForDiagram(getDiagram()).setFramedConfiguration(framedFeatureConfiguration);
 	}
 }

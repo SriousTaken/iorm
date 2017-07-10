@@ -76,7 +76,7 @@ public class TextLiterals {
 							   MUTLIPAGE_EDITOR_ERROR_NULLPOINTER_ON_FILE_EDITOR_INPUT = "The file editor input used to refresh the file is null!",
 							   STATUS_MESSAGE_UNSAVED_CHANGES = "Unsaved changes - the pages are out of sync!",
 							   MESSAGE_UNSAVED_CHANGES_IN_OTHER_MULTIPAGE_EDITORS_TITLE = "Unsaved changes in other multipage editors!",
-							   MESSAGE_UNSAVED_CHANGES_IN_OTHER_MULTIPAGE_EDITORS_TEXT = "There are unsaved changes in other opened mutlipage editors."
-							    + "Save these editors first to ensure no changes to the model get lost!",
-							    MESSAGE_FILE_EDITOR_INPUT_FOR_RESOURCE_IS_NULL = "No file editor input could be created for a given resource!";
+							   MESSAGE_UNSAVED_CHANGES_IN_OTHER_MULTIPAGE_EDITORS_TEXT = "There are unsaved changes in other opened mutlipage editors. "
+									   + "Save these editors first to ensure no changes to the model get lost!",
+							   MESSAGE_FILE_EDITOR_INPUT_FOR_RESOURCE_IS_NULL = "No file editor input could be created for a given resource!";
 }

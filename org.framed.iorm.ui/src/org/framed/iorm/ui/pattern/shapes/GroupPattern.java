@@ -42,8 +42,10 @@ import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
+import org.framed.iorm.ui.util.DiagramUtil;
 import org.framed.iorm.ui.util.DirectEditingUtil;
 import org.framed.iorm.ui.util.GeneralUtil;
+import org.framed.iorm.ui.util.PatternUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
 import org.framed.iorm.ui.wizards.RoleModelWizard;
 
@@ -163,7 +165,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 				//target container is diagram with root model
 				ContainerShape containerShape = getDiagram();
 				if(containerShape instanceof Diagram) {
-					if(GeneralUtil.getRootModelForDiagram((Diagram) containerShape) != null)
+					if(DiagramUtil.getLinkedModelForDiagram((Diagram) containerShape) != null)
 						return true;
 		}	}	}
 		return false;
@@ -290,7 +292,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 		//target container is either diagram with model
 		ContainerShape containerShape = getDiagram();
 		if(containerShape instanceof Diagram) {
-			if(GeneralUtil.getRootModelForDiagram((Diagram) containerShape) != null)
+			if(DiagramUtil.getLinkedModelForDiagram((Diagram) containerShape) != null)
 				return true;
 		}
 		return false;
@@ -303,7 +305,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 		newGroup.setType(Type.GROUP);
 		newGroup.setName(STANDART_GROUP_NAME);
 		//add new group to the elements of the model
-		Model model = GeneralUtil.getRootModelForDiagram((Diagram) getDiagram());
+		Model model = DiagramUtil.getLinkedModelForDiagram((Diagram) getDiagram());
 		if(newGroup.eResource() != null) getDiagram().eResource().getContents().add(newGroup);
 		model.getElements().add(newGroup);
 		newGroup.setContainer(model);
@@ -469,25 +471,29 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 
 	@Override
 	public IReason updateNeeded(IUpdateContext updateContext) {
+		String rawModelContainerElementName,
+			   modelContainerElementName;
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
-			
+		
 		if(pictogramElement.getGraphicsAlgorithm() != null &&
 		   PropertyUtil.isShape_IdValue(pictogramElement.getGraphicsAlgorithm(), SHAPE_ID_GROUP_TYPEBODY)) {
 			//pictogram name of natural type, attributes and operations
-			String pictogramTypeName = GeneralUtil.getNameOfPictogramElement(pictogramElement, SHAPE_ID_GROUP_NAME);
+			String pictogramTypeName = PatternUtil.getNameOfPictogramElement(pictogramElement, SHAPE_ID_GROUP_NAME);
 			//business name and attributes
-			String businessTypeName = GeneralUtil.getNameOfBusinessObject(getBusinessObjectForPictogramElement(pictogramElement));
+			String businessTypeName = PatternUtil.getNameOfBusinessObject(getBusinessObjectForPictogramElement(pictogramElement));
 			//model element names in model
-			List<String> modelElementsNames = GeneralUtil.getModelElementsNames(pictogramElement, getDiagram());
+			List<String> modelElementsNames = PatternUtil.getModelElementsNames(pictogramElement, getDiagram());
  			//model element names in model container of shape
-			List<String> modelContainerElementsNames = GeneralUtil.getModelContainerElementsNames(pictogramElement);		
+			List<String> modelContainerElementsNames = PatternUtil.getModelContainerElementsNames(pictogramElement);		
 				
 			//check for update: different names, different amount of attibutes/ operations
 			if(pictogramTypeName==null || businessTypeName==null) return Reason.createTrueReason("Name is null.");
 			if(!(pictogramTypeName.equals(businessTypeName))) return Reason.createTrueReason("Name is out of date.");
 			if(modelElementsNames.size() != modelContainerElementsNames.size()) return Reason.createTrueReason("Different amount of Group Elements.");
 			for(int i=0; i<modelElementsNames.size(); i++) {
-				if(!(modelElementsNames.get(i).equals(modelContainerElementsNames.get(i)))) return Reason.createTrueReason("Different names of Group Elements.");
+				modelContainerElementName = modelContainerElementsNames.get(i);
+				rawModelContainerElementName = modelContainerElementName.substring(modelContainerElementName.indexOf(" ")+1);
+				if(!(modelElementsNames.get(i).equals(rawModelContainerElementName))) return Reason.createTrueReason("Different names of Group Elements.");
 		}	}
 		return Reason.createFalseReason();
 	}
@@ -498,7 +504,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 		boolean changed = false;
 	         
 		PictogramElement pictogramElement = updateContext.getPictogramElement();
-		String businessTypeName = GeneralUtil.getNameOfBusinessObject(getBusinessObjectForPictogramElement(pictogramElement));
+		String businessTypeName = PatternUtil.getNameOfBusinessObject(getBusinessObjectForPictogramElement(pictogramElement));
 			
 		//set type name in pictogram model
 	    if (pictogramElement instanceof ContainerShape) {     
@@ -508,7 +514,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	        		Text text = (Text) shape.getGraphicsAlgorithm();
 	                if(PropertyUtil.isShape_IdValue(text, SHAPE_ID_GROUP_NAME)) {
 	                    //change diagram name
-	                	Diagram diagram = GeneralUtil.getGroupDiagramForGroupShape(shape, getDiagram());
+	                	Diagram diagram = DiagramUtil.getGroupDiagramForGroupShape(shape, getDiagram());
 	                	diagram.setName(businessTypeName);
 	                	//change group name
 	                	text.setValue(businessTypeName);
@@ -519,14 +525,14 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	        		Rectangle rectangle = (Rectangle) shape.getGraphicsAlgorithm();
 	        		if(PropertyUtil.isShape_IdValue(rectangle, SHAPE_ID_GROUP_MODEL)) {
 		                ContainerShape modelContainerShape = (ContainerShape) shape;
-			            Diagram groupsDiagram = GeneralUtil.getGroupDiagramForGroupShape(typeBodyShape, getDiagram());
-			            Model groupModel = GeneralUtil.getRootModelForDiagram(groupsDiagram);
+			            Diagram groupsDiagram = DiagramUtil.getGroupDiagramForGroupShape(typeBodyShape, getDiagram());
+			            Model groupModel = DiagramUtil.getLinkedModelForDiagram(groupsDiagram);
 		             
 			            counter = 0;
 		                modelContainerShape.getChildren().clear();
-			            for(ModelElement modelElement : groupModel.getElements()) {							//TODO GROUP: name
+			            for(ModelElement modelElement : groupModel.getElements()) {		
 			            	Shape groupElementShape = pictogramElementCreateService.createShape(modelContainerShape, true);
-			            	Text groupElementText = graphicAlgorithmService.createText(groupElementShape, modelElement.getName());
+			            	Text groupElementText = graphicAlgorithmService.createText(groupElementShape, PatternUtil.getGroupOrCompartmentTypeElementText(modelElement));
 			            	groupElementText.setForeground(manageColor(COLOR_TEXT));
 			            	graphicAlgorithmService.setLocationAndSize(groupElementText, PUFFER_BETWEEN_ELEMENTS, HEIGHT_NAME_SHAPE+PUFFER_BETWEEN_ELEMENTS+HEIGHT_GROUP_ELEMENT_SHAPE*counter, 
 			            			modelContainerShape.getGraphicsAlgorithm().getWidth()-2*PUFFER_BETWEEN_ELEMENTS, HEIGHT_GROUP_ELEMENT_SHAPE);
@@ -541,14 +547,13 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	   }     
 	return changed;
 	}	
-	
+	 
 	//move feature
 	//~~~~~~~~~~~~
 	//disable that the user can move the drop shadow manually
 	@Override
 	public boolean canMoveShape(IMoveShapeContext moveContext) {
-		if(PropertyUtil.isShape_IdValue(moveContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_SHADOW) ||
-		   PropertyUtil.isShape_IdValue(moveContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_ELEMENT)) {
+		if(PropertyUtil.isShape_IdValue(moveContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_SHADOW)) {
 			return false;
 		}
 		ContainerShape typeBodyShape = (ContainerShape) moveContext.getPictogramElement();
@@ -589,8 +594,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	//disable that the user can resize the drop shadow manually
 	@Override
 	public boolean canResizeShape(IResizeShapeContext resizeContext) {
-		if(PropertyUtil.isShape_IdValue(resizeContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_SHADOW) ||
-		   PropertyUtil.isShape_IdValue(resizeContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_ELEMENT)) {
+		if(PropertyUtil.isShape_IdValue(resizeContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_SHADOW)) {
 			return false;
 		}
 		return super.canResizeShape(resizeContext);
@@ -601,8 +605,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	//disable that the user can delete the drop shadow and group elements manually
 	@Override
 	public boolean canDelete(IDeleteContext deleteContext) {
-		if(PropertyUtil.isShape_IdValue(deleteContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_SHADOW) ||
-		   PropertyUtil.isShape_IdValue(deleteContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_ELEMENT)) {
+		if(PropertyUtil.isShape_IdValue(deleteContext.getPictogramElement().getGraphicsAlgorithm(), SHAPE_ID_GROUP_SHADOW)) {
 			return false;
 		}
 		return super.canDelete(deleteContext);
@@ -612,7 +615,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	@Override
 	public void delete(IDeleteContext deleteContext) {
 		//delete groups diagram
-		Diagram groupDiagram = GeneralUtil.getGroupDiagramForGroupShape((Shape) deleteContext.getPictogramElement(), getDiagram());
+		Diagram groupDiagram = DiagramUtil.getGroupDiagramForGroupShape((Shape) deleteContext.getPictogramElement(), getDiagram());
 		DeleteContext deleteContextForGroupDiagram = new DeleteContext(groupDiagram);
 		deleteContextForGroupDiagram.setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
 		super.delete(deleteContextForGroupDiagram);

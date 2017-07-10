@@ -16,7 +16,7 @@ import org.framed.iorm.model.Model;
 import org.framed.iorm.model.OrmFactory;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.URLLiterals;
-import org.framed.iorm.ui.util.GeneralUtil;
+import org.framed.iorm.ui.util.DiagramUtil;
 
 /**
  * This graphiti pattern class is used to work with {@link org.framed.iorm.model.Model} in the editor. 
@@ -98,7 +98,7 @@ public class ModelPattern extends FRaMEDShapePattern implements IPattern {
 	@Override
 	public boolean canAdd(IAddContext addContext) {
 		if(addContext.getNewObject() instanceof Model) {
-			return (GeneralUtil.getRootModelForDiagram(getDiagram()) == null);
+			return (DiagramUtil.getLinkedModelForDiagram(getDiagram()) == null);
 		}  
 		return false;
 	}
@@ -125,7 +125,7 @@ public class ModelPattern extends FRaMEDShapePattern implements IPattern {
 	 */
 	@Override
 	public boolean canCreate(ICreateContext createContext) {
-		return (GeneralUtil.getRootModelForDiagram(getDiagram()) == null);
+		return (DiagramUtil.getLinkedModelForDiagram(getDiagram()) == null);
 	}
 	
 	/**

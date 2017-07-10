@@ -12,7 +12,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.multipage.MultipageEditor;
-import org.framed.iorm.ui.util.GeneralUtil;
+import org.framed.iorm.ui.util.DiagramUtil;
 
 /**
  * This graphiti custom feature is used to step in groups and compartment types by opening a new tab.
@@ -61,7 +61,7 @@ public class StepInNewTabFeature extends AbstractStepInFeature {
 				multipageEditorTosave.getDiagramEditor().doSave(new NullProgressMonitor());
 		}	});	
 		ContainerShape typeBodyShape = (ContainerShape) context.getPictogramElements()[0];
-		Diagram groupDiagram = GeneralUtil.getGroupDiagramForGroupShape(typeBodyShape, getDiagram());
+		Diagram groupDiagram = DiagramUtil.getGroupDiagramForGroupShape(typeBodyShape, getDiagram());
 		IEditorInput diagramEditorInput = DiagramEditorInput.createEditorInput(groupDiagram, DIAGRAM_PROVIDER_ID);
 		try {
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(diagramEditorInput, EDITOR_ID);

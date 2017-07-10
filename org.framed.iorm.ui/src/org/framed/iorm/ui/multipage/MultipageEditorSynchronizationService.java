@@ -12,7 +12,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.framed.iorm.ui.exceptions.InvalidTypeOfEditorInputException;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
-import org.framed.iorm.ui.util.GeneralUtil;
+import org.framed.iorm.ui.util.DiagramUtil;
+import org.framed.iorm.ui.util.EditorInputUtil;
 
 /**
  * This operation offers a register and a synchronizing functionality for multipage editors.
@@ -132,17 +133,17 @@ public class MultipageEditorSynchronizationService {
 		//Step 1
 		Resource baseResource = null;
 		if(baseEditorInput instanceof IFileEditorInput || baseEditorInput instanceof DiagramEditorInput)
-			baseResource = GeneralUtil.getResourceFromEditorInput(baseEditorInput);
+			baseResource = EditorInputUtil.getResourceFromEditorInput(baseEditorInput);
 		else throw new InvalidTypeOfEditorInputException();
 		//Step 2
 		if(changedEditorInput instanceof IFileEditorInput)
-			return GeneralUtil.getIFileEditorInputForResource(baseResource);
+			return EditorInputUtil.getIFileEditorInputForResource(baseResource);
 		//Step 3
 		if(changedEditorInput instanceof DiagramEditorInput) {
-			Resource changedEditorResource = GeneralUtil.getResourceFromEditorInput(changedEditorInput);
-			Diagram changedEditorDiagram = GeneralUtil.getDiagramForResourceOfDiagramEditorInput(changedEditorResource);
+			Resource changedEditorResource = EditorInputUtil.getResourceFromEditorInput(changedEditorInput);
+			Diagram changedEditorDiagram = DiagramUtil.getDiagramForResourceOfDiagramEditorInput(changedEditorResource);
 			Diagram equivalentDiagramInBaseResource =
-				GeneralUtil.getDiagramFromResourceByName(baseResource, changedEditorDiagram.getName());
+				DiagramUtil.getDiagramFromResourceByName(baseResource, changedEditorDiagram.getName());
 			return DiagramEditorInput.createEditorInput(equivalentDiagramInBaseResource, DIAGRAM_PROVIDER_ID);
 		} 
 		//Step 4
