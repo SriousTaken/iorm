@@ -28,7 +28,9 @@ public class TextLiterals {
 	 * (8) the message if the name of a group is already used when direct editing or<br>
 	 */
 	public static final String DIRECTEDITING_ATTRIBUTES = "An attributes name has the form <name>:<type>.",
+							   NAME_ALREADY_USED_ATTRIBUTES = "Another attribute already has the same name!",
 							   DIRECTEDITING_OPERATIONS = "An operations name has the form <name>(<parameters>):<type>.",
+							   NAME_ALREADY_USED_OPERATIONS = "Another operation already has the same name!",
 							   DIRECTEDITING_DATATYPE = "A datatypes name cant be empty and cant contains spaces. Numbers are allowed but as first symbol.",
 							   NAME_ALREADY_USED_DATATYPE = "Another datatype already has the same name!",
 							   DIRECTEDITING_NATURALTYPE = "A natural types name cant be empty and cant contains spaces. Numbers are allowed but as first symbol.",

@@ -1,6 +1,11 @@
 package org.framed.iorm.ui.pattern.shapes;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IDirectEditingContext;
+import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.pattern.AbstractPattern;
@@ -14,17 +19,6 @@ public abstract class FRaMEDShapePattern extends AbstractPattern {
 	
 	public FRaMEDShapePattern() {
 		super(null);
-	}
-	
-	protected Object getBusinessObject(IDirectEditingContext editingContext) {
-		PictogramElement pictogramElement = editingContext.getPictogramElement();
-		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
-		return businessObject;
-	}
-	
-	protected void updateContainingGroup() {
-		ContainerShape groupTypeBodyToUpdate = PatternUtil.getGroupTypeBodyForGroupsDiagram(getDiagram());
-        updatePictogramElement(groupTypeBodyToUpdate);
 	}
 	
 	/**
@@ -54,4 +48,15 @@ public abstract class FRaMEDShapePattern extends AbstractPattern {
 	 */
 	@Override
 	protected abstract boolean isPatternRoot(PictogramElement pictogramElement);
+	
+	protected Object getBusinessObject(IDirectEditingContext editingContext) {
+		PictogramElement pictogramElement = editingContext.getPictogramElement();
+		Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
+		return businessObject;
+	}
+	
+	protected void updateContainingGroup() {
+		ContainerShape groupTypeBodyToUpdate = PatternUtil.getGroupTypeBodyForGroupsDiagram(getDiagram());
+        updatePictogramElement(groupTypeBodyToUpdate);
+	}
 }

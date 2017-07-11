@@ -4,7 +4,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
-import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
@@ -72,18 +71,6 @@ public abstract class AbstractStepInFeature extends AbstractCustomFeature {
 					return true;
 		}	}	
 		return false;
-	}
-	
-	//TODO
-	public static void saveMultipageEditorWhenPossible(MultipageEditor multipageEditorToClose) {
-		Display display = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().getDisplay();
-		display.asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				multipageEditorToClose.getDiagramEditor().doSave(new NullProgressMonitor());
-				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeEditor(multipageEditorToClose, false);
-			}
-		});
 	}
 	
 	/**

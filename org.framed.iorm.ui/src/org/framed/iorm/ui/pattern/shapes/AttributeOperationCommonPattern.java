@@ -59,10 +59,14 @@ public class AttributeOperationCommonPattern extends FRaMEDShapePattern implemen
 	
 	/**
 	 * text literals used as warning if an invalid name for attributes or operation is chosen
+	 * or another attribute or operation in the same class or role already has the same name 
+	 * when direct editing
 	 * gathered from {@link TextLiterals}
 	 */
 	private final String DIRECTEDITING_ATTRIBUTES = TextLiterals.DIRECTEDITING_ATTRIBUTES,
-						 DIRECTEDITING_OPERATIONS = TextLiterals.DIRECTEDITING_OPERATIONS;
+						 NAME_ALREADY_USED_ATTRIBUTES = TextLiterals.NAME_ALREADY_USED_ATTRIBUTES,
+						 DIRECTEDITING_OPERATIONS = TextLiterals.DIRECTEDITING_OPERATIONS,
+						 NAME_ALREADY_USED_OPERATIONS = TextLiterals.NAME_ALREADY_USED_OPERATIONS;
 	
 	/**
 	 * layout integers used to add attributes and operations at the right position
@@ -141,7 +145,7 @@ public class AttributeOperationCommonPattern extends FRaMEDShapePattern implemen
 	public boolean canAdd(IAddContext addContext) {
 		if(addContext.getNewObject() instanceof NamedElement) {
 			NamedElement namedElement = (NamedElement) addContext.getNewObject();
-			if(namedElement.getName().equals(STANDARD_ATTRIBUTE_NAME) || namedElement.getName().equals(STANDARD_OPERATION_NAME)) {
+			if(namedElement.getName().startsWith(STANDARD_ATTRIBUTE_NAME) || namedElement.getName().startsWith(STANDARD_OPERATION_NAME)) {
 				PictogramElement pictogramElement = addContext.getTargetContainer();
 				Object businessObject = getBusinessObjectForPictogramElement(pictogramElement);
 				if(businessObject instanceof org.framed.iorm.model.Shape) {
@@ -190,7 +194,7 @@ public class AttributeOperationCommonPattern extends FRaMEDShapePattern implemen
 			horizontalCenter = GeneralUtil.calculateHorizontalCenter(businessObjectOfClassOrRole.getType(), 
 							    	classOrRoleContainer.getGraphicsAlgorithm().getHeight());
 		//Step 3
-		 if(addedAttributeOrOperation.getName().equals(STANDARD_ATTRIBUTE_NAME)) {
+		 if(addedAttributeOrOperation.getName().startsWith(STANDARD_ATTRIBUTE_NAME)) {
 	    	attributeOrOperationShape = pictogramElementCreateService.createShape(attributeContainer, true);
 	    	text = graphicAlgorithmService.createText(attributeOrOperationShape, addedAttributeOrOperation.getName());
 	    	text.setForeground(manageColor(COLOR_TEXT));
@@ -198,7 +202,7 @@ public class AttributeOperationCommonPattern extends FRaMEDShapePattern implemen
 	    								 classOrRoleContainer.getGraphicsAlgorithm().getWidth()-2*PUFFER_BETWEEN_ELEMENTS, HEIGHT_ATTRIBUTE_SHAPE);
 	    	PropertyUtil.setShape_IdValue(attributeOrOperationShape, SHAPE_ID_ATTRIBUTE_TEXT);
 	    } else {
-			if(addedAttributeOrOperation.getName().equals(STANDARD_OPERATION_NAME)) {
+			if(addedAttributeOrOperation.getName().startsWith(STANDARD_OPERATION_NAME)) {
 		    	attributeOrOperationShape = pictogramElementCreateService.createShape(operationContainer, true);
 		    	text = graphicAlgorithmService.createText(attributeOrOperationShape, addedAttributeOrOperation.getName());
 		    	text.setForeground(manageColor(COLOR_TEXT));
@@ -255,19 +259,26 @@ public class AttributeOperationCommonPattern extends FRaMEDShapePattern implemen
 	/**
 	 * checks if the chosen attribute or operation name is a valid value for it
 	 * <p>
-	 * This is done by using the regular expressions in the class {@link DirectUtil}.
+	 * This is done by using the regular expressions and by checking if another attribute or
+	 * operation in the same class or role has the same name. Both checks are done with operations
+	 * in the class {@link DirectUtil}.
 	 * @return if the new value of an attributes or operations name is valid
 	 */
 	public String checkValueValid(String newName, IDirectEditingContext editingContext) {
+		if(getInitialValue(editingContext).equals(newName)) return null;
 		Shape shape = (Shape) editingContext.getPictogramElement();
 		ContainerShape classOrRoleShape = shape.getContainer().getContainer();
 		ContainerShape attributeContainer = (ContainerShape) classOrRoleShape.getChildren().get(2);
 		ContainerShape operationContainer = (ContainerShape) classOrRoleShape.getChildren().get(4);
 		if(attributeContainer.getChildren().contains(shape))	{
 			if(!(DirectEditingUtil.matchesAttribute(newName))) return DIRECTEDITING_ATTRIBUTES;
+			if(DirectEditingUtil.nameAlreadyUsedForAttributeOrOperation(attributeContainer, newName)) 
+				return NAME_ALREADY_USED_ATTRIBUTES;
 		}
 		if(operationContainer.getChildren().contains(shape))	{
 			if(!(DirectEditingUtil.matchesOperation(newName))) return DIRECTEDITING_OPERATIONS;
+			if(DirectEditingUtil.nameAlreadyUsedForAttributeOrOperation(operationContainer, newName)) 
+				return NAME_ALREADY_USED_OPERATIONS;
 		}
 		return null;
 	}	

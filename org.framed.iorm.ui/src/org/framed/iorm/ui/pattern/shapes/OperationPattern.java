@@ -1,6 +1,7 @@
 package org.framed.iorm.ui.pattern.shapes;
 
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.pattern.IPattern;
 import org.framed.iorm.model.ModelElement;
@@ -10,6 +11,7 @@ import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.pattern.shapes.AttributeOperationCommonPattern; //*import for javadoc link
+import org.framed.iorm.ui.util.DirectEditingUtil;
 
 /**
  * This graphiti pattern is used to work with {@link NamedElement}s
@@ -121,8 +123,10 @@ public class OperationPattern extends FRaMEDShapePattern implements IPattern {
 	 */
 	@Override
 	public Object[] create(ICreateContext createContext) {
+		ContainerShape operationContainer = (ContainerShape) createContext.getTargetContainer().getChildren().get(4);
 		NamedElement newOperation = OrmFactory.eINSTANCE.createNamedElement();
-		newOperation.setName(STANDARD_OPERATION_NAME);
+		String standartName = DirectEditingUtil.calculateStandardNameForAttributeOrOperation(operationContainer, STANDARD_OPERATION_NAME);
+		newOperation.setName(standartName);
 		org.framed.iorm.model.Shape classOrRole = 
 				(org.framed.iorm.model.Shape) getBusinessObjectForPictogramElement(createContext.getTargetContainer());
 		if(newOperation.eResource() != null) getDiagram().eResource().getContents().add(newOperation);

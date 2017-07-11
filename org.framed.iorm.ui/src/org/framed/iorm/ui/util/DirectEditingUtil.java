@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern; 
 import org.framed.iorm.ui.wizards.RoleModelWizard; //*import for javadoc link
+import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.algorithms.Text;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.framed.iorm.model.Model;
@@ -28,6 +31,9 @@ public class DirectEditingUtil {
 	 * If its not clear what <em>main diagram</em> means, see {@link RoleModelWizard#createEmfFileForDiagram} for reference.
 	 */
 	private static final String DIAGRAM_KIND_MAIN_DIAGRAM = IdentifierLiterals.DIAGRAM_KIND_MAIN_DIAGRAM;
+	
+	//TODO
+	private final static int STANDART_NAMES_COUNTER_LIMIT = 10;
 	
 	/**
 	 * regular expression for identifiers:
@@ -132,9 +138,9 @@ public class DirectEditingUtil {
 	 * @param diagram the diagram the that is direct edited
 	 * @param type the type to the check for if a model element of that type already has the same name
 	 * @param newName the name to check against
-	 * @return if another model element of a given type already has the same name when direct editing
+	 * @return boolean if another model element of a given type already has the same name when direct editing
 	 */
-	public static boolean nameAlreadyUsed(Diagram diagram, Type type, String newName) {
+	public static boolean nameAlreadyUsedForClassOrRole(Diagram diagram, Type type, String newName) {
 		List<String> modelElements = new ArrayList<String>();
 		//Step 1
 		Model rootModel = null;
@@ -170,10 +176,35 @@ public class DirectEditingUtil {
 				if(modelElement.getType() == Type.GROUP) {
 					if(type == Type.GROUP) modelElementNames.add(modelElement.getName());
 					getModelElementsNamesRecursive(((org.framed.iorm.model.Shape) modelElement).getModel(), type, modelElementNames);
-				}	
-			}
-			if(modelElement instanceof org.framed.iorm.model.Relation) {
-			
-			}		
-	}	}
+	}	}	}	}
+	
+	/**
+	 * calculates if another attribute or operation in the same class or role already have the same name when 
+	 * direct editing names of attributes or operations 
+	 * @param attributeOrOperationsContainer the container to search the other attributes or operations to check against
+	 * @param newName the name to check against
+	 * @return boolean if another attribute or operation in the same class or role already has the same name when 
+	 * 		   direct editing
+	 */
+	public static boolean nameAlreadyUsedForAttributeOrOperation(ContainerShape attributeOrOperationsContainer, String newName) {
+		List<String> attributeOrOperationNames = new ArrayList<String>();
+		for(Shape shape : attributeOrOperationsContainer.getChildren()) {
+			attributeOrOperationNames.add(((Text) shape.getGraphicsAlgorithm()).getValue());
+		}
+		return attributeOrOperationNames.contains(newName);
+	}
+	
+	//TODO
+	public static String calculateStandardNameForAttributeOrOperation(ContainerShape attributeOrOperationsContainer, String standardName) {
+		List<String> attributeOrOperationNames = new ArrayList<String>();
+		for(Shape shape : attributeOrOperationsContainer.getChildren()) {
+			attributeOrOperationNames.add(((Text) shape.getGraphicsAlgorithm()).getValue());
+		}
+		if(!(attributeOrOperationNames.contains(standardName))) return standardName;
+		for(int i=1; i<=STANDART_NAMES_COUNTER_LIMIT; i++) {
+			if(!(attributeOrOperationNames.contains(standardName + Integer.toString(i))))
+				return standardName + Integer.toString(i);
+		}
+		return standardName;
+	}
 }

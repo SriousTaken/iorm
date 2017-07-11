@@ -357,10 +357,9 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 		
 	@Override
 	public String checkValueValid(String newName, IDirectEditingContext editingContext) {
-		String oldName = ((Text) editingContext.getGraphicsAlgorithm()).getValue();
-		if(oldName.contentEquals(newName)) return null;
+		if(getInitialValue(editingContext).contentEquals(newName)) return null;
 		if(!(DirectEditingUtil.matchesIdentifier(newName))) return DIRECTEDITING_GROUP;
-		if(DirectEditingUtil.nameAlreadyUsed(getDiagram(), Type.GROUP, newName)) 
+		if(DirectEditingUtil.nameAlreadyUsedForClassOrRole(getDiagram(), Type.GROUP, newName)) 
 			return NAME_ALREADY_USED_GROUP;
 	    return null;
 	}
