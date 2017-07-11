@@ -60,35 +60,36 @@ import org.framed.iorm.ui.wizards.RoleModelWizard;
 public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	
 	//names
-	private String GROUP_FEATURE_NAME = NameLiterals.GROUP_FEATURE_NAME,
-				   STANDART_GROUP_NAME = NameLiterals.STANDART_GROUP_NAME;
+	private final String GROUP_FEATURE_NAME = NameLiterals.GROUP_FEATURE_NAME,
+				   		 STANDART_GROUP_NAME = NameLiterals.STANDART_GROUP_NAME;
 	
 	//identifier
-	private String SHAPE_ID_GROUP_CONTAINER = IdentifierLiterals.SHAPE_ID_GROUP_CONTAINER,
-				   SHAPE_ID_GROUP_TYPEBODY = IdentifierLiterals.SHAPE_ID_GROUP_TYPEBODY,
-				   SHAPE_ID_GROUP_SHADOW = IdentifierLiterals.SHAPE_ID_GROUP_SHADOW,
-				   SHAPE_ID_GROUP_NAME = IdentifierLiterals.SHAPE_ID_GROUP_NAME, 
-				   SHAPE_ID_GROUP_LINE = IdentifierLiterals.SHAPE_ID_GROUP_LINE,
-				   SHAPE_ID_GROUP_MODEL = IdentifierLiterals.SHAPE_ID_GROUP_MODEL,
-				   SHAPE_ID_GROUP_ELEMENT = IdentifierLiterals.SHAPE_ID_GROUP_ELEMENT,
-				   //TODO trennen
-				   IMG_ID_FEATURE_GROUP = IdentifierLiterals.IMG_ID_FEATURE_GROUP,
-				   DIAGRAM_TYPE = IdentifierLiterals.DIAGRAM_TYPE_ID,
+	private final String SHAPE_ID_GROUP_CONTAINER = IdentifierLiterals.SHAPE_ID_GROUP_CONTAINER,
+				   		 SHAPE_ID_GROUP_TYPEBODY = IdentifierLiterals.SHAPE_ID_GROUP_TYPEBODY,
+				   		 SHAPE_ID_GROUP_SHADOW = IdentifierLiterals.SHAPE_ID_GROUP_SHADOW,
+				   		 SHAPE_ID_GROUP_NAME = IdentifierLiterals.SHAPE_ID_GROUP_NAME, 
+				   		 SHAPE_ID_GROUP_LINE = IdentifierLiterals.SHAPE_ID_GROUP_LINE,
+				   		 SHAPE_ID_GROUP_MODEL = IdentifierLiterals.SHAPE_ID_GROUP_MODEL,
+				   		 SHAPE_ID_GROUP_ELEMENT = IdentifierLiterals.SHAPE_ID_GROUP_ELEMENT;
 				   
-				   DIAGRAM_KIND_GROUP_DIAGRAM = IdentifierLiterals.DIAGRAM_KIND_GROUP_DIAGRAM;
-	
+	private final String DIAGRAM_KIND_GROUP_DIAGRAM = IdentifierLiterals.DIAGRAM_KIND_GROUP_DIAGRAM;			  
+				   		 
+	private final String IMG_ID_FEATURE_GROUP = IdentifierLiterals.IMG_ID_FEATURE_GROUP,
+				   		 DIAGRAM_TYPE = IdentifierLiterals.DIAGRAM_TYPE_ID;
+				   
 	//text
-	private String DIRECTEDITING_GROUP = TextLiterals.DIRECTEDITING_GROUP;
+	private final String DIRECTEDITING_GROUP = TextLiterals.DIRECTEDITING_GROUP,
+				   NAME_ALREADY_USED_GROUP = TextLiterals.NAME_ALREADY_USED_GROUP;
 	
 	//layout
-	private int MIN_WIDTH = LayoutLiterals.MIN_WIDTH_FOR_CLASS_OR_ROLE,
+	private final int MIN_WIDTH = LayoutLiterals.MIN_WIDTH_FOR_CLASS_OR_ROLE,
 				MIN_HEIGHT = LayoutLiterals.MIN_HEIGHT_FOR_CLASS_OR_ROLE,
 				HEIGHT_NAME_SHAPE = LayoutLiterals.HEIGHT_NAME_SHAPE,
 				PUFFER_BETWEEN_ELEMENTS = LayoutLiterals.PUFFER_BETWEEN_ELEMENTS,
 				GROUP_CORNER_RADIUS = LayoutLiterals.GROUP_CORNER_RADIUS,
 				SHADOW_SIZE = LayoutLiterals.SHADOW_SIZE,
 				HEIGHT_GROUP_ELEMENT_SHAPE = LayoutLiterals.HEIGHT_GROUP_ELEMENT_SHAPE;
-	private IColorConstant COLOR_TEXT = LayoutLiterals.COLOR_TEXT,
+	private final IColorConstant COLOR_TEXT = LayoutLiterals.COLOR_TEXT,
 			   			   COLOR_LINES = LayoutLiterals.COLOR_LINES,
 			   			   COLOR_BACKGROUND = LayoutLiterals.COLOR_BACKGROUND,
 			   	  		   COLOR_SHADOW = LayoutLiterals.COLOR_SHADOW;
@@ -356,7 +357,11 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 		
 	@Override
 	public String checkValueValid(String newName, IDirectEditingContext editingContext) {
+		String oldName = ((Text) editingContext.getGraphicsAlgorithm()).getValue();
+		if(oldName.contentEquals(newName)) return null;
 		if(!(DirectEditingUtil.matchesIdentifier(newName))) return DIRECTEDITING_GROUP;
+		if(DirectEditingUtil.nameAlreadyUsed(getDiagram(), Type.GROUP, newName)) 
+			return NAME_ALREADY_USED_GROUP;
 	    return null;
 	}
 		
@@ -483,7 +488,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 			//business name and attributes
 			String businessTypeName = PatternUtil.getNameOfBusinessObject(getBusinessObjectForPictogramElement(pictogramElement));
 			//model element names in model
-			List<String> modelElementsNames = PatternUtil.getModelElementsNames(pictogramElement, getDiagram());
+			List<String> modelElementsNames = PatternUtil.getGroupOrCompartmentTypeElementNames(pictogramElement, getDiagram());
  			//model element names in model container of shape
 			List<String> modelContainerElementsNames = PatternUtil.getModelContainerElementsNames(pictogramElement);		
 				

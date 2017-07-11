@@ -52,7 +52,8 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 						 STANDARD_NATURALTYPE_NAME = NameLiterals.STANDARD_NATURALTYPE_NAME;
 	
 	//text literals
-	private final String DIRECTEDITING_NATURALTYPE = TextLiterals.DIRECTEDITING_NATURALTYPE;
+	private final String DIRECTEDITING_NATURALTYPE = TextLiterals.DIRECTEDITING_NATURALTYPE,
+						 NAME_ALREADY_USED_NATURALTYPE = TextLiterals.NAME_ALREADY_USED_NATURALTYPE;
 	
 	//ID literals
 	private final String SHAPE_ID_NATURALTYPE_CONTAINER = IdentifierLiterals.SHAPE_ID_NATURALTYPE_CONTAINER,
@@ -313,7 +314,11 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 	
 	@Override
 	public String checkValueValid(String newName, IDirectEditingContext editingContext) {
+		String oldName = ((Text) editingContext.getGraphicsAlgorithm()).getValue();
+		if(oldName.contentEquals(newName)) return null;
 		if(!(DirectEditingUtil.matchesIdentifier(newName))) return DIRECTEDITING_NATURALTYPE;
+		if(DirectEditingUtil.nameAlreadyUsed(getDiagram(), Type.NATURAL_TYPE, newName)) 
+			return NAME_ALREADY_USED_NATURALTYPE;
         return null;
 	}
 	

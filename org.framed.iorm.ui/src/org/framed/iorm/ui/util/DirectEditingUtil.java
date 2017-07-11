@@ -1,8 +1,17 @@
 package org.framed.iorm.ui.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern; 
 import org.framed.iorm.ui.wizards.RoleModelWizard; //*import for javadoc link
+import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.framed.iorm.model.Model;
+import org.framed.iorm.model.ModelElement;
+import org.framed.iorm.model.Type;
+import org.framed.iorm.ui.exceptions.NoModelFoundException;
+import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.wizards.RoleModelProjectWizard; //*import for javadoc link
 
 /**
@@ -13,6 +22,13 @@ import org.framed.iorm.ui.wizards.RoleModelProjectWizard; //*import for javadoc 
  */
 public class DirectEditingUtil {
 
+	/**
+	 * the identifier of the <em>main diagram</em> using the property diagram kind
+	 * <p>
+	 * If its not clear what <em>main diagram</em> means, see {@link RoleModelWizard#createEmfFileForDiagram} for reference.
+	 */
+	private static final String DIAGRAM_KIND_MAIN_DIAGRAM = IdentifierLiterals.DIAGRAM_KIND_MAIN_DIAGRAM;
+	
 	/**
 	 * regular expression for identifiers:
 	 * <p>
@@ -103,4 +119,61 @@ public class DirectEditingUtil {
 		Matcher operationMatcher = operationPattern.matcher(operationName);
 		return operationMatcher.matches();
 	}
+	
+	/**
+	 * calculates if another model element of a specific {@link org.framed.iorm.model.Type} already has a name equivalent 
+	 * to the new given name when direct editing names using the following steps:
+	 * <p>
+	 * Step 1: It gets the <em>main diagram</em> of the role model that the given diagram belongs to.<br>
+	 * Step 2: It fetches a list of the model element names for the given type and checks if this list contains
+	 * 		   the new name.
+	 * <p>
+	 * If its not clear what <em>main diagram</em> means, see {@link RoleModelWizard#createEmfFileForDiagram} for reference.
+	 * @param diagram the diagram the that is direct edited
+	 * @param type the type to the check for if a model element of that type already has the same name
+	 * @param newName the name to check against
+	 * @return if another model element of a given type already has the same name when direct editing
+	 */
+	public static boolean nameAlreadyUsed(Diagram diagram, Type type, String newName) {
+		List<String> modelElements = new ArrayList<String>();
+		//Step 1
+		Model rootModel = null;
+		Diagram containerDiagram = DiagramUtil.getContainerDiagramForAnyDiagram(diagram);
+		for(Shape shape : containerDiagram.getChildren()) {
+			if(shape instanceof Diagram &&
+			   PropertyUtil.isDiagram_KindValue((Diagram) shape, DIAGRAM_KIND_MAIN_DIAGRAM)) {
+				if(shape.getLink().getBusinessObjects().size() == 1) {
+					rootModel = (Model) shape.getLink().getBusinessObjects().get(0);
+		}	}	}
+		if(rootModel == null) throw new NoModelFoundException();
+		else {
+			//Step 2
+			getModelElementsNamesRecursive(rootModel, type, modelElements);
+			return modelElements.contains(newName);
+	}	}
+		
+	/**
+	 * fetches all names of model elements of a given type in a recursive manner
+	 * @param model the model to fetch the model elements names from
+	 * @param type the type of the model elements to get the names from
+	 * @param modelElementNames the list of model element names to fill while using recursion
+	 */
+	private static void getModelElementsNamesRecursive(Model model, Type type, List<String> modelElementNames) {
+		for(ModelElement modelElement : model.getElements()) {
+			if(modelElement instanceof org.framed.iorm.model.Shape) {
+				if(modelElement.getType() == Type.NATURAL_TYPE &&
+				   type == Type.NATURAL_TYPE) 
+					modelElementNames.add(modelElement.getName());
+				if(modelElement.getType() == Type.DATA_TYPE &&
+				   type == Type.DATA_TYPE)
+					modelElementNames.add(modelElement.getName());
+				if(modelElement.getType() == Type.GROUP) {
+					if(type == Type.GROUP) modelElementNames.add(modelElement.getName());
+					getModelElementsNamesRecursive(((org.framed.iorm.model.Shape) modelElement).getModel(), type, modelElementNames);
+				}	
+			}
+			if(modelElement instanceof org.framed.iorm.model.Relation) {
+			
+			}		
+	}	}
 }

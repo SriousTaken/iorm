@@ -2,6 +2,7 @@ package org.framed.iorm.ui.literals;
 
 import org.framed.iorm.ui.exceptions.FeatureModelNotReadableException; //*import for javadoc link
 import org.framed.iorm.ui.exceptions.NoDiagramFoundException; //*import for javadoc link
+import org.framed.iorm.ui.exceptions.NoModelFoundException; //*import for javadoc link
 import org.framed.iorm.ui.wizards.RoleModelWizardPage; //*import for javadoc link
 import org.framed.iorm.ui.wizards.RoleModelWizard; //*import for javadoc link
 import org.eclipse.ui.PartInitException; //*import for javadoc link
@@ -20,15 +21,21 @@ public class TextLiterals {
 	 * (1) the direct editing message for attribute names or<br>
 	 * (2) the direct editing message for operation names or<br>
 	 * (3) the direct editing message for data type names or<br>
-	 * (4) the direct editing message for natural type names or<br>
-	 * (5) the direct editing message for group names
+	 * (4) the message if the name of a datatype is already used when direct editing or<br>
+	 * (5) the direct editing message for natural type names or<br>
+	 * (6) the message if the name of a natural type is already used when direct editing or<br>	 
+	 * (7) the direct editing message for group names
+	 * (8) the message if the name of a group is already used when direct editing or<br>
 	 */
-	public static final String DIRECTEDITING_ATTRIBUTES = "An attributes name has the form <name>:<type>",
-							   DIRECTEDITING_OPERATIONS = "An operations name has the form <name>(<parameters>):<type>",
+	public static final String DIRECTEDITING_ATTRIBUTES = "An attributes name has the form <name>:<type>.",
+							   DIRECTEDITING_OPERATIONS = "An operations name has the form <name>(<parameters>):<type>.",
 							   DIRECTEDITING_DATATYPE = "A datatypes name cant be empty and cant contains spaces. Numbers are allowed but as first symbol.",
+							   NAME_ALREADY_USED_DATATYPE = "Another datatype already has the same name!",
 							   DIRECTEDITING_NATURALTYPE = "A natural types name cant be empty and cant contains spaces. Numbers are allowed but as first symbol.",
-							   DIRECTEDITING_GROUP = "A groups name cant be empty and cant contains spaces. Numbers are allowed but as first symbol.";
-	
+							   NAME_ALREADY_USED_NATURALTYPE = "Another natural type already has the same name!",
+							   DIRECTEDITING_GROUP = "A groups name cant be empty and cant contains spaces. Numbers are allowed but as first symbol.",
+							   NAME_ALREADY_USED_GROUP = "Another group already has the same name!";
+
 	/**
 	 * messages used in the feature sub editor
 	 * <p>
@@ -39,8 +46,13 @@ public class TextLiterals {
 	/**
 	 * the error message for the {@link NoDiagramFoundException}
 	 */
-	public static final String ERROR_NO_DIAGRAM_FOUND = "There was no diagram found for the the diagram editor input!";
-				
+	public static final String ERROR_NO_DIAGRAM_FOUND = "A diagram could not be found!";
+		
+	/**
+	 * the error message for the {@link NoModelFoundException}
+	 */
+	public static final String ERROR_NO_MODEL_FOUND = "A model could not be found!";
+	
 	/**
 	 * messages used in the Eclipse wizards
 	 * <p>

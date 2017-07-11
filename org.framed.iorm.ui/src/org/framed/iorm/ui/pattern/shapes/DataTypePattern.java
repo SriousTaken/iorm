@@ -53,7 +53,8 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 						 STANDARD_DATATYPE_NAME = NameLiterals.STANDARD_DATATYPE_NAME;
 	
 	//text literals
-	private final String DIRECTEDITING_DATATYPE = TextLiterals.DIRECTEDITING_DATATYPE;
+	private final String DIRECTEDITING_DATATYPE = TextLiterals.DIRECTEDITING_DATATYPE,
+						 NAME_ALREADY_USED_DATATYPE = TextLiterals.NAME_ALREADY_USED_DATATYPE;
 	
 	//ID literals
 	private final String SHAPE_ID_DATATYPE_CONTAINER = IdentifierLiterals.SHAPE_ID_DATATYPE_CONTAINER,
@@ -324,7 +325,11 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 		
 	@Override
 	public String checkValueValid(String newName, IDirectEditingContext editingContext) {
+		String oldName = ((Text) editingContext.getGraphicsAlgorithm()).getValue();
+		if(oldName.contentEquals(newName)) return null;
 		if(!(DirectEditingUtil.matchesIdentifier(newName))) return DIRECTEDITING_DATATYPE;
+		if(DirectEditingUtil.nameAlreadyUsed(getDiagram(), Type.DATA_TYPE, newName)) 
+			return NAME_ALREADY_USED_DATATYPE;
 	    return null;
 	}
 		

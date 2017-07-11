@@ -10,7 +10,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.framed.iorm.model.Model;
 import org.framed.iorm.model.ModelElement;
-import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.pattern.shapes.GroupPattern; //*import for javadoc link
 
@@ -23,10 +22,10 @@ public class PatternUtil {
 	/**
 	 * the identifiers for graphics algorithms of group pictograms gathered from {@link IdentifierLiterals}
 	 */
-	static final String SHAPE_ID_GROUP_TYPEBODY = IdentifierLiterals.SHAPE_ID_GROUP_TYPEBODY,
-				  	    SHAPE_ID_GROUP_NAME = IdentifierLiterals.SHAPE_ID_GROUP_NAME,
-				  	    SHAPE_ID_GROUP_MODEL = IdentifierLiterals.SHAPE_ID_GROUP_MODEL;
-
+	private static final String SHAPE_ID_GROUP_TYPEBODY = IdentifierLiterals.SHAPE_ID_GROUP_TYPEBODY,
+								SHAPE_ID_GROUP_NAME = IdentifierLiterals.SHAPE_ID_GROUP_NAME,
+								SHAPE_ID_GROUP_MODEL = IdentifierLiterals.SHAPE_ID_GROUP_MODEL;
+			
 	/**
 	 * fetches all the names of the groups content that are shown in <em>model container</em> of the group
 	 * <p>
@@ -55,7 +54,7 @@ public class PatternUtil {
 	 * @param diagram the diagram the pattern that called this operation works in
 	 * @return a list of names of all direct child elements in a groups model
 	 */
-	public static List<String> getModelElementsNames(PictogramElement pictogramElement, Diagram diagram) {
+	public static List<String> getGroupOrCompartmentTypeElementNames(PictogramElement pictogramElement, Diagram diagram) {
 		List<String> modelElementsNames = new ArrayList<String>();
 		Diagram groupDiagram = DiagramUtil.getGroupDiagramForGroupShape((ContainerShape) pictogramElement, diagram);
 		Model groupModel = DiagramUtil.getLinkedModelForDiagram(groupDiagram);
@@ -180,27 +179,6 @@ public class PatternUtil {
 						groupTypeBodies.add((ContainerShape) innerShape);
 		}	}	}	}
 		return groupTypeBodies;
-	}
-	
-	public static List<String> getListOfModelElementNamesOfType(Diagram diagram, Type type) {
-		List<ModelElement> modelElements = new ArrayList<ModelElement>();
-		getListOfModelElementsOfType(diagram, type, modelElements);
-		return null;
-	}
-	
-	private static List<ModelElement> getListOfModelElementsOfType(Diagram diagram, Type type, List<ModelElement> modelElements) {
-		for(Shape shape : diagram.getChildren()) {
-			//diagram
-			if(shape instanceof Diagram) {
-				getListOfModelElementsOfType((Diagram) shape, type, modelElements);
-			}
-			if(shape instanceof ContainerShape &&
-			   !(shape instanceof Diagram)) {
-				ContainerShape containerShape = (ContainerShape) shape;
-				getListOfModelElementsOfType((Diagram) shape, type, modelElements);
-			}
-		}		
-		return null;
 	}
 	
 	/**
