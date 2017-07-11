@@ -23,16 +23,17 @@ import org.framed.iorm.ui.wizards.RoleModelProjectWizard; //*import for javadoc 
  * of project and file names.
  * @author Kevin Kassin
  */
-public class DirectEditingUtil {
-
-	/**
-	 * the identifier of the <em>main diagram</em> using the property diagram kind
-	 * <p>
-	 * If its not clear what <em>main diagram</em> means, see {@link RoleModelWizard#createEmfFileForDiagram} for reference.
-	 */
-	private static final String DIAGRAM_KIND_MAIN_DIAGRAM = IdentifierLiterals.DIAGRAM_KIND_MAIN_DIAGRAM;
+public class NameUtil {
 	
-	//TODO
+	/**
+	 * the limit of the suffix for standard names
+	 * <p>
+	 * This means that if the limit is 10 the following standard names are used:<br>
+	 * <em>standard name</em><br>
+	 * <em>standard name1</em><br>
+	 * <em>...</em><br>
+	 * <em>standard name10</em><br>
+	 */
 	private final static int STANDART_NAMES_COUNTER_LIMIT = 10;
 	
 	/**
@@ -135,7 +136,7 @@ public class DirectEditingUtil {
 	 * 		   the new name.
 	 * <p>
 	 * If its not clear what <em>main diagram</em> means, see {@link RoleModelWizard#createEmfFileForDiagram} for reference.
-	 * @param diagram the diagram the that is direct edited
+	 * @param diagram the diagram that is direct edited
 	 * @param type the type to the check for if a model element of that type already has the same name
 	 * @param newName the name to check against
 	 * @return boolean if another model element of a given type already has the same name when direct editing
@@ -143,21 +144,12 @@ public class DirectEditingUtil {
 	public static boolean nameAlreadyUsedForClassOrRole(Diagram diagram, Type type, String newName) {
 		List<String> modelElements = new ArrayList<String>();
 		//Step 1
-		Model rootModel = null;
-		Diagram containerDiagram = DiagramUtil.getContainerDiagramForAnyDiagram(diagram);
-		for(Shape shape : containerDiagram.getChildren()) {
-			if(shape instanceof Diagram &&
-			   PropertyUtil.isDiagram_KindValue((Diagram) shape, DIAGRAM_KIND_MAIN_DIAGRAM)) {
-				if(shape.getLink().getBusinessObjects().size() == 1) {
-					rootModel = (Model) shape.getLink().getBusinessObjects().get(0);
-		}	}	}
-		if(rootModel == null) throw new NoModelFoundException();
-		else {
-			//Step 2
-			getModelElementsNamesRecursive(rootModel, type, modelElements);
-			return modelElements.contains(newName);
-	}	}
-		
+		Model rootModel = DiagramUtil.getMainDiagramForAnyDiagram(diagram);
+		//Step 2
+		getModelElementsNamesRecursive(rootModel, type, modelElements);
+		return modelElements.contains(newName);
+	}
+			
 	/**
 	 * fetches all names of model elements of a given type in a recursive manner
 	 * @param model the model to fetch the model elements names from
@@ -194,7 +186,38 @@ public class DirectEditingUtil {
 		return attributeOrOperationNames.contains(newName);
 	}
 	
-	//TODO
+	/**
+	 * calculates the standard name of a class or role when creating one
+	 * <p>
+	 * The standard name will be build by using a given standard name and adding number as suffix to it
+	 * if needed. The limit of this number is set in {@link #STANDART_NAMES_COUNTER_LIMIT}.
+	 * @param diagram the diagram in that a class or role is added
+	 * @param type the type to the check for if a model element with the a standard name already exists
+	 * @param standardName the normally used standard name for the class or role
+	 * @return
+	 */
+	public static String calculateStandardNameForClassOrRole(Diagram diagram, Type type, String standardName) {
+		List<String> modelElements = new ArrayList<String>();
+		Model rootModel = DiagramUtil.getMainDiagramForAnyDiagram(diagram);
+		getModelElementsNamesRecursive(rootModel, type, modelElements);
+		if(!(modelElements.contains(standardName))) return standardName;
+		for(int i=1; i<=STANDART_NAMES_COUNTER_LIMIT; i++) {
+			if(!(modelElements.contains(standardName + Integer.toString(i))))
+				return standardName + Integer.toString(i);
+		}
+		return standardName;
+	}	
+	
+	/**
+	 * calculates the standard name of an attribute or operation when creating one
+	 * <p>
+	 * The standard name will be build by using a given standard name and adding number as suffix to it
+	 * if needed. The limit of this number is set in {@link #STANDART_NAMES_COUNTER_LIMIT}.
+	 * @param attributeOrOperationsContainer the container to search the other attributes or operations to check for
+	 * 		  already used standard names
+	 * @param standardName the normally used standard name for the attribute or operation
+	 * @return
+	 */
 	public static String calculateStandardNameForAttributeOrOperation(ContainerShape attributeOrOperationsContainer, String standardName) {
 		List<String> attributeOrOperationNames = new ArrayList<String>();
 		for(Shape shape : attributeOrOperationsContainer.getChildren()) {

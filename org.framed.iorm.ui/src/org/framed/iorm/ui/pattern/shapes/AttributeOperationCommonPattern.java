@@ -22,7 +22,7 @@ import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
-import org.framed.iorm.ui.util.DirectEditingUtil;
+import org.framed.iorm.ui.util.NameUtil;
 import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
 
@@ -271,13 +271,13 @@ public class AttributeOperationCommonPattern extends FRaMEDShapePattern implemen
 		ContainerShape attributeContainer = (ContainerShape) classOrRoleShape.getChildren().get(2);
 		ContainerShape operationContainer = (ContainerShape) classOrRoleShape.getChildren().get(4);
 		if(attributeContainer.getChildren().contains(shape))	{
-			if(!(DirectEditingUtil.matchesAttribute(newName))) return DIRECTEDITING_ATTRIBUTES;
-			if(DirectEditingUtil.nameAlreadyUsedForAttributeOrOperation(attributeContainer, newName)) 
+			if(!(NameUtil.matchesAttribute(newName))) return DIRECTEDITING_ATTRIBUTES;
+			if(NameUtil.nameAlreadyUsedForAttributeOrOperation(attributeContainer, newName)) 
 				return NAME_ALREADY_USED_ATTRIBUTES;
 		}
 		if(operationContainer.getChildren().contains(shape))	{
-			if(!(DirectEditingUtil.matchesOperation(newName))) return DIRECTEDITING_OPERATIONS;
-			if(DirectEditingUtil.nameAlreadyUsedForAttributeOrOperation(operationContainer, newName)) 
+			if(!(NameUtil.matchesOperation(newName))) return DIRECTEDITING_OPERATIONS;
+			if(NameUtil.nameAlreadyUsedForAttributeOrOperation(operationContainer, newName)) 
 				return NAME_ALREADY_USED_OPERATIONS;
 		}
 		return null;

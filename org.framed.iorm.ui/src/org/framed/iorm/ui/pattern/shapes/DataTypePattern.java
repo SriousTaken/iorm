@@ -41,7 +41,7 @@ import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
 import org.framed.iorm.ui.util.DiagramUtil;
-import org.framed.iorm.ui.util.DirectEditingUtil;
+import org.framed.iorm.ui.util.NameUtil;
 import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.util.PatternUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
@@ -275,7 +275,8 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 		//create new data type
 		org.framed.iorm.model.Shape newDataType = OrmFactory.eINSTANCE.createShape();
 		newDataType.setType(Type.DATA_TYPE);
-		newDataType.setName(STANDARD_DATATYPE_NAME);
+		String standardName = NameUtil.calculateStandardNameForClassOrRole(getDiagram(), Type.DATA_TYPE, STANDARD_DATATYPE_NAME);
+		newDataType.setName(standardName);
 		//add new natural type to the elements of the model
 		Model model = DiagramUtil.getLinkedModelForDiagram(getDiagram());
 		if(newDataType.eResource() != null) getDiagram().eResource().getContents().add(newDataType);
@@ -326,8 +327,8 @@ public class DataTypePattern extends FRaMEDShapePattern implements IPattern {
 	@Override
 	public String checkValueValid(String newName, IDirectEditingContext editingContext) {
 		if(getInitialValue(editingContext).contentEquals(newName)) return null;
-		if(!(DirectEditingUtil.matchesIdentifier(newName))) return DIRECTEDITING_DATATYPE;
-		if(DirectEditingUtil.nameAlreadyUsedForClassOrRole(getDiagram(), Type.DATA_TYPE, newName)) 
+		if(!(NameUtil.matchesIdentifier(newName))) return DIRECTEDITING_DATATYPE;
+		if(NameUtil.nameAlreadyUsedForClassOrRole(getDiagram(), Type.DATA_TYPE, newName)) 
 			return NAME_ALREADY_USED_DATATYPE;
 	    return null;
 	}

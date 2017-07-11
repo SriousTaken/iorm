@@ -9,6 +9,7 @@ import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.ui.IEditorInput;
 import org.framed.iorm.model.Model;
 import org.framed.iorm.ui.exceptions.NoDiagramFoundException;
+import org.framed.iorm.ui.exceptions.NoModelFoundException;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.wizards.RoleModelWizard;
 
@@ -17,6 +18,15 @@ import org.framed.iorm.ui.wizards.RoleModelWizard;
  * @author Kevin Kassin
  */
 public class DiagramUtil {
+	
+	/**
+	 * the identifier of the <em>main diagram</em> and <em>container diagram</em> using the property diagram kind
+	 * <p>
+	 * If its not clear what <em>main diagram</em> and <em>container diagram</em> means, see 
+	 * {@link RoleModelWizard#createEmfFileForDiagram} for reference.
+	 */
+	private static final String DIAGRAM_KIND_MAIN_DIAGRAM = IdentifierLiterals.DIAGRAM_KIND_MAIN_DIAGRAM,
+							    DIAGRAM_KIND_CONTAINER_DIAGRAM = IdentifierLiterals.DIAGRAM_KIND_CONTAINER_DIAGRAM;
 	
 	/**
 	 * the identifiers for graphics algorithms of group pictograms gathered from {@link IdentifierLiterals}
@@ -105,14 +115,34 @@ public class DiagramUtil {
 	 * @param diagram the diagram to search the container diagram from
 	 * @return the container diagram of a role model
 	 */
-	static Diagram getContainerDiagramForAnyDiagram(Diagram diagram) {
-		if(diagram.getContainer() == null) return diagram;
+	public static Diagram getContainerDiagramForAnyDiagram(Diagram diagram) {
+		if(PropertyUtil.isDiagram_KindValue(diagram, DIAGRAM_KIND_CONTAINER_DIAGRAM)) return diagram;
 		else {
 			if(diagram.getContainer() instanceof Diagram)
 				return getContainerDiagramForAnyDiagram((Diagram) diagram.getContainer());
 			else return null;
 		}	
 	}
+	
+	/**
+	 * fetches the <em>main diagram</em> of role model which contains the given diagram
+	 * <p>
+	 * If its not clear what <em>main diagram</em> means, see {@link RoleModelWizard#createEmfFileForDiagram} for reference.
+	 * @param diagram the diagram to search the main diagram for
+	 * @return the main diagram of a role model
+	 */
+	public static Model getMainDiagramForAnyDiagram(Diagram diagram) {
+		Model rootModel = null;
+		Diagram containerDiagram = DiagramUtil.getContainerDiagramForAnyDiagram(diagram);
+		for(Shape shape : containerDiagram.getChildren()) {
+			if(shape instanceof Diagram &&
+			   PropertyUtil.isDiagram_KindValue((Diagram) shape, DIAGRAM_KIND_MAIN_DIAGRAM)) {
+				if(shape.getLink().getBusinessObjects().size() == 1) {
+					rootModel = (Model) shape.getLink().getBusinessObjects().get(0);
+		}	}	}
+		if(rootModel == null) throw new NoModelFoundException();
+		else return rootModel;
+	}	
 
 	/**
 	 * returns the diagram for a resource fetched from a {@link DiagramEditorInput}

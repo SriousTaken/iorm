@@ -43,7 +43,7 @@ import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
 import org.framed.iorm.ui.util.DiagramUtil;
-import org.framed.iorm.ui.util.DirectEditingUtil;
+import org.framed.iorm.ui.util.NameUtil;
 import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.util.PatternUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
@@ -61,7 +61,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	
 	//names
 	private final String GROUP_FEATURE_NAME = NameLiterals.GROUP_FEATURE_NAME,
-				   		 STANDART_GROUP_NAME = NameLiterals.STANDART_GROUP_NAME;
+				   		 STANDARD_GROUP_NAME = NameLiterals.STANDARD_GROUP_NAME;
 	
 	//identifier
 	private final String SHAPE_ID_GROUP_CONTAINER = IdentifierLiterals.SHAPE_ID_GROUP_CONTAINER,
@@ -256,7 +256,7 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 												   width-2*PUFFER_BETWEEN_ELEMENTS, height-GROUP_CORNER_RADIUS-2*PUFFER_BETWEEN_ELEMENTS);
 		
 		//groups diagram
-		Diagram contentDiagram = pictogramElementCreateService.createDiagram(DIAGRAM_TYPE, STANDART_GROUP_NAME, 10, false);
+		Diagram contentDiagram = pictogramElementCreateService.createDiagram(DIAGRAM_TYPE, addedGroup.getName(), 10, false);
 		PropertyUtil.setDiagram_KindValue(contentDiagram, DIAGRAM_KIND_GROUP_DIAGRAM);
 		AddGroupOrCompartmentTypeContext agctc = (AddGroupOrCompartmentTypeContext) addContext;
 		link(contentDiagram, agctc.getModelToLink());
@@ -306,7 +306,8 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 		//create new natural type
 		org.framed.iorm.model.Shape newGroup = OrmFactory.eINSTANCE.createShape();
 		newGroup.setType(Type.GROUP);
-		newGroup.setName(STANDART_GROUP_NAME);
+		String standardName = NameUtil.calculateStandardNameForClassOrRole(getDiagram(), Type.GROUP, STANDARD_GROUP_NAME);
+		newGroup.setName(standardName);
 		//add new group to the elements of the model
 		Model model = DiagramUtil.getLinkedModelForDiagram((Diagram) getDiagram());
 		if(newGroup.eResource() != null) getDiagram().eResource().getContents().add(newGroup);
@@ -358,8 +359,8 @@ public class GroupPattern extends FRaMEDShapePattern implements IPattern {
 	@Override
 	public String checkValueValid(String newName, IDirectEditingContext editingContext) {
 		if(getInitialValue(editingContext).contentEquals(newName)) return null;
-		if(!(DirectEditingUtil.matchesIdentifier(newName))) return DIRECTEDITING_GROUP;
-		if(DirectEditingUtil.nameAlreadyUsedForClassOrRole(getDiagram(), Type.GROUP, newName)) 
+		if(!(NameUtil.matchesIdentifier(newName))) return DIRECTEDITING_GROUP;
+		if(NameUtil.nameAlreadyUsedForClassOrRole(getDiagram(), Type.GROUP, newName)) 
 			return NAME_ALREADY_USED_GROUP;
 	    return null;
 	}

@@ -40,7 +40,7 @@ import org.framed.iorm.ui.literals.LayoutLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.literals.TextLiterals;
 import org.framed.iorm.ui.util.DiagramUtil;
-import org.framed.iorm.ui.util.DirectEditingUtil;
+import org.framed.iorm.ui.util.NameUtil;
 import org.framed.iorm.ui.util.GeneralUtil;
 import org.framed.iorm.ui.util.PatternUtil;
 import org.framed.iorm.ui.util.PropertyUtil;
@@ -264,7 +264,8 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 		//create new natural type
 		org.framed.iorm.model.Shape newNaturalType = OrmFactory.eINSTANCE.createShape();
 		newNaturalType.setType(Type.NATURAL_TYPE);
-		newNaturalType.setName(STANDARD_NATURALTYPE_NAME);
+		String standardName = NameUtil.calculateStandardNameForClassOrRole(getDiagram(), Type.NATURAL_TYPE, STANDARD_NATURALTYPE_NAME);
+		newNaturalType.setName(standardName);
 		//add new natural type to the elements of the model
 		Model model = DiagramUtil.getLinkedModelForDiagram((Diagram) getDiagram());
 		if(newNaturalType.eResource() != null) getDiagram().eResource().getContents().add(newNaturalType);
@@ -315,8 +316,8 @@ public class NaturalTypePattern extends FRaMEDShapePattern implements IPattern {
 	@Override
 	public String checkValueValid(String newName, IDirectEditingContext editingContext) {
 		if(getInitialValue(editingContext).contentEquals(newName)) return null;
-		if(!(DirectEditingUtil.matchesIdentifier(newName))) return DIRECTEDITING_NATURALTYPE;
-		if(DirectEditingUtil.nameAlreadyUsedForClassOrRole(getDiagram(), Type.NATURAL_TYPE, newName)) 
+		if(!(NameUtil.matchesIdentifier(newName))) return DIRECTEDITING_NATURALTYPE;
+		if(NameUtil.nameAlreadyUsedForClassOrRole(getDiagram(), Type.NATURAL_TYPE, newName)) 
 			return NAME_ALREADY_USED_NATURALTYPE;
         return null;
 	}

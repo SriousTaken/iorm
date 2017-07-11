@@ -45,7 +45,7 @@ public class NameLiterals {
 							   STANDARD_OPERATION_NAME = "operation():type",
 							   STANDARD_NATURALTYPE_NAME = "naturalType",
 							   STANDARD_DATATYPE_NAME = "dataType",
-							   STANDART_GROUP_NAME = "group";
+							   STANDARD_GROUP_NAME = "group";
 
 	/**
 	 * name literals for commands

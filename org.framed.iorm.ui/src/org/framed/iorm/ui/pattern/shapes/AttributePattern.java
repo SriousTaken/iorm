@@ -11,7 +11,7 @@ import org.framed.iorm.model.Type;
 import org.framed.iorm.ui.literals.IdentifierLiterals;
 import org.framed.iorm.ui.literals.NameLiterals;
 import org.framed.iorm.ui.pattern.shapes.AttributeOperationCommonPattern; //*import for javadoc link
-import org.framed.iorm.ui.util.DirectEditingUtil;
+import org.framed.iorm.ui.util.NameUtil;
 
 /**
  * This graphiti pattern is used to work with {@link NamedElement}s
@@ -126,7 +126,7 @@ public class AttributePattern extends FRaMEDShapePattern implements IPattern {
 	public Object[] create(ICreateContext createContext) {
 		ContainerShape attributeContainer = (ContainerShape) createContext.getTargetContainer().getChildren().get(2);
 		NamedElement newAttribute = OrmFactory.eINSTANCE.createNamedElement();
-		String standartName = DirectEditingUtil.calculateStandardNameForAttributeOrOperation(attributeContainer, ATTRIBUTE_STANDARD_NAME);
+		String standartName = NameUtil.calculateStandardNameForAttributeOrOperation(attributeContainer, ATTRIBUTE_STANDARD_NAME);
 		newAttribute.setName(standartName);
 		if(newAttribute.eResource() != null) getDiagram().eResource().getContents().add(newAttribute);
 		org.framed.iorm.model.Shape classOrRole = 
